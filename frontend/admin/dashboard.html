@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — ReDiscoverU</title>
+<style>
+:root {
+  --bg-dark:#020617; --bg-card:#0f1929; --bg-input:#0d1b2e;
+  --gold:#facc15; --sky:#38bdf8; --green:#16a34a;
+  --text:#e2e8f0; --text-2:#94a3b8; --text-3:#475569;
+  --border:#1e3050; --danger:#ef4444; --warn:#f59e0b;
+  --radius:10px; --shadow:0 2px 12px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-dark);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex}
+.sidebar{width:220px;background:var(--bg-card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo span{color:var(--gold);font-weight:700;font-size:.95rem;letter-spacing:.05em}
+.sidebar-logo small{display:block;color:var(--text-3);font-size:.7rem;margin-top:2px}
+nav{flex:1;overflow-y:auto;padding:12px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--text-2);font-size:.82rem;border-left:3px solid transparent;transition:all .2s}
+.nav-item:hover,.nav-item.active{color:var(--text);background:rgba(250,204,21,.06);border-left-color:var(--gold)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border)}
+.sidebar-footer button{width:100%;padding:8px;background:transparent;border:1px solid var(--border);color:var(--text-2);border-radius:6px;cursor:pointer;font-size:.78rem}
+.sidebar-footer button:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.main{margin-left:220px;flex:1;padding:28px;min-height:100vh}
+.page{display:none}
+.page.active{display:block}
+.page-header{margin-bottom:24px}
+.page-header h1{font-size:1.4rem;font-weight:700;color:var(--text)}
+.page-header p{color:var(--text-2);font-size:.83rem;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.stat-card .label{color:var(--text-3);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+.stat-card .value{font-size:1.8rem;font-weight:700;color:var(--gold);margin-top:6px}
+.stat-card .sub{color:var(--text-3);font-size:.72rem;margin-top:2px}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.card-header h3{font-size:.95rem;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .2s}
+.btn-primary{background:var(--gold);color:#000}
+.btn-primary:hover{background:#e6b800}
+.btn-sm{padding:5px 10px;font-size:.75rem}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--sky);color:var(--sky)}
+.btn-success{background:var(--green);color:#fff}
+.btn-sky{background:var(--sky);color:#000}
+table{width:100%;border-collapse:collapse;font-size:.81rem}
+th{text-align:left;padding:10px 12px;color:var(--text-3);font-weight:500;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid rgba(30,48,80,.5);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600}
+.badge-green{background:rgba(22,163,74,.2);color:#4ade80}
+.badge-gold{background:rgba(250,204,21,.15);color:var(--gold)}
+.badge-gray{background:rgba(71,85,105,.3);color:var(--text-3)}
+.badge-blue{background:rgba(56,189,248,.15);color:var(--sky)}
+.badge-red{background:rgba(239,68,68,.15);color:#f87171}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.77rem;color:var(--text-2);margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 12px;font-size:.82rem}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gold)}
+.form-group textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:28px}
+.modal h2{font-size:1.1rem;margin-bottom:20px;color:var(--text)}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:.82rem;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;max-width:360px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:var(--green);color:#4ade80}
+.toast.error{border-color:var(--danger);color:#f87171}
+.toast.info{border-color:var(--sky);color:var(--sky)}
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(250,204,21,.05)}
+.upload-zone .icon{font-size:2rem;margin-bottom:8px}
+.upload-zone p{color:var(--text-2);font-size:.82rem}
+.upload-zone small{color:var(--text-3);font-size:.72rem}
+input[type=file]{display:none}
+.file-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.file-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.fi-video{background:rgba(239,68,68,.15)}
+.fi-pdf{background:rgba(239,68,68,.2)}
+.fi-doc{background:rgba(56,189,248,.15)}
+.fi-ppt{background:rgba(250,204,21,.15)}
+.fi-img{background:rgba(22,163,74,.15)}
+.file-meta{flex:1;min-width:0}
+.file-meta .name{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta .info{font-size:.7rem;color:var(--text-3);margin-top:2px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.progress-bar .fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s}
+.section-toggle{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.section-toggle button{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-2);font-size:.78rem;cursor:pointer;transition:all .2s}
+.section-toggle button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-3)}
+.empty-state svg{width:40px;height:40px;margin:0 auto 12px;opacity:.3}
+.empty-state p{font-size:.85rem}
+.action-bar{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:768px){
+  .sidebar{width:60px;overflow:hidden}
+  .sidebar .sidebar-logo span,.sidebar .nav-item span,.sidebar .sidebar-footer button span{display:none}
+  .main{margin-left:60px}
+  .form-row,.form-row-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>ReDiscoverU</span>
+    <small>Admin Panel</small>
+  </div>
+  <nav>
+    <div class="nav-item active" onclick="showPage('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Overview</span>
+    </div>
+    <div class="nav-item" onclick="showPage('categories')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>
+      <span>Categories</span>
+    </div>
+    <div class="nav-item" onclick="showPage('programs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span>Programs</span>
+    </div>
+    <div class="nav-item" onclick="showPage('sessions')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      <span>Sessions</span>
+    </div>
+    <div class="nav-item" onclick="showPage('whatsapp')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      <span>Community</span>
+    </div>
+    <div class="nav-item" onclick="showPage('motivation')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+      <span>Inspiration</span>
+    </div>
+    <div class="nav-item" onclick="showPage('quotes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span>Quotes</span>
+    </div>
+    <div class="nav-item" onclick="showPage('coupons')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+      <span>Coupons</span>
+    </div>
+    <div class="nav-item" onclick="showPage('payments')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span>Payments</span>
+    </div>
+    <div class="nav-item" onclick="showPage('users')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span>Users</span>
+    </div>
+    <div class="nav-item" onclick="showPage('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Settings</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <button onclick="logout()"><span>Sign Out</span></button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- OVERVIEW -->
+  <section class="page active" id="page-overview">
+    <div class="page-header">
+      <h1>Dashboard Overview</h1>
+      <p>Welcome back, Jayashankar. Here's your platform at a glance.</p>
+    </div>
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="label">Total Users</div><div class="value" id="s-users">—</div></div>
+      <div class="stat-card"><div class="label">Paid Members</div><div class="value" id="s-paid">—</div></div>
+      <div class="stat-card"><div class="label">Programs</div><div class="value" id="s-prog">—</div></div>
+      <div class="stat-card"><div class="label">Revenue</div><div class="value" id="s-rev">—</div><div class="sub">lifetime</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Platform Price</h3>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:160px">
+          <label style="font-size:.77rem;color:var(--text-2);display:block;margin-bottom:6px">Lifetime Access Price (₹)</label>
+          <input id="price-input" type="number" min="0" style="width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 12px;font-size:.9rem">
+        </div>
+        <button class="btn btn-primary" style="margin-top:22px" onclick="savePrice()">Update Price</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="page" id="page-categories">
+    <div class="page-header">
+      <h1>Program Categories</h1>
+      <p>Dynamic categories for organizing programs. Optional — programs can exist without a category.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>All Categories</h3>
+        <button class="btn btn-primary btn-sm" onclick="openCatModal()">+ Add Category</button>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="cat-tbody"><tr><td colspan="3" style="text-align:center;color:var(--text-3);padding:24px">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PROGRAMS -->
+  <section class="page" id="page-programs">
+    <div class="page-header">
+      <h1>Programs</h1>
+      <p>Manage your mentorship programs, content, and file uploads.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>All Programs</h3>
+        <button class="btn btn-primary btn-sm" onclick="openProgramModal()">+ New Program</button>
+      </div>
+      <div id="programs-list"></div>
+    </div>
+  </section>
+
+  <!-- SESSIONS -->
+  <section class="page" id="page-sessions">
+    <div class="page-header">
+      <h1>Live Sessions</h1>
+      <p>Schedule recurring or one-time sessions across all programs.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>All Sessions</h3>
+        <button class="btn btn-primary btn-sm" onclick="openSessionModal(null)">+ New Session</button>
+      </div>
+      <div id="sessions-all-list"></div>
+    </div>
+  </section>
+
+  <!-- WHATSAPP -->
+  <section class="page" id="page-whatsapp">
+    <div class="page-header">
+      <h1>WhatsApp Community</h1>
+      <p>Groups and channels appear automatically on user dashboards.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Groups & Channels</h3>
+        <button class="btn btn-primary btn-sm" onclick="openWAModal()">+ Add</button>
+      </div>
+      <div id="wa-list"></div>
+    </div>
+  </section>
+
+  <!-- MOTIVATION -->
+  <section class="page" id="page-motivation">
+    <div class="page-header">
+      <h1>Daily Inspiration</h1>
+      <p>Upload or link images for the daily inspiration grid on the homepage.</p>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Posts</h3>
+        <div class="action-bar">
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('insp-file-input').click()">↑ Upload Image</button>
+          <button class="btn btn-ghost btn-sm" onclick="openPostModal()">+ Add by URL</button>
+        </div>
+        <input type="file" id="insp-file-input" accept="image/*" onchange="uploadInspirationFile(this)">
+      </div>
+      <div id="motivation-list"></div>
+    </div>
+  </section>
+
+  <!-- QUOTES -->
+  <section class="page" id="page-quotes">
+    <div class="page-header"><h1>Mentor Quotes</h1><p>Rotating quote shown on the homepage hero.</p></div>
+    <div class="card">
+      <div class="card-header"><h3>Quotes</h3><button class="btn btn-primary btn-sm" onclick="openQuoteModal()">+ Add Quote</button></div>
+      <div id="quotes-list"></div>
+    </div>
+  </section>
+
+  <!-- COUPONS -->
+  <section class="page" id="page-coupons">
+    <div class="page-header"><h1>Discount Coupons</h1><p>Manage coupon codes for the subscription page.</p></div>
+    <div class="card">
+      <div class="card-header"><h3>Coupons</h3><button class="btn btn-primary btn-sm" onclick="openCouponModal()">+ New Coupon</button></div>
+      <table>
+        <thead><tr><th>Code</th><th>Discount</th><th>Used / Max</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="coupon-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PAYMENTS -->
+  <section class="page" id="page-payments">
+    <div class="page-header"><h1>Payments</h1><p>All transaction records.</p></div>
+    <div class="card">
+      <table>
+        <thead><tr><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="pay-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- USERS -->
+  <section class="page" id="page-users">
+    <div class="page-header"><h1>Users</h1><p>Manage registered members.</p></div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Role</th><th>Actions</th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="page" id="page-settings">
+    <div class="page-header"><h1>Settings</h1></div>
+    <div class="card" style="max-width:400px">
+      <h3 style="margin-bottom:16px">Platform Price</h3>
+      <div class="form-group">
+        <label>Lifetime Access Price (₹)</label>
+        <input id="settings-price" type="number" min="0">
+      </div>
+      <button class="btn btn-primary" onclick="savePrice()">Save</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── MODALS ── -->
+
+<!-- Category Modal -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <h2 id="cat-modal-title">Add Category</h2>
+    <input type="hidden" id="cat-id">
+    <div class="form-group"><label>Category Name *</label><input id="cat-name" placeholder="e.g. Morning Rituals"></div>
+    <div class="form-group"><label>Description</label><textarea id="cat-desc" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('cat-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+    </div>
+  </div>
+</div>
+
+<!-- Program Modal -->
+<div class="modal-overlay" id="program-modal">
+  <div class="modal">
+    <h2 id="prog-modal-title">New Program</h2>
+    <input type="hidden" id="prog-id">
+    <div class="form-group"><label>Title *</label><input id="prog-title" placeholder="Program title"></div>
+    <div class="form-group"><label>Tagline</label><input id="prog-tagline" placeholder="Short tagline shown on program cards"></div>
+    <div class="form-group"><label>Description</label><textarea id="prog-desc" rows="3"></textarea></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="prog-category">
+          <option value="">— No Category —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Duration</label>
+        <input id="prog-duration" placeholder="e.g. 4 weeks · Live">
+      </div>
+    </div>
+    <div class="form-group"><label>Cover Image URL</label><input id="prog-cover" placeholder="https://..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('program-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProgram()">Save Program</button>
+    </div>
+  </div>
+</div>
+
+<!-- Content Modal -->
+<div class="modal-overlay" id="content-modal">
+  <div class="modal">
+    <h2>Add Content Item</h2>
+    <input type="hidden" id="content-prog-id">
+    <input type="hidden" id="content-id">
+    <div class="form-group"><label>Title *</label><input id="content-title"></div>
+    <div class="form-group">
+      <label>Content Type</label>
+      <select id="content-type" onchange="onContentTypeChange()">
+        <option value="VIDEO">YouTube Video</option>
+        <option value="YOUTUBE">YouTube Embed</option>
+        <option value="PDF">PDF Link</option>
+        <option value="ARTICLE">Article</option>
+        <option value="MEETING">Meeting / Session</option>
+        <option value="LINK">External Link</option>
+      </select>
+    </div>
+    <div class="form-group"><label>URL / Link *</label><input id="content-url" placeholder="https://..."></div>
+    <div class="form-group" id="schedule-text-group" style="display:none">
+      <label>Schedule Text</label><input id="content-schedule" placeholder="e.g. Tue & Thu – 8:00 PM IST">
+    </div>
+    <div class="form-group"><label>Order Index</label><input id="content-order" type="number" value="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('content-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveContent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Session Modal -->
+<div class="modal-overlay" id="session-modal">
+  <div class="modal">
+    <h2 id="sess-modal-title">New Session</h2>
+    <input type="hidden" id="sess-id">
+    <input type="hidden" id="sess-prog-id">
+    <div class="form-group"><label>Session Title *</label><input id="sess-title" placeholder="e.g. Morning Ritual Session"></div>
+    <div class="form-group">
+      <label>Program</label>
+      <select id="sess-program"></select>
+    </div>
+    <div class="form-group">
+      <label>Recurrence</label>
+      <select id="sess-recurrence" onchange="onRecurrenceChange()">
+        <option value="ONE_TIME">One Time</option>
+        <option value="DAILY">Daily</option>
+        <option value="WEEKDAYS">Weekdays (Mon–Fri)</option>
+        <option value="CUSTOM_DAYS">Custom Days</option>
+        <option value="SPECIFIC_DATE_RANGE">Date Range</option>
+      </select>
+    </div>
+    <div id="sess-date-field" class="form-group">
+      <label>Date</label><input id="sess-date" type="date">
+    </div>
+    <div id="sess-days-field" class="form-group" style="display:none">
+      <label>Select Days</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="MON"> Mon</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="TUE"> Tue</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="WED"> Wed</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="THU"> Thu</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="FRI"> Fri</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="SAT"> Sat</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem"><input type="checkbox" value="SUN"> Sun</label>
+      </div>
+    </div>
+    <div id="sess-range-fields" style="display:none">
+      <div class="form-row">
+        <div class="form-group"><label>Valid From</label><input id="sess-from" type="date"></div>
+        <div class="form-group"><label>Valid To</label><input id="sess-to" type="date"></div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Start Time</label><input id="sess-start" type="time"></div>
+      <div class="form-group"><label>End Time</label><input id="sess-end" type="time"></div>
+    </div>
+    <div class="form-group"><label>Timezone</label>
+      <select id="sess-tz">
+        <option value="Asia/Kolkata">IST (Asia/Kolkata)</option>
+        <option value="UTC">UTC</option>
+        <option value="America/New_York">EST (New York)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Meeting Link</label><input id="sess-link" placeholder="https://meet.google.com/..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('session-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSession()">Save Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- WA Modal -->
+<div class="modal-overlay" id="wa-modal">
+  <div class="modal">
+    <h2 id="wa-modal-title">Add Community</h2>
+    <input type="hidden" id="wa-id">
+    <div class="form-group"><label>Name *</label><input id="wa-name"></div>
+    <div class="form-group"><label>WhatsApp URL *</label><input id="wa-url" placeholder="https://chat.whatsapp.com/..."></div>
+    <div class="form-group"><label>Type</label>
+      <select id="wa-type"><option value="GROUP">Group</option><option value="CHANNEL">Channel</option></select>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="wa-desc" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('wa-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveWA()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post by URL Modal -->
+<div class="modal-overlay" id="post-modal">
+  <div class="modal">
+    <h2>Add Inspiration Post</h2>
+    <div class="form-group"><label>Image URL *</label><input id="post-url" placeholder="https://..."></div>
+    <div class="form-group"><label>Caption</label><input id="post-caption"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('post-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePost()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quote Modal -->
+<div class="modal-overlay" id="quote-modal">
+  <div class="modal">
+    <h2>Add Quote</h2>
+    <input type="hidden" id="quote-id">
+    <div class="form-group"><label>Quote Text *</label><textarea id="quote-text" rows="4"></textarea></div>
+    <div class="form-group"><label>Author</label><input id="quote-author" value="Jayashankar Lingaiah"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('quote-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveQuote()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coupon Modal -->
+<div class="modal-overlay" id="coupon-modal">
+  <div class="modal">
+    <h2>New Coupon</h2>
+    <div class="form-group"><label>Code *</label><input id="c-code" placeholder="e.g. OFF50" style="text-transform:uppercase"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Discount %</label><input id="c-pct" type="number" min="1" max="100" value="10"></div>
+      <div class="form-group"><label>Max Usage (blank=unlimited)</label><input id="c-max" type="number" min="1"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('coupon-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCoupon()">Create Coupon</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload File Modal -->
+<div class="modal-overlay" id="upload-modal">
+  <div class="modal">
+    <h2>Upload File</h2>
+    <input type="hidden" id="upload-prog-id">
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('upload-file-input').click()">
+      <div class="icon">📎</div>
+      <p>Click to select a file</p>
+      <small>Supports MP4, PDF, DOC, DOCX, PPT, PPTX, Images (max 200MB)</small>
+    </div>
+    <input type="file" id="upload-file-input"
+      accept=".mp4,.pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.gif,.mov"
+      onchange="onFileSelected(this)">
+    <div id="upload-file-preview" style="display:none;margin-top:12px"></div>
+    <div class="form-group" style="margin-top:12px">
+      <label>Title (optional — defaults to filename)</label>
+      <input id="upload-title" placeholder="Leave blank to use filename">
+    </div>
+    <div class="form-group">
+      <label>Order Index</label>
+      <input id="upload-order" type="number" value="0">
+    </div>
+    <div id="upload-progress" style="display:none">
+      <div class="progress-bar"><div class="fill" id="upload-progress-fill" style="width:0%"></div></div>
+      <p style="font-size:.75rem;color:var(--text-3);margin-top:6px">Uploading…</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('upload-modal')">Cancel</button>
+      <button class="btn btn-primary" id="upload-btn" onclick="doUpload()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:8080';
+
+function token() { return localStorage.getItem('rdu_token'); }
+function H(json) {
+  const h = { 'Authorization': 'Bearer ' + token() };
+  if (json) h['Content-Type'] = 'application/json';
+  return h;
+}
+
+function logout() { localStorage.clear(); location.href = '../login.html'; }
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  // Lazy-load data
+  if (name === 'overview') { loadStats(); }
+  if (name === 'categories') { loadCategories(); }
+  if (name === 'programs') { loadPrograms(); }
+  if (name === 'sessions') { loadAllSessions(); }
+  if (name === 'whatsapp') { loadWA(); }
+  if (name === 'motivation') { loadMotivation(); }
+  if (name === 'quotes') { loadQuotes(); }
+  if (name === 'coupons') { loadCoupons(); }
+  if (name === 'payments') { loadPayments(); }
+  if (name === 'users') { loadUsers(); }
+  if (name === 'settings') { loadSettingsPage(); }
+}
+
+function toast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── STATS ──────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const [sRes, prRes] = await Promise.all([
+      fetch(`${API}/api/admin/stats`, { headers: H() }),
+      fetch(`${API}/api/admin/settings`, { headers: H() })
+    ]);
+    if (!sRes.ok) throw new Error('HTTP ' + sRes.status);
+    const s = await sRes.json();
+    document.getElementById('s-users').textContent = s.totalUsers ?? 0;
+    document.getElementById('s-paid').textContent  = s.paidUsers  ?? 0;
+    document.getElementById('s-prog').textContent  = s.totalPrograms ?? 0;
+    const rev = s.totalRevenue || 0;
+    document.getElementById('s-rev').textContent   = '₹' + Number(rev).toLocaleString('en-IN');
+    if (prRes.ok) {
+      const pr = await prRes.json();
+      document.getElementById('price-input').value = pr.lifetimePrice || 499;
+    }
+  } catch (e) {
+    console.error('[loadStats]', e);
+  }
+}
+
+async function savePrice() {
+  const val = document.getElementById('price-input').value || document.getElementById('settings-price').value;
+  try {
+    const res = await fetch(`${API}/api/admin/settings/price`, {
+      method: 'PATCH', headers: H(true),
+      body: JSON.stringify({ lifetimePrice: parseFloat(val) })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    toast('Price updated', 'success');
+  } catch (e) {
+    console.error('[savePrice]', e);
+    toast('Failed to update price: ' + e.message, 'error');
+  }
+}
+
+async function loadSettingsPage() {
+  try {
+    const res = await fetch(`${API}/api/admin/settings`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    document.getElementById('settings-price').value = d.lifetimePrice || 499;
+  } catch (e) {
+    console.error('[loadSettingsPage]', e);
+  }
+}
+
+// ── CATEGORIES ────────────────────────────────────────────────────
+let _categories = [];
+async function loadCategories() {
+  try {
+    const res = await fetch(`${API}/api/admin/categories`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    _categories = Array.isArray(data) ? data : [];
+    const tbody = document.getElementById('cat-tbody');
+    if (!_categories.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-3);padding:24px">No categories yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = _categories.map(c => `
+      <tr>
+        <td><strong>${esc(c.name)}</strong>${c.description ? `<br><small style="color:var(--text-3)">${esc(c.description)}</small>` : ''}</td>
+        <td><span class="badge ${c.active ? 'badge-green' : 'badge-gray'}">${c.active ? 'Active' : 'Inactive'}</span></td>
+        <td>
+          <div class="action-bar">
+            <button class="btn btn-ghost btn-sm" onclick="editCatModal(${c.id})">Edit</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleCategory(${c.id})">${c.active ? 'Disable' : 'Enable'}</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCategory(${c.id})">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch (e) {
+    console.error('[loadCategories]', e);
+    document.getElementById('cat-tbody').innerHTML = `<tr><td colspan="3" style="color:var(--danger)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+function openCatModal() {
+  document.getElementById('cat-id').value = '';
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-desc').value = '';
+  document.getElementById('cat-modal-title').textContent = 'Add Category';
+  openModal('cat-modal');
+}
+
+function editCatModal(id) {
+  const c = _categories.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('cat-id').value = id;
+  document.getElementById('cat-name').value = c.name;
+  document.getElementById('cat-desc').value = c.description || '';
+  document.getElementById('cat-modal-title').textContent = 'Edit Category';
+  openModal('cat-modal');
+}
+
+async function saveCategory() {
+  const id = document.getElementById('cat-id').value;
+  const body = {
+    name: document.getElementById('cat-name').value.trim(),
+    description: document.getElementById('cat-desc').value,
+    active: true
+  };
+  if (!body.name) { toast('Name is required', 'error'); return; }
+  try {
+    const url = id ? `${API}/api/admin/categories/${id}` : `${API}/api/admin/categories`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: H(true), body: JSON.stringify(body) });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('cat-modal');
+    toast(id ? 'Category updated' : 'Category added', 'success');
+    loadCategories();
+  } catch (e) {
+    console.error('[saveCategory]', e);
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function toggleCategory(id) {
+  try {
+    await fetch(`${API}/api/admin/categories/${id}/toggle`, { method: 'PATCH', headers: H() });
+    loadCategories();
+  } catch (e) { console.error('[toggleCategory]', e); }
+}
+
+async function deleteCategory(id) {
+  if (!confirm('Delete this category?')) return;
+  try {
+    await fetch(`${API}/api/admin/categories/${id}`, { method: 'DELETE', headers: H() });
+    toast('Deleted', 'success');
+    loadCategories();
+  } catch (e) { console.error('[deleteCategory]', e); toast('Error', 'error'); }
+}
+
+// ── PROGRAMS ──────────────────────────────────────────────────────
+let _programs = [];
+async function loadPrograms() {
+  try {
+    const res = await fetch(`${API}/api/admin/programs`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    _programs = Array.isArray(data) ? data : [];
+    renderPrograms();
+  } catch (e) {
+    console.error('[loadPrograms]', e);
+    document.getElementById('programs-list').innerHTML = `<p style="color:var(--danger);padding:16px">Error: ${e.message}</p>`;
+  }
+}
+
+function renderPrograms() {
+  const el = document.getElementById('programs-list');
+  if (!_programs.length) {
+    el.innerHTML = '<div class="empty-state"><p>No programs yet. Click New Program to create one.</p></div>';
+    return;
+  }
+  el.innerHTML = _programs.map(p => `
+    <div style="border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:rgba(255,255,255,.02);flex-wrap:wrap;gap:8px">
+        <div>
+          <strong style="font-size:.9rem">${esc(p.title)}</strong>
+          ${p.category ? `<span class="badge badge-blue" style="margin-left:8px">${esc(p.category.name)}</span>` : ''}
+          ${p.active ? '<span class="badge badge-green" style="margin-left:6px">Active</span>' : '<span class="badge badge-gray" style="margin-left:6px">Hidden</span>'}
+          ${p.duration ? `<span style="color:var(--text-3);font-size:.74rem;margin-left:8px">${esc(p.duration)}</span>` : ''}
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost btn-sm" onclick="editProgram(${p.id})">Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleProgram(${p.id})">${p.active ? 'Hide' : 'Show'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="expandProgram(${p.id})">Content & Files</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProgram(${p.id})">Delete</button>
+        </div>
+      </div>
+      <div id="prog-detail-${p.id}" style="display:none;padding:18px;border-top:1px solid var(--border)">
+        <div class="section-toggle">
+          <button class="active" onclick="showProgSection(${p.id},'sessions',this)">Sessions</button>
+          <button onclick="showProgSection(${p.id},'content',this)">URL Content</button>
+          <button onclick="showProgSection(${p.id},'files',this)">📁 Files</button>
+        </div>
+        <div id="prog-sessions-${p.id}"><div style="color:var(--text-3);font-size:.82rem">Loading…</div></div>
+        <div id="prog-content-${p.id}" style="display:none"></div>
+        <div id="prog-files-${p.id}" style="display:none"></div>
+      </div>
+    </div>`).join('');
+}
+
+function showProgSection(pid, section, btn) {
+  ['sessions','content','files'].forEach(s => {
+    const el = document.getElementById(`prog-${s}-${pid}`);
+    if (el) el.style.display = (s === section) ? 'block' : 'none';
+  });
+  btn.closest('.section-toggle').querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (section === 'sessions') loadProgSessions(pid);
+  if (section === 'content') loadProgContent(pid);
+  if (section === 'files') loadProgFiles(pid);
+}
+
+async function expandProgram(id) {
+  const detail = document.getElementById(`prog-detail-${id}`);
+  const visible = detail.style.display !== 'none';
+  document.querySelectorAll('[id^="prog-detail-"]').forEach(d => d.style.display = 'none');
+  if (!visible) {
+    detail.style.display = 'block';
+    loadProgSessions(id);
+  }
+}
+
+async function loadProgSessions(pid) {
+  const el = document.getElementById(`prog-sessions-${pid}`);
+  el.innerHTML = '<div style="color:var(--text-3);font-size:.82rem">Loading…</div>';
+  try {
+    const res = await fetch(`${API}/api/admin/programs/${pid}/sessions`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const sessions = Array.isArray(data) ? data : [];
+    el.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <button class="btn btn-sky btn-sm" onclick="openSessionModalForProg(${pid})">+ Add Session</button>
+      </div>
+      ${sessions.length === 0 ? '<p style="color:var(--text-3);font-size:.82rem">No sessions yet.</p>' :
+        sessions.map(s => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-input);border-radius:8px;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+            <div>
+              <strong style="font-size:.83rem">${esc(s.title)}</strong>
+              <span class="badge ${s.active ? 'badge-green' : 'badge-gray'}" style="margin-left:8px">${s.recurrenceType || 'ONE_TIME'}</span><br>
+              <small style="color:var(--text-3)">${esc(buildScheduleText(s))}</small>
+              ${s.meetingLink ? `<br><a href="${esc(s.meetingLink)}" target="_blank" style="color:var(--sky);font-size:.75rem">Join Link ↗</a>` : ''}
+            </div>
+            <div class="action-bar">
+              <button class="btn btn-ghost btn-sm" onclick="editSessionModal(${s.id})">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteSession(${s.id},${pid})">Delete</button>
+            </div>
+          </div>`).join('')}`;
+  } catch (e) {
+    console.error('[loadProgSessions]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadProgContent(pid) {
+  const el = document.getElementById(`prog-content-${pid}`);
+  el.innerHTML = '<div style="color:var(--text-3);font-size:.82rem">Loading…</div>';
+  try {
+    const res = await fetch(`${API}/api/admin/programs/${pid}/content`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const items = Array.isArray(data) ? data : [];
+    el.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <button class="btn btn-sky btn-sm" onclick="openContentModal(${pid})">+ Add URL Content</button>
+      </div>
+      ${items.length === 0 ? '<p style="color:var(--text-3);font-size:.82rem">No URL content.</p>' :
+        items.map(c => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-input);border-radius:8px;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+            <div>
+              <span class="badge badge-gray" style="margin-right:6px">${c.contentType}</span>
+              <strong style="font-size:.83rem">${esc(c.title)}</strong><br>
+              <small style="color:var(--text-3)">${esc(c.contentUrl||'')}</small>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="deleteContent(${c.id},${pid})">Delete</button>
+          </div>`).join('')}`;
+  } catch (e) {
+    console.error('[loadProgContent]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadProgFiles(pid) {
+  const el = document.getElementById(`prog-files-${pid}`);
+  el.innerHTML = '<div style="color:var(--text-3);font-size:.82rem">Loading…</div>';
+  try {
+    const res = await fetch(`${API}/api/admin/programs/${pid}/files`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const files = Array.isArray(data) ? data : [];
+    el.innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <button class="btn btn-primary btn-sm" onclick="openUploadModal(${pid})">↑ Upload File</button>
+      </div>
+      ${files.length === 0 ? '<p style="color:var(--text-3);font-size:.82rem">No uploaded files.</p>' :
+        files.map(f => `
+          <div class="file-item">
+            <div class="file-icon fi-${fiClass(f.fileCategory)}">${fiIcon(f.fileCategory)}</div>
+            <div class="file-meta">
+              <div class="name">${esc(f.title)}</div>
+              <div class="info">${f.fileCategory} · ${formatSize(f.fileSizeBytes)} · <a href="${API}${f.filePath}" target="_blank" style="color:var(--sky)">Open ↗</a></div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="deleteFile(${f.id},${pid})">Delete</button>
+          </div>`).join('')}`;
+  } catch (e) {
+    console.error('[loadProgFiles]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+function fiClass(cat) {
+  if (!cat) return 'doc';
+  return {VIDEO:'video',PDF:'pdf',DOC:'doc',PPT:'ppt',IMAGE:'img'}[cat] || 'doc';
+}
+function fiIcon(cat) {
+  return {VIDEO:'🎬',PDF:'📄',DOC:'📝',PPT:'📊',IMAGE:'🖼️'}[cat] || '📎';
+}
+function formatSize(bytes) {
+  if (!bytes) return '—';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+function buildScheduleText(s) {
+  if (!s) return '';
+  let text = '';
+  switch(s.recurrenceType) {
+    case 'DAILY': text = 'Every Day'; break;
+    case 'WEEKDAYS': text = 'Mon – Fri'; break;
+    case 'CUSTOM_DAYS': text = (s.recurrenceDays || 'Custom').replace(/,/g,' · '); break;
+    case 'SPECIFIC_DATE_RANGE': text = (s.validFrom||'') + (s.validTo ? ' to '+s.validTo : ''); break;
+    default: text = s.specificDate || 'One-time';
+  }
+  if (s.startTime) {
+    text += ' · ' + s.startTime;
+    if (s.endTime) text += ' – ' + s.endTime;
+    text += ' ' + (s.timezone||'IST').replace('Asia/Kolkata','IST');
+  }
+  return text;
+}
+
+function openProgramModal() {
+  document.getElementById('prog-id').value = '';
+  document.getElementById('prog-title').value = '';
+  document.getElementById('prog-tagline').value = '';
+  document.getElementById('prog-desc').value = '';
+  document.getElementById('prog-duration').value = '';
+  document.getElementById('prog-cover').value = '';
+  document.getElementById('prog-modal-title').textContent = 'New Program';
+  populateCategoryDropdown('prog-category');
+  openModal('program-modal');
+}
+
+function editProgram(id) {
+  const p = _programs.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('prog-id').value = id;
+  document.getElementById('prog-title').value = p.title || '';
+  document.getElementById('prog-tagline').value = p.tagline || '';
+  document.getElementById('prog-desc').value = p.description || '';
+  document.getElementById('prog-duration').value = p.duration || '';
+  document.getElementById('prog-cover').value = p.coverImageUrl || '';
+  document.getElementById('prog-modal-title').textContent = 'Edit Program';
+  populateCategoryDropdown('prog-category', p.category?.id);
+  openModal('program-modal');
+}
+
+async function populateCategoryDropdown(selectId, selectedId) {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = '<option value="">— No Category —</option>';
+  try {
+    const res = await fetch(`${API}/api/admin/categories`, { headers: H() });
+    if (!res.ok) return;
+    const cats = await res.json();
+    if (Array.isArray(cats)) {
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        if (c.id === selectedId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+  } catch (e) { console.error('[populateCategoryDropdown]', e); }
+}
+
+async function saveProgram() {
+  const id = document.getElementById('prog-id').value;
+  const catId = document.getElementById('prog-category').value;
+  const body = {
+    title: document.getElementById('prog-title').value.trim(),
+    tagline: document.getElementById('prog-tagline').value.trim(),
+    description: document.getElementById('prog-desc').value,
+    duration: document.getElementById('prog-duration').value,
+    coverImageUrl: document.getElementById('prog-cover').value,
+    active: true,
+    category: catId ? { id: parseInt(catId) } : null
+  };
+  if (!body.title) { toast('Title required', 'error'); return; }
+  try {
+    const url = id ? `${API}/api/admin/programs/${id}` : `${API}/api/admin/programs`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: H(true), body: JSON.stringify(body) });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('program-modal');
+    toast(id ? 'Program updated' : 'Program created', 'success');
+    loadPrograms();
+  } catch (e) {
+    console.error('[saveProgram]', e);
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function toggleProgram(id) {
+  try {
+    await fetch(`${API}/api/admin/programs/${id}/toggle`, { method: 'PATCH', headers: H() });
+    loadPrograms();
+  } catch (e) { console.error('[toggleProgram]', e); }
+}
+
+async function deleteProgram(id) {
+  if (!confirm('Delete this program and ALL its content and files?')) return;
+  try {
+    await fetch(`${API}/api/admin/programs/${id}`, { method: 'DELETE', headers: H() });
+    toast('Program deleted', 'success');
+    loadPrograms();
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── CONTENT ───────────────────────────────────────────────────────
+function openContentModal(progId) {
+  document.getElementById('content-prog-id').value = progId;
+  document.getElementById('content-id').value = '';
+  document.getElementById('content-title').value = '';
+  document.getElementById('content-url').value = '';
+  document.getElementById('content-schedule').value = '';
+  document.getElementById('content-order').value = '0';
+  document.getElementById('content-type').value = 'VIDEO';
+  document.getElementById('schedule-text-group').style.display = 'none';
+  openModal('content-modal');
+}
+
+function onContentTypeChange() {
+  const type = document.getElementById('content-type').value;
+  document.getElementById('schedule-text-group').style.display = type === 'MEETING' ? 'block' : 'none';
+}
+
+async function saveContent() {
+  const pid = document.getElementById('content-prog-id').value;
+  const body = {
+    title: document.getElementById('content-title').value.trim(),
+    contentType: document.getElementById('content-type').value,
+    contentUrl: document.getElementById('content-url').value.trim(),
+    scheduleText: document.getElementById('content-schedule').value,
+    orderIndex: parseInt(document.getElementById('content-order').value) || 0
+  };
+  if (!body.title) { toast('Title required', 'error'); return; }
+  try {
+    const res = await fetch(`${API}/api/admin/programs/${pid}/content`, {
+      method: 'POST', headers: H(true), body: JSON.stringify(body)
+    });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('content-modal');
+    toast('Content added', 'success');
+    loadProgContent(pid);
+  } catch (e) {
+    console.error('[saveContent]', e);
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function deleteContent(cid, pid) {
+  if (!confirm('Delete this content item?')) return;
+  try {
+    await fetch(`${API}/api/admin/content/${cid}`, { method: 'DELETE', headers: H() });
+    toast('Deleted', 'success');
+    loadProgContent(pid);
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── FILE UPLOAD ───────────────────────────────────────────────────
+let _uploadFile = null;
+
+function openUploadModal(progId) {
+  document.getElementById('upload-prog-id').value = progId;
+  document.getElementById('upload-title').value = '';
+  document.getElementById('upload-order').value = '0';
+  document.getElementById('upload-file-input').value = '';
+  document.getElementById('upload-file-preview').style.display = 'none';
+  document.getElementById('upload-progress').style.display = 'none';
+  document.getElementById('upload-progress-fill').style.width = '0%';
+  _uploadFile = null;
+  openModal('upload-modal');
+}
+
+function onFileSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  _uploadFile = file;
+  const preview = document.getElementById('upload-file-preview');
+  preview.style.display = 'block';
+  preview.innerHTML = `
+    <div class="file-item">
+      <div class="file-icon fi-doc">${fiIcon(guessCategory(file.name))}</div>
+      <div class="file-meta">
+        <div class="name">${esc(file.name)}</div>
+        <div class="info">${formatSize(file.size)}</div>
+      </div>
+    </div>`;
+  if (!document.getElementById('upload-title').value)
+    document.getElementById('upload-title').value = file.name.replace(/\.[^.]+$/, '');
+}
+
+function guessCategory(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (['mp4','mov','webm'].includes(ext)) return 'VIDEO';
+  if (ext === 'pdf') return 'PDF';
+  if (['doc','docx'].includes(ext)) return 'DOC';
+  if (['ppt','pptx'].includes(ext)) return 'PPT';
+  if (['jpg','jpeg','png','gif','webp'].includes(ext)) return 'IMAGE';
+  return 'OTHER';
+}
+
+async function doUpload() {
+  if (!_uploadFile) { toast('Select a file first', 'error'); return; }
+  const pid = document.getElementById('upload-prog-id').value;
+  const title = document.getElementById('upload-title').value.trim();
+  const order = document.getElementById('upload-order').value || '0';
+
+  const formData = new FormData();
+  formData.append('file', _uploadFile);
+  if (title) formData.append('title', title);
+  formData.append('orderIndex', order);
+
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  const prog = document.getElementById('upload-progress');
+  const fill = document.getElementById('upload-progress-fill');
+  prog.style.display = 'block';
+
+  // Simulate progress (XHR for real progress)
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `${API}/api/admin/programs/${pid}/files/upload`);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + token());
+
+  xhr.upload.addEventListener('progress', (e) => {
+    if (e.lengthComputable) {
+      fill.style.width = Math.round(e.loaded / e.total * 100) + '%';
+    }
+  });
+
+  xhr.addEventListener('load', () => {
+    btn.disabled = false;
+    if (xhr.status >= 200 && xhr.status < 300) {
+      toast('File uploaded successfully!', 'success');
+      closeModal('upload-modal');
+      loadProgFiles(pid);
+    } else {
+      try {
+        const err = JSON.parse(xhr.responseText);
+        toast(err.error || 'Upload failed', 'error');
+      } catch(e) {
+        toast('Upload failed: ' + xhr.status, 'error');
+      }
+    }
+  });
+
+  xhr.addEventListener('error', () => {
+    btn.disabled = false;
+    toast('Upload error — check connection', 'error');
+    console.error('[doUpload] XHR error');
+  });
+
+  xhr.send(formData);
+}
+
+async function deleteFile(fid, pid) {
+  if (!confirm('Delete this file?')) return;
+  try {
+    await fetch(`${API}/api/admin/files/${fid}`, { method: 'DELETE', headers: H() });
+    toast('File deleted', 'success');
+    loadProgFiles(pid);
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── SESSIONS ──────────────────────────────────────────────────────
+async function loadAllSessions() {
+  const el = document.getElementById('sessions-all-list');
+  el.innerHTML = '<p style="color:var(--text-3)">Loading…</p>';
+  try {
+    const [sRes, pRes] = await Promise.all([
+      fetch(`${API}/api/admin/programs`, { headers: H() }),
+      Promise.resolve()
+    ]);
+    if (!sRes.ok) throw new Error('HTTP ' + sRes.status);
+    const programs = Array.isArray(await sRes.json()) ? await fetch(`${API}/api/admin/programs`, { headers: H() }).then(r => r.json()) : [];
+
+    // collect all sessions
+    let allSessions = [];
+    for (const p of (Array.isArray(programs) ? programs : [])) {
+      const sRes2 = await fetch(`${API}/api/admin/programs/${p.id}/sessions`, { headers: H() });
+      if (sRes2.ok) {
+        const ss = await sRes2.json();
+        if (Array.isArray(ss)) {
+          ss.forEach(s => { s._programTitle = p.title; s._programId = p.id; allSessions.push(s); });
+        }
+      }
+    }
+
+    if (!allSessions.length) {
+      el.innerHTML = '<div class="empty-state"><p>No sessions. Use the Programs page to add sessions per program.</p></div>';
+      return;
+    }
+
+    el.innerHTML = allSessions.map(s => `
+      <div style="border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <strong>${esc(s.title)}</strong>
+          <span class="badge badge-blue" style="margin-left:8px">${esc(s._programTitle||'')}</span>
+          <span class="badge badge-gold" style="margin-left:6px">${s.recurrenceType||'ONE_TIME'}</span>
+          <br><small style="color:var(--text-3)">${esc(buildScheduleText(s))}</small>
+          ${s.meetingLink ? `<br><a href="${esc(s.meetingLink)}" target="_blank" style="color:var(--sky);font-size:.75rem">Join Link ↗</a>` : ''}
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost btn-sm" onclick="editSessionModal(${s.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSession(${s.id},${s._programId})">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    console.error('[loadAllSessions]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+function openSessionModal(progId) {
+  document.getElementById('sess-id').value = '';
+  document.getElementById('sess-title').value = '';
+  document.getElementById('sess-link').value = '';
+  document.getElementById('sess-date').value = '';
+  document.getElementById('sess-from').value = '';
+  document.getElementById('sess-to').value = '';
+  document.getElementById('sess-start').value = '';
+  document.getElementById('sess-end').value = '';
+  document.getElementById('sess-recurrence').value = 'ONE_TIME';
+  document.getElementById('sess-tz').value = 'Asia/Kolkata';
+  document.getElementById('sess-modal-title').textContent = 'New Session';
+  // Uncheck all days
+  document.querySelectorAll('#sess-days-field input[type=checkbox]').forEach(c => c.checked = false);
+  onRecurrenceChange();
+  populateProgramDropdown('sess-program', progId);
+  openModal('session-modal');
+}
+
+function openSessionModalForProg(progId) { openSessionModal(progId); }
+
+async function editSessionModal(id) {
+  // Fetch session from list - need to find it across programs
+  // For simplicity, open modal and pre-populate from visible data
+  // This is a limitation without a GET /sessions/{id} endpoint — we'll use what we have
+  toast('Open the Programs page → expand a program → click Edit on a specific session for direct edit.', 'info');
+}
+
+function onRecurrenceChange() {
+  const v = document.getElementById('sess-recurrence').value;
+  document.getElementById('sess-date-field').style.display =
+    (v === 'ONE_TIME') ? 'block' : 'none';
+  document.getElementById('sess-days-field').style.display =
+    (v === 'CUSTOM_DAYS') ? 'block' : 'none';
+  document.getElementById('sess-range-fields').style.display =
+    (v === 'SPECIFIC_DATE_RANGE') ? 'block' : 'none';
+}
+
+async function populateProgramDropdown(selectId, selectedId) {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = '<option value="">— Select Program —</option>';
+  try {
+    const res = await fetch(`${API}/api/admin/programs`, { headers: H() });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      data.filter(p => p.active).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.title;
+        if (p.id === selectedId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+  } catch (e) { console.error('[populateProgramDropdown]', e); }
+}
+
+async function saveSession() {
+  const id = document.getElementById('sess-id').value;
+  const progId = document.getElementById('sess-program').value;
+  const recurrence = document.getElementById('sess-recurrence').value;
+
+  if (!progId) { toast('Select a program', 'error'); return; }
+
+  let days = null;
+  if (recurrence === 'CUSTOM_DAYS') {
+    const checked = Array.from(document.querySelectorAll('#sess-days-field input:checked')).map(c => c.value);
+    days = checked.join(',');
+  }
+
+  const body = {
+    title: document.getElementById('sess-title').value.trim(),
+    meetingLink: document.getElementById('sess-link').value.trim(),
+    recurrenceType: recurrence,
+    recurrenceDays: days,
+    specificDate: document.getElementById('sess-date').value || null,
+    validFrom: document.getElementById('sess-from').value || null,
+    validTo: document.getElementById('sess-to').value || null,
+    startTime: document.getElementById('sess-start').value || null,
+    endTime: document.getElementById('sess-end').value || null,
+    timezone: document.getElementById('sess-tz').value,
+    active: true
+  };
+
+  if (!body.title) { toast('Title required', 'error'); return; }
+
+  try {
+    const url = id
+      ? `${API}/api/admin/sessions/${id}`
+      : `${API}/api/admin/programs/${progId}/sessions`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: H(true), body: JSON.stringify(body) });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('session-modal');
+    toast(id ? 'Session updated' : 'Session created', 'success');
+    loadProgSessions(progId);
+  } catch (e) {
+    console.error('[saveSession]', e);
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function deleteSession(sid, pid) {
+  if (!confirm('Delete this session?')) return;
+  try {
+    await fetch(`${API}/api/admin/sessions/${sid}`, { method: 'DELETE', headers: H() });
+    toast('Deleted', 'success');
+    if (pid) loadProgSessions(pid);
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── WHATSAPP ──────────────────────────────────────────────────────
+let _waGroups = [];
+async function loadWA() {
+  const el = document.getElementById('wa-list');
+  try {
+    const res = await fetch(`${API}/api/admin/whatsapp-groups`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    _waGroups = Array.isArray(data) ? data : [];
+    if (!_waGroups.length) {
+      el.innerHTML = '<div class="empty-state"><p>No community groups yet.</p></div>';
+      return;
+    }
+    el.innerHTML = _waGroups.map(g => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg-input);border-radius:8px;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div>
+          <strong>${esc(g.name)}</strong>
+          <span class="badge ${g.type==='CHANNEL'?'badge-gold':'badge-green'}" style="margin-left:8px">${g.type||'GROUP'}</span>
+          <span class="badge ${g.active?'badge-green':'badge-gray'}" style="margin-left:6px">${g.active?'Active':'Hidden'}</span><br>
+          ${g.description ? `<small style="color:var(--text-3)">${esc(g.description)}</small><br>` : ''}
+          <a href="${esc(g.url)}" target="_blank" style="color:var(--sky);font-size:.75rem">Join ↗</a>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost btn-sm" onclick="editWAModal(${g.id})">Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleWA(${g.id})">${g.active?'Hide':'Show'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteWA(${g.id})">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    console.error('[loadWA]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+function openWAModal() {
+  document.getElementById('wa-id').value = '';
+  document.getElementById('wa-name').value = '';
+  document.getElementById('wa-url').value = '';
+  document.getElementById('wa-type').value = 'GROUP';
+  document.getElementById('wa-desc').value = '';
+  document.getElementById('wa-modal-title').textContent = 'Add Community';
+  openModal('wa-modal');
+}
+
+function editWAModal(id) {
+  const g = _waGroups.find(x => x.id === id);
+  if (!g) return;
+  document.getElementById('wa-id').value = id;
+  document.getElementById('wa-name').value = g.name || '';
+  document.getElementById('wa-url').value = g.url || '';
+  document.getElementById('wa-type').value = g.type || 'GROUP';
+  document.getElementById('wa-desc').value = g.description || '';
+  document.getElementById('wa-modal-title').textContent = 'Edit Community';
+  openModal('wa-modal');
+}
+
+async function saveWA() {
+  const id = document.getElementById('wa-id').value;
+  const body = {
+    name: document.getElementById('wa-name').value.trim(),
+    url: document.getElementById('wa-url').value.trim(),
+    type: document.getElementById('wa-type').value,
+    description: document.getElementById('wa-desc').value,
+    active: true
+  };
+  if (!body.name || !body.url) { toast('Name and URL required', 'error'); return; }
+  try {
+    const url = id ? `${API}/api/admin/whatsapp-groups/${id}` : `${API}/api/admin/whatsapp-groups`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: H(true), body: JSON.stringify(body) });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('wa-modal');
+    toast('Saved', 'success');
+    loadWA();
+  } catch (e) { console.error('[saveWA]', e); toast('Error', 'error'); }
+}
+
+async function toggleWA(id) {
+  try {
+    await fetch(`${API}/api/admin/whatsapp-groups/${id}/toggle`, { method: 'PATCH', headers: H() });
+    loadWA();
+  } catch (e) { console.error('[toggleWA]', e); }
+}
+
+async function deleteWA(id) {
+  if (!confirm('Delete?')) return;
+  try {
+    await fetch(`${API}/api/admin/whatsapp-groups/${id}`, { method: 'DELETE', headers: H() });
+    toast('Deleted', 'success');
+    loadWA();
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── MOTIVATION ────────────────────────────────────────────────────
+async function loadMotivation() {
+  const el = document.getElementById('motivation-list');
+  try {
+    const res = await fetch(`${API}/api/admin/motivation-posts`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const posts = Array.isArray(data) ? data : [];
+    if (!posts.length) {
+      el.innerHTML = '<div class="empty-state"><p>No inspiration posts yet.</p></div>';
+      return;
+    }
+    el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:4px">` +
+      posts.map(p => `
+        <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;position:relative">
+          <img src="${esc(p.imagePath)}" style="width:100%;height:140px;object-fit:cover" onerror="this.style.display='none'">
+          <div style="padding:10px">
+            ${p.caption ? `<p style="font-size:.75rem;color:var(--text-2)">${esc(p.caption)}</p>` : ''}
+            <div style="display:flex;gap:6px;margin-top:8px">
+              <button class="btn btn-danger btn-sm" style="width:100%" onclick="deletePost(${p.id})">Delete</button>
+            </div>
+          </div>
+        </div>`).join('') + `</div>`;
+  } catch (e) {
+    console.error('[loadMotivation]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+async function uploadInspirationFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('image', file);
+  try {
+    const res = await fetch(`${API}/api/admin/motivation-posts/upload`, {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token() }, body: fd
+    });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Upload failed', 'error'); return; }
+    toast('Image uploaded', 'success');
+    loadMotivation();
+  } catch (e) { console.error('[uploadInspiration]', e); toast('Error: ' + e.message, 'error'); }
+}
+
+function openPostModal() {
+  document.getElementById('post-url').value = '';
+  document.getElementById('post-caption').value = '';
+  openModal('post-modal');
+}
+
+async function savePost() {
+  const body = {
+    imagePath: document.getElementById('post-url').value.trim(),
+    caption: document.getElementById('post-caption').value,
+    active: true
+  };
+  if (!body.imagePath) { toast('Image URL required', 'error'); return; }
+  try {
+    const res = await fetch(`${API}/api/admin/motivation-posts`, {
+      method: 'POST', headers: H(true), body: JSON.stringify(body)
+    });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('post-modal');
+    toast('Post added', 'success');
+    loadMotivation();
+  } catch (e) { console.error('[savePost]', e); toast('Error', 'error'); }
+}
+
+async function deletePost(id) {
+  if (!confirm('Delete?')) return;
+  try {
+    await fetch(`${API}/api/admin/motivation-posts/${id}`, { method: 'DELETE', headers: H() });
+    toast('Deleted', 'success');
+    loadMotivation();
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── QUOTES ────────────────────────────────────────────────────────
+let _quotes = [];
+async function loadQuotes() {
+  const el = document.getElementById('quotes-list');
+  try {
+    const res = await fetch(`${API}/api/admin/quotes`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    _quotes = Array.isArray(data) ? data : [];
+    if (!_quotes.length) {
+      el.innerHTML = '<div class="empty-state"><p>No quotes yet.</p></div>';
+      return;
+    }
+    el.innerHTML = _quotes.map(q => `
+      <div style="border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px">
+        <p style="font-style:italic;color:var(--text-2)">"${esc((q.quoteText||'').substring(0,120))}…"</p>
+        <p style="font-size:.75rem;color:var(--text-3);margin-top:6px">— ${esc(q.authorName||'')}</p>
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+          <span class="badge ${q.active?'badge-gold':'badge-gray'}">${q.active?'Active':'Inactive'}</span>
+          ${!q.active ? `<button class="btn btn-ghost btn-sm" onclick="activateQuote(${q.id})">Set Active</button>` : ''}
+          <button class="btn btn-danger btn-sm" onclick="deleteQuote(${q.id})">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    console.error('[loadQuotes]', e);
+    el.innerHTML = `<p style="color:var(--danger)">Error: ${e.message}</p>`;
+  }
+}
+
+function openQuoteModal() {
+  document.getElementById('quote-id').value = '';
+  document.getElementById('quote-text').value = '';
+  document.getElementById('quote-author').value = 'Jayashankar Lingaiah';
+  openModal('quote-modal');
+}
+
+async function saveQuote() {
+  const body = {
+    quoteText: document.getElementById('quote-text').value.trim(),
+    authorName: document.getElementById('quote-author').value.trim(),
+    active: true
+  };
+  if (!body.quoteText) { toast('Quote text required', 'error'); return; }
+  try {
+    const res = await fetch(`${API}/api/admin/quotes`, {
+      method: 'POST', headers: H(true), body: JSON.stringify(body)
+    });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('quote-modal');
+    toast('Quote saved', 'success');
+    loadQuotes();
+  } catch (e) { console.error('[saveQuote]', e); toast('Error', 'error'); }
+}
+
+async function activateQuote(id) {
+  try {
+    await fetch(`${API}/api/admin/quotes/${id}/activate`, { method: 'PATCH', headers: H() });
+    loadQuotes();
+  } catch (e) { console.error('[activateQuote]', e); }
+}
+
+async function deleteQuote(id) {
+  if (!confirm('Delete quote?')) return;
+  try {
+    await fetch(`${API}/api/admin/quotes/${id}`, { method: 'DELETE', headers: H() });
+    toast('Deleted', 'success');
+    loadQuotes();
+  } catch (e) { toast('Error', 'error'); }
+}
+
+// ── COUPONS ───────────────────────────────────────────────────────
+async function loadCoupons() {
+  try {
+    const res = await fetch(`${API}/api/admin/coupons`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const coupons = Array.isArray(data) ? data : [];
+    const tbody = document.getElementById('coupon-tbody');
+    tbody.innerHTML = coupons.length === 0
+      ? '<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:24px">No coupons</td></tr>'
+      : coupons.map(c => `<tr>
+          <td><code style="color:var(--gold)">${esc(c.code)}</code></td>
+          <td>${c.discountPercentage}%</td>
+          <td>${c.usageCount||0} / ${c.maxUsage||'∞'}</td>
+          <td><span class="badge ${c.active?'badge-green':'badge-gray'}">${c.active?'Active':'Off'}</span></td>
+          <td><button class="btn btn-ghost btn-sm" onclick="toggleCoupon(${c.id})">${c.active?'Disable':'Enable'}</button></td>
+        </tr>`).join('');
+  } catch (e) {
+    console.error('[loadCoupons]', e);
+    document.getElementById('coupon-tbody').innerHTML = `<tr><td colspan="5" style="color:var(--danger)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+function openCouponModal() { openModal('coupon-modal'); }
+
+async function saveCoupon() {
+  const body = {
+    code: document.getElementById('c-code').value.toUpperCase().trim(),
+    discountPercentage: parseInt(document.getElementById('c-pct').value) || 10,
+    maxUsage: document.getElementById('c-max').value ? parseInt(document.getElementById('c-max').value) : null
+  };
+  if (!body.code) { toast('Code required', 'error'); return; }
+  try {
+    const res = await fetch(`${API}/api/admin/coupons`, {
+      method: 'POST', headers: H(true), body: JSON.stringify(body)
+    });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Error', 'error'); return; }
+    closeModal('coupon-modal');
+    toast('Coupon created', 'success');
+    loadCoupons();
+  } catch (e) { console.error('[saveCoupon]', e); toast('Error', 'error'); }
+}
+
+async function toggleCoupon(id) {
+  try {
+    await fetch(`${API}/api/admin/coupons/${id}/toggle`, { method: 'PATCH', headers: H() });
+    loadCoupons();
+  } catch (e) { console.error('[toggleCoupon]', e); }
+}
+
+// ── PAYMENTS ──────────────────────────────────────────────────────
+async function loadPayments() {
+  try {
+    const res = await fetch(`${API}/api/admin/payments`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const pays = Array.isArray(data) ? data : [];
+    const tbody = document.getElementById('pay-tbody');
+    tbody.innerHTML = pays.length === 0
+      ? '<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:24px">No payments</td></tr>'
+      : pays.map(p => `<tr>
+          <td>${esc(p.userName||p.userId||'')}</td>
+          <td>₹${p.amount||0}</td>
+          <td><span class="badge ${p.status==='SUCCESS'?'badge-green':'badge-gold'}">${esc(p.status||'')}</span></td>
+          <td style="color:var(--text-3)">${p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : ''}</td>
+        </tr>`).join('');
+  } catch (e) {
+    console.error('[loadPayments]', e);
+    document.getElementById('pay-tbody').innerHTML = `<tr><td colspan="4" style="color:var(--danger)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+// ── USERS ─────────────────────────────────────────────────────────
+async function loadUsers() {
+  try {
+    const res = await fetch(`${API}/api/admin/users`, { headers: H() });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const users = Array.isArray(data) ? data : [];
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = users.length === 0
+      ? '<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:24px">No users</td></tr>'
+      : users.map(u => `<tr>
+          <td>${esc(u.name||'')}</td>
+          <td style="color:var(--text-3)">${esc(u.email||'')}</td>
+          <td><span class="badge ${u.subscriptionStatus==='PAID'?'badge-green':u.subscriptionStatus==='PENDING'?'badge-gold':'badge-gray'}">${esc(u.subscriptionStatus||'FREE')}</span></td>
+          <td><span class="badge badge-gray">${u.role==='ROLE_ADMIN'?'Admin':'User'}</span></td>
+          <td>
+            ${u.subscriptionStatus !== 'PAID' ? `<button class="btn btn-success btn-sm" onclick="activateUser(${u.id})">Activate</button> ` : ''}
+            <button class="btn btn-ghost btn-sm" onclick="toggleUser(${u.id})">${u.enabled?'Disable':'Enable'}</button>
+          </td>
+        </tr>`).join('');
+  } catch (e) {
+    console.error('[loadUsers]', e);
+    document.getElementById('users-tbody').innerHTML = `<tr><td colspan="5" style="color:var(--danger)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+async function activateUser(id) {
+  try {
+    await fetch(`${API}/api/admin/users/${id}/activate`, { method: 'PATCH', headers: H() });
+    toast('User activated', 'success');
+    loadUsers();
+  } catch (e) { toast('Error', 'error'); }
+}
+
+async function toggleUser(id) {
+  try {
+    await fetch(`${API}/api/admin/users/${id}/toggle`, { method: 'PATCH', headers: H() });
+    loadUsers();
+  } catch (e) { console.error('[toggleUser]', e); }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+(async function init() {
+  const tok = token();
+  if (!tok) { location.href = '../login.html'; return; }
+  // Verify admin role
+  try {
+    const res = await fetch(`${API}/api/user/status`, { headers: H() });
+    if (!res.ok) throw new Error('Auth failed');
+    const d = await res.json();
+    if (d.role !== 'ROLE_ADMIN') { alert('Admin access required'); location.href = '../login.html'; return; }
+  } catch (e) {
+    location.href = '../login.html'; return;
+  }
+  loadStats();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — ReDiscoverU</title>
+<style>
+:root{
+  --bg:#020617;--bg2:#0f1929;--bg3:#0d1b2e;
+  --gold:#facc15;--sky:#38bdf8;--green:#16a34a;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --border:#1e3050;--radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh}
+
+/* TOP NAV */
+.topnav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.topnav .brand{font-weight:700;color:var(--gold);letter-spacing:.05em;font-size:.9rem}
+.topnav .user-info{display:flex;align-items:center;gap:12px}
+.topnav .user-info span{font-size:.8rem;color:var(--text2)}
+.topnav button{padding:6px 14px;border:1px solid var(--border);background:transparent;color:var(--text2);border-radius:6px;cursor:pointer;font-size:.78rem}
+.topnav button:hover{background:var(--border)}
+
+/* TAB NAV */
+.tab-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.tab-btn{padding:14px 20px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* MAIN */
+.main{padding:28px 24px;max-width:1100px;margin:0 auto}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* SUBSCRIPTION BANNER */
+.sub-banner{background:linear-gradient(135deg,rgba(250,204,21,.12),rgba(56,189,248,.08));border:1px solid rgba(250,204,21,.3);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.sub-banner .status-text{font-size:.95rem;font-weight:600;color:var(--gold)}
+.sub-banner small{color:var(--text2);font-size:.78rem;display:block;margin-top:2px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-gold{background:rgba(250,204,21,.15);color:var(--gold)}
+.badge-green{background:rgba(22,163,74,.2);color:#4ade80}
+.badge-blue{background:rgba(56,189,248,.15);color:var(--sky)}
+.badge-gray{background:rgba(71,85,105,.3);color:var(--text3)}
+
+/* PROGRAM CARDS */
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.prog-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s}
+.prog-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.prog-card-cover{height:130px;background:linear-gradient(135deg,#0d1b2e,#1e3050);display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;overflow:hidden}
+.prog-card-cover img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.prog-card-body{padding:16px}
+.prog-card-body h3{font-size:.92rem;font-weight:600;margin-bottom:4px}
+.prog-card-body .cat{font-size:.72rem;color:var(--sky);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.prog-card-body p{font-size:.78rem;color:var(--text2);line-height:1.5}
+.prog-card-body .meta{font-size:.72rem;color:var(--text3);margin-top:8px}
+
+/* PROGRAM DETAIL */
+.prog-detail{display:none}
+.prog-detail.open{display:block}
+.prog-detail-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.back-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+.detail-section{margin-bottom:32px}
+.detail-section h2{font-size:1rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.detail-section h2::after{content:'';flex:1;height:1px;background:var(--border);margin-left:8px}
+
+/* SESSION CARDS */
+.session-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.session-info .title{font-size:.88rem;font-weight:600}
+.session-info .schedule{font-size:.77rem;color:var(--sky);margin-top:4px}
+.session-info .program-name{font-size:.72rem;color:var(--text3);margin-top:2px}
+.join-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--green);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:600;text-decoration:none}
+.join-btn:hover{background:#15803d}
+
+/* FILE VIEWER */
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.file-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s}
+.file-card:hover{border-color:var(--sky)}
+.file-card-icon{font-size:2rem;text-align:center}
+.file-card-name{font-size:.82rem;font-weight:500;text-align:center;word-break:break-word}
+.file-card-meta{font-size:.7rem;color:var(--text3);text-align:center}
+.file-card-actions{display:flex;gap:8px;justify-content:center}
+.file-card-actions a,.file-card-actions button{padding:6px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;text-decoration:none;border:none}
+.btn-play{background:var(--green);color:#fff}
+.btn-view{background:var(--sky);color:#000}
+.btn-dl{background:transparent;border:1px solid var(--border)!important;color:var(--text2)}
+.btn-dl:hover{border-color:var(--gold)!important;color:var(--gold)}
+
+/* IMAGE MODAL */
+.img-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+.img-modal-overlay.open{display:flex}
+.img-modal-overlay img{max-width:90%;max-height:85vh;border-radius:10px}
+.img-modal-close{position:fixed;top:20px;right:24px;background:transparent;border:none;color:#fff;font-size:2rem;cursor:pointer}
+
+/* VIDEO MODAL */
+.video-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+.video-modal-overlay.open{display:flex;flex-direction:column;gap:12px}
+.video-modal-close{position:fixed;top:20px;right:24px;background:transparent;border:none;color:#fff;font-size:2rem;cursor:pointer}
+video{max-width:90%;max-height:80vh;border-radius:10px;background:#000}
+
+/* COMMUNITY */
+.community-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.community-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:12px}
+.community-card h3{font-size:.9rem;font-weight:600}
+.community-card p{font-size:.8rem;color:var(--text2);line-height:1.5}
+.community-card .join-link{display:inline-block;padding:10px 20px;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);color:#25d366;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:600;text-align:center;transition:all .2s}
+.community-card .join-link:hover{background:rgba(37,211,102,.25)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state .icon{font-size:3rem;margin-bottom:12px;opacity:.3}
+.empty-state p{font-size:.85rem}
+.empty-state small{font-size:.75rem;margin-top:4px;display:block}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--text3);font-size:.85rem}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<header class="topnav">
+  <div class="brand">✦ ReDiscoverU</div>
+  <div class="user-info">
+    <span id="user-name">Loading…</span>
+    <button onclick="logout()">Sign Out</button>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('programs', this)">Programs</button>
+  <button class="tab-btn" onclick="switchTab('sessions', this)">Live Sessions</button>
+  <button class="tab-btn" onclick="switchTab('community', this)">Community</button>
+  <button class="tab-btn" onclick="switchTab('payments', this)">My Payments</button>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- SUBSCRIPTION BANNER -->
+  <div class="sub-banner" id="sub-banner" style="display:none">
+    <div>
+      <div class="status-text" id="sub-status">✦ Lifetime Member</div>
+      <small id="sub-email"></small>
+    </div>
+    <span class="badge badge-gold">Lifetime Access</span>
+  </div>
+
+  <!-- PROGRAMS TAB -->
+  <div class="tab-content active" id="tab-programs">
+    <div id="prog-list-view">
+      <div class="loading">Loading programs…</div>
+    </div>
+    <div class="prog-detail" id="prog-detail-view"></div>
+  </div>
+
+  <!-- SESSIONS TAB -->
+  <div class="tab-content" id="tab-sessions">
+    <div id="sessions-container">
+      <div class="loading">Loading sessions…</div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY TAB -->
+  <div class="tab-content" id="tab-community">
+    <div id="community-container">
+      <div class="loading">Loading community…</div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS TAB -->
+  <div class="tab-content" id="tab-payments">
+    <div id="payments-container">
+      <div class="loading">Loading…</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- IMAGE MODAL -->
+<div class="img-modal-overlay" id="img-modal" onclick="this.classList.remove('open')">
+  <button class="img-modal-close" onclick="document.getElementById('img-modal').classList.remove('open')">×</button>
+  <img id="img-modal-src" src="" alt="">
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="video-modal-overlay" id="vid-modal">
+  <button class="video-modal-close" onclick="closeVideoModal()">×</button>
+  <video id="vid-player" controls></video>
+  <p id="vid-title" style="color:var(--text2);font-size:.82rem"></p>
+</div>
+
+<script>
+const API = 'http://localhost:8080';
+function token() { return localStorage.getItem('rdu_token'); }
+function H() { return { 'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json' }; }
+function logout() { localStorage.clear(); location.href = '../login.html'; }
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let _programs = [];
+let _loaded = { programs: false, sessions: false, community: false, payments: false };
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (!_loaded[name]) {
+    _loaded[name] = true;
+    if (name === 'programs') loadPrograms();
+    if (name === 'sessions') loadSessions();
+    if (name === 'community') loadCommunity();
+    if (name === 'payments') loadPayments();
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+(async function init() {
+  const tok = token();
+  if (!tok) { location.href = '../login.html'; return; }
+  try {
+    const res = await fetch(`${API}/api/user/status`, {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!res.ok) throw new Error('Auth failed');
+    const u = await res.json();
+
+    if (u.role === 'ROLE_ADMIN') {
+      window.location.href = '../admin/dashboard.html';
+      return;
+    }
+
+    document.getElementById('user-name').textContent = u.name || u.email;
+    document.getElementById('sub-status').textContent =
+      u.subscriptionStatus === 'PAID' ? '✦ Lifetime Member' : '○ Free Account';
+    document.getElementById('sub-email').textContent = u.email;
+    document.getElementById('sub-banner').style.display = 'flex';
+
+    if (u.subscriptionStatus !== 'PAID') {
+      showPaywallBanner();
+    }
+
+    _loaded.programs = true;
+    loadPrograms();
+  } catch (e) {
+    console.error('[init]', e);
+    location.href = '../login.html';
+  }
+})();
+
+function showPaywallBanner() {
+  const banner = document.getElementById('sub-banner');
+  banner.style.background = 'rgba(239,68,68,.08)';
+  banner.style.borderColor = 'rgba(239,68,68,.3)';
+  banner.style.display = 'flex';
+  document.getElementById('sub-status').style.color = '#f87171';
+  document.getElementById('sub-status').textContent = '○ Free Account — Content Locked';
+  banner.innerHTML += `<a href="../subscribe.html" style="padding:8px 20px;background:var(--gold);color:#000;border-radius:7px;text-decoration:none;font-size:.82rem;font-weight:700">Unlock Lifetime Access ↗</a>`;
+}
+
+// ── PROGRAMS ──────────────────────────────────────────────────────
+async function loadPrograms() {
+  const listView = document.getElementById('prog-list-view');
+  try {
+    const res = await fetch(`${API}/api/user/programs`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.status === 402) {
+      listView.innerHTML = paywall();
+      return;
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    _programs = Array.isArray(data) ? data : [];
+
+    if (!_programs.length) {
+      listView.innerHTML = '<div class="empty-state"><div class="icon">📚</div><p>No programs available yet.</p><small>Check back soon.</small></div>';
+      return;
+    }
+
+    listView.innerHTML = `<div class="prog-grid">` + _programs.map(p => `
+      <div class="prog-card" onclick="openProgram(${p.id})">
+        <div class="prog-card-cover">
+          ${p.coverImageUrl ? `<img src="${esc(p.coverImageUrl)}" alt="${esc(p.title)}" onerror="this.remove()">` : ''}
+          <span style="z-index:1;position:relative">${programIcon(p)}</span>
+        </div>
+        <div class="prog-card-body">
+          ${p.category ? `<div class="cat">${esc(p.category.name)}</div>` : ''}
+          <h3>${esc(p.title)}</h3>
+          ${p.tagline ? `<p style="color:var(--text2);margin-bottom:4px">${esc(p.tagline)}</p>` : ''}
+          <p>${esc((p.description||'').substring(0,100))}${(p.description||'').length > 100 ? '…' : ''}</p>
+          ${p.duration ? `<div class="meta">⏱ ${esc(p.duration)}</div>` : ''}
+        </div>
+      </div>`).join('') + `</div>`;
+  } catch (e) {
+    console.error('[loadPrograms]', e);
+    listView.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load programs.</p><small>${e.message}</small></div>`;
+  }
+}
+
+function programIcon(p) {
+  if (!p.type && !p.category) return '📖';
+  const t = p.type || '';
+  if (t === 'LIVE') return '🔴';
+  if (t === 'MENTORSHIP') return '🎯';
+  return '📖';
+}
+
+async function openProgram(id) {
+  const listView = document.getElementById('prog-list-view');
+  const detailView = document.getElementById('prog-detail-view');
+  listView.style.display = 'none';
+  detailView.className = 'prog-detail open';
+  detailView.innerHTML = '<div class="loading">Loading program details…</div>';
+
+  try {
+    const res = await fetch(`${API}/api/program/${id}/details`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const { program, contents, files, liveSessions } = data;
+
+    const sessions = Array.isArray(liveSessions) ? liveSessions : [];
+    const contentItems = Array.isArray(contents) ? contents : [];
+    const uploadedFiles = Array.isArray(files) ? files : [];
+
+    // Categorize uploaded files
+    const videos = uploadedFiles.filter(f => f.fileCategory === 'VIDEO');
+    const pdfs   = uploadedFiles.filter(f => f.fileCategory === 'PDF');
+    const docs   = uploadedFiles.filter(f => f.fileCategory === 'DOC');
+    const ppts   = uploadedFiles.filter(f => f.fileCategory === 'PPT');
+    const images = uploadedFiles.filter(f => f.fileCategory === 'IMAGE');
+    const others = uploadedFiles.filter(f => ['OTHER'].includes(f.fileCategory));
+
+    detailView.innerHTML = `
+      <div class="prog-detail-header">
+        <button class="back-btn" onclick="closeProgram()">← Back</button>
+        <h2 style="font-size:1.1rem">${esc(program.title)}</h2>
+        ${program.category ? `<span class="badge badge-blue">${esc(program.category.name)}</span>` : ''}
+      </div>
+      ${program.description ? `<p style="color:var(--text2);font-size:.85rem;margin-bottom:24px;line-height:1.7">${esc(program.description)}</p>` : ''}
+
+      <!-- SESSIONS -->
+      ${sessions.length > 0 ? `
+        <div class="detail-section">
+          <h2>🔴 Live Sessions</h2>
+          ${sessions.map(s => `
+            <div class="session-card">
+              <div class="session-info">
+                <div class="title">${esc(s.title)}</div>
+                <div class="schedule">${esc(s.scheduleText || buildScheduleText(s))}</div>
+              </div>
+              ${s.meetingLink ? `<a class="join-btn" href="${esc(s.meetingLink)}" target="_blank">📹 Join Session</a>` : ''}
+            </div>`).join('')}
+        </div>` : ''}
+
+      <!-- VIDEOS -->
+      ${videos.length > 0 ? `
+        <div class="detail-section">
+          <h2>🎬 Recorded Videos</h2>
+          <div class="file-grid">
+            ${videos.map(f => `
+              <div class="file-card">
+                <div class="file-card-icon">🎬</div>
+                <div class="file-card-name">${esc(f.title)}</div>
+                <div class="file-card-meta">${formatSize(f.fileSizeBytes)}</div>
+                <div class="file-card-actions">
+                  <button class="btn-play" onclick="playVideo('${API}${esc(f.filePath)}','${esc(f.title)}')">▶ Play</button>
+                  <a class="btn-dl" href="${API}${esc(f.filePath)}" download>↓</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      <!-- PDFs -->
+      ${pdfs.length > 0 ? `
+        <div class="detail-section">
+          <h2>📄 Documents</h2>
+          <div class="file-grid">
+            ${pdfs.map(f => `
+              <div class="file-card">
+                <div class="file-card-icon">📄</div>
+                <div class="file-card-name">${esc(f.title)}</div>
+                <div class="file-card-meta">${formatSize(f.fileSizeBytes)}</div>
+                <div class="file-card-actions">
+                  <a class="btn-view" href="${API}${esc(f.filePath)}" target="_blank">Open</a>
+                  <a class="btn-dl" href="${API}${esc(f.filePath)}" download>↓</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      <!-- DOC/PPT -->
+      ${(docs.length + ppts.length > 0) ? `
+        <div class="detail-section">
+          <h2>📁 Resources</h2>
+          <div class="file-grid">
+            ${[...docs, ...ppts, ...others].map(f => `
+              <div class="file-card">
+                <div class="file-card-icon">${f.fileCategory==='DOC'?'📝':'f.fileCategory'==='PPT'?'📊':'📎'}</div>
+                <div class="file-card-name">${esc(f.title)}</div>
+                <div class="file-card-meta">${f.fileCategory} · ${formatSize(f.fileSizeBytes)}</div>
+                <div class="file-card-actions">
+                  <a class="btn-dl" href="${API}${esc(f.filePath)}" download>↓ Download</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      <!-- IMAGES -->
+      ${images.length > 0 ? `
+        <div class="detail-section">
+          <h2>🖼️ Images</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
+            ${images.map(f => `
+              <div style="border-radius:8px;overflow:hidden;cursor:pointer;background:var(--bg2)" onclick="openImage('${API}${esc(f.filePath)}')">
+                <img src="${API}${esc(f.filePath)}" alt="${esc(f.title)}" style="width:100%;height:120px;object-fit:cover" onerror="this.parentElement.remove()">
+                <p style="padding:6px 8px;font-size:.72rem;color:var(--text3)">${esc(f.title)}</p>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      <!-- URL CONTENT -->
+      ${contentItems.filter(c => c.contentType !== 'MEETING').length > 0 ? `
+        <div class="detail-section">
+          <h2>🔗 Additional Content</h2>
+          ${contentItems.filter(c => c.contentType !== 'MEETING').map(c => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+              <div>
+                <span class="badge badge-gray" style="margin-right:8px">${c.contentType}</span>
+                <strong style="font-size:.83rem">${esc(c.title)}</strong>
+              </div>
+              ${c.contentUrl ? `<a href="${esc(c.contentUrl)}" target="_blank" class="btn-view" style="padding:6px 14px;border-radius:6px;font-size:.78rem;text-decoration:none">Open ↗</a>` : ''}
+            </div>`).join('')}
+        </div>` : ''}
+
+      ${sessions.length === 0 && uploadedFiles.length === 0 && contentItems.length === 0 ? `
+        <div class="empty-state"><div class="icon">📭</div><p>Content coming soon.</p></div>` : ''}
+    `;
+  } catch (e) {
+    console.error('[openProgram]', e);
+    detailView.innerHTML = `<div class="prog-detail-header"><button class="back-btn" onclick="closeProgram()">← Back</button></div>
+      <div class="empty-state"><div class="icon">⚠</div><p>Could not load details.</p><small>${e.message}</small></div>`;
+  }
+}
+
+function closeProgram() {
+  document.getElementById('prog-list-view').style.display = 'block';
+  document.getElementById('prog-detail-view').className = 'prog-detail';
+}
+
+function buildScheduleText(s) {
+  if (!s) return '';
+  let text = '';
+  switch(s.recurrenceType) {
+    case 'DAILY': text = 'Every Day'; break;
+    case 'WEEKDAYS': text = 'Mon – Fri'; break;
+    case 'CUSTOM_DAYS': text = (s.recurrenceDays || 'Custom').replace(/,/g,' · '); break;
+    case 'SPECIFIC_DATE_RANGE': text = (s.validFrom||'') + (s.validTo?' to '+s.validTo:''); break;
+    default: text = s.specificDate || 'One-time';
+  }
+  if (s.startTime) {
+    text += ' · ' + s.startTime;
+    if (s.endTime) text += ' – ' + s.endTime;
+    text += ' ' + (s.timezone||'IST').replace('Asia/Kolkata','IST');
+  }
+  return text;
+}
+
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+// ── SESSIONS TAB ──────────────────────────────────────────────────
+async function loadSessions() {
+  const el = document.getElementById('sessions-container');
+  try {
+    const res = await fetch(`${API}/api/user/sessions`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.status === 402) { el.innerHTML = paywall(); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const sessions = Array.isArray(data) ? data : [];
+
+    if (!sessions.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">🗓</div><p>No sessions scheduled yet.</p></div>';
+      return;
+    }
+
+    el.innerHTML = sessions.map(s => `
+      <div class="session-card">
+        <div class="session-info">
+          <div class="title">${esc(s.title)}</div>
+          <div class="schedule">${esc(s.scheduleText || buildScheduleText(s))}</div>
+          ${s.programTitle ? `<div class="program-name">${esc(s.programTitle)}</div>` : ''}
+        </div>
+        ${s.meetingLink ? `<a class="join-btn" href="${esc(s.meetingLink)}" target="_blank">📹 Join Session</a>` : '<span style="font-size:.8rem;color:var(--text3)">Link coming soon</span>'}
+      </div>`).join('');
+  } catch (e) {
+    console.error('[loadSessions]', e);
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load sessions.</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ── COMMUNITY TAB ─────────────────────────────────────────────────
+async function loadCommunity() {
+  const el = document.getElementById('community-container');
+  try {
+    const res = await fetch(`${API}/api/user/community`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.status === 402) { el.innerHTML = paywall(); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const groups = Array.isArray(data) ? data : [];
+
+    if (!groups.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>No community groups yet.</p><small>The mentor will add WhatsApp groups soon.</small></div>';
+      return;
+    }
+
+    el.innerHTML = `
+      <p style="color:var(--text2);font-size:.82rem;margin-bottom:20px">Join our exclusive community groups and channels for daily support and growth.</p>
+      <div class="community-grid">
+        ${groups.map(g => `
+          <div class="community-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <h3>${esc(g.name)}</h3>
+              <span class="badge ${g.type==='CHANNEL'?'badge-gold':'badge-green'}">${g.type||'GROUP'}</span>
+            </div>
+            ${g.description ? `<p>${esc(g.description)}</p>` : ''}
+            <a href="${esc(g.url)}" target="_blank" class="join-link">💬 Join ${g.type==='CHANNEL'?'Channel':'Group'}</a>
+          </div>`).join('')}
+      </div>`;
+  } catch (e) {
+    console.error('[loadCommunity]', e);
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load community.</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ── PAYMENTS TAB ──────────────────────────────────────────────────
+async function loadPayments() {
+  const el = document.getElementById('payments-container');
+  try {
+    const res = await fetch(`${API}/api/user/payments`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const pays = Array.isArray(data) ? data : [];
+
+    if (!pays.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">💳</div><p>No payment history yet.</p></div>';
+      return;
+    }
+
+    el.innerHTML = `
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+          <thead><tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:10px 12px;color:var(--text3);font-weight:500">Amount</th>
+            <th style="text-align:left;padding:10px 12px;color:var(--text3);font-weight:500">Status</th>
+            <th style="text-align:left;padding:10px 12px;color:var(--text3);font-weight:500">Date</th>
+          </tr></thead>
+          <tbody>${pays.map(p => `<tr style="border-bottom:1px solid rgba(30,48,80,.5)">
+            <td style="padding:10px 12px">₹${p.amount||0}</td>
+            <td style="padding:10px 12px"><span class="badge ${p.status==='SUCCESS'?'badge-green':'badge-gold'}">${esc(p.status||'PENDING')}</span></td>
+            <td style="padding:10px 12px;color:var(--text3)">${p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : ''}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+  } catch (e) {
+    console.error('[loadPayments]', e);
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load payments.</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ── MEDIA HELPERS ─────────────────────────────────────────────────
+function openImage(src) {
+  document.getElementById('img-modal-src').src = src;
+  document.getElementById('img-modal').classList.add('open');
+}
+
+function playVideo(src, title) {
+  const vid = document.getElementById('vid-player');
+  vid.src = src;
+  document.getElementById('vid-title').textContent = title;
+  document.getElementById('vid-modal').classList.add('open');
+}
+
+function closeVideoModal() {
+  const vid = document.getElementById('vid-player');
+  vid.pause();
+  vid.src = '';
+  document.getElementById('vid-modal').classList.remove('open');
+}
+
+// Close video on ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeVideoModal();
+    document.getElementById('img-modal').classList.remove('open');
+  }
+});
+
+function paywall() {
+  return `<div class="empty-state">
+    <div class="icon">🔒</div>
+    <p>Lifetime membership required.</p>
+    <small>Purchase access to unlock all programs, sessions, and content.</small>
+    <a href="../subscribe.html" style="display:inline-block;margin-top:16px;padding:10px 24px;background:var(--gold);color:#000;border-radius:7px;text-decoration:none;font-size:.85rem;font-weight:700">Unlock Lifetime Access ↗</a>
+  </div>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReDiscoverU — Reclaim Your Discipline</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* ── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 0 5%;
+      gap: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 75% 50%, rgba(198,168,92,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(15,20,34,0.8) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-left { position: relative; }
+    .hero-eyebrow { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+    .hero h1 { color: var(--text); margin-bottom: 0; line-height: 1.05; }
+    .hero-divider { width: 100%; height: 1px; background: linear-gradient(90deg, var(--gold-line) 0%, transparent 80%); margin: 2rem 0; }
+    .hero-sub { font-size: 0.98rem; color: var(--text-2); line-height: 1.85; max-width: 440px; margin-bottom: 2.5rem; }
+    .hero-actions { display: flex; gap: 1rem; align-items: center; }
+    .hero-right { border: 1px solid var(--border); padding: 3rem; background: var(--surface); position: relative; }
+    .hero-right::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-line), transparent); }
+    .quote-mark { font-family: var(--serif); font-size: 4rem; color: var(--gold); opacity: 0.3; line-height: 0.5; margin-bottom: 1.5rem; display: block; }
+    .hero-quote { font-family: var(--serif); font-size: 1.35rem; font-style: italic; font-weight: 300; line-height: 1.7; color: var(--text); margin-bottom: 1.75rem; }
+    .hero-cite  { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
+
+    /* ── Pillars ─────────────────────────────────────────────────── */
+    .pillars-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .pillar { background: var(--ink-2); padding: 2.5rem 2rem; border-left: 1px solid transparent; transition: border-color 0.3s; }
+    .pillar:hover { border-left-color: var(--gold-line); }
+    .pillar-num { font-family: var(--serif); font-size: 2.5rem; color: rgba(198,168,92,0.15); font-weight: 300; line-height: 1; margin-bottom: 1.25rem; }
+    .pillar h4 { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .pillar p  { font-size: 0.83rem; color: var(--text-2); line-height: 1.7; }
+
+    /* ── Programs preview ────────────────────────────────────────── */
+    .programs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .program-panel { background: var(--surface); }
+    .program-panel-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--border); }
+
+    /* ── Mentor ──────────────────────────────────────────────────── */
+    .mentor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+    .mentor-portrait { border: 1px solid var(--border); aspect-ratio: 4/5; background: var(--surface); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .mentor-initial { font-family: var(--serif); font-size: 8rem; font-weight: 300; color: rgba(198,168,92,0.2); line-height: 1; }
+    .mentor-portrait::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 60%, rgba(198,168,92,0.04) 100%); }
+    .mentor-name { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; margin-bottom: 0.25rem; }
+    .mentor-role { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 2rem; }
+    .mentor-bio { font-size: 0.93rem; color: var(--text-2); line-height: 1.85; margin-bottom: 2rem; }
+    .contact-list { list-style: none; margin-bottom: 2.5rem; }
+    .contact-list li { padding: 0.75rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--text-2); display: flex; gap: 1rem; }
+    .contact-list li:last-child { border-bottom: none; }
+    .contact-list a { color: var(--text-2); text-decoration: none; transition: color 0.2s; }
+    .contact-list a:hover { color: var(--gold); }
+    .contact-label { color: var(--text-3); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; min-width: 90px; padding-top: 2px; }
+
+    /* ── Statement band ──────────────────────────────────────────── */
+    .statement-band { background: var(--ink-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: var(--section-v) 5%; text-align: center; position: relative; }
+    .statement-band::before { content: ''; position: absolute; top: 0; left: 5%; right: 5%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-line) 40%, transparent); }
+    .statement { font-family: var(--serif); font-size: clamp(1.6rem, 3.5vw, 2.5rem); font-style: italic; font-weight: 300; line-height: 1.5; max-width: 680px; margin: 0 auto 2.5rem; color: var(--text); }
+
+    /* ── "From the Mentor" video section ─────────────────────────── */
+    .video-section { padding: var(--section-v) 5%; background: var(--bg); }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .video-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+    }
+    .video-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      border-color: rgba(198,168,92,0.35);
+    }
+    .video-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(198,168,92,0.5), transparent);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .video-card:hover::before { opacity: 1; }
+    .video-embed-wrap {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      background: #000;
+    }
+    .video-embed-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .video-card-body {
+      padding: 1.25rem 1.5rem 1.5rem;
+    }
+    .video-card-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      opacity: 0.8;
+    }
+    .video-card-title {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .video-empty {
+      grid-column: 1 / -1;
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 0.85rem;
+    }
+
+    /* ── Footer social links ─────────────────────────────────────── */
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .social-link:hover {
+      color: var(--gold);
+      border-color: rgba(198,168,92,0.35);
+    }
+    .social-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
+    /* ── Daily Inspiration ───────────────────────────────────────── */
+    .inspiration-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .inspiration-card {
+      position: relative;
+      aspect-ratio: 4/5;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .inspiration-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+    .inspiration-card:hover img { transform: scale(1.04); }
+    .inspiration-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(2,6,23,0.92));
+      padding: 2rem 1.25rem 1.25rem;
+      transform: translateY(8px);
+      transition: transform 0.3s;
+    }
+    .inspiration-card:hover .inspiration-overlay { transform: translateY(0); }
+    .inspiration-caption {
+      font-size: 0.82rem; color: #f1f5f9; line-height: 1.5;
+    }
+    .inspiration-placeholder {
+      aspect-ratio: 4/5; background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.75rem;
+    }
+
+    /* ── Image modal ─────────────────────────────────────────────── */
+    .img-modal {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(2,6,23,0.95); align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .img-modal.open { display: flex; }
+    .img-modal img {
+      max-width: 90vw; max-height: 85vh;
+      border: 1px solid var(--border);
+      object-fit: contain;
+    }
+    .img-modal-caption {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.88rem; color: var(--text-2);
+      text-align: center; max-width: 500px;
+    }
+    .img-modal-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: none; border: 1px solid var(--border);
+      color: var(--text-2); font-size: 1.2rem; cursor: pointer;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    }
+
+    @media (max-width: 900px) { .inspiration-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px) { .inspiration-grid { grid-template-columns: 1fr; } }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .pillars-grid { grid-template-columns: 1fr 1fr; }
+      .mentor-grid { grid-template-columns: 1fr; }
+      .mentor-portrait { display: none; }
+      .programs-grid { grid-template-columns: 1fr; }
+      .video-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    }
+    @media (max-width: 600px) {
+      .video-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Re<span>Discover</span>U</a>
+  <div class="nav-links" id="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="programs.html">Programs</a>
+    <a href="#mentor">Mentor</a>
+    <a href="login.html">Sign In</a>
+    <a href="subscribe.html" class="nav-cta">Enrol</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left fade-up">
+    <div class="hero-eyebrow">Bengaluru · India</div>
+    <h1>Reclaim Your<br>Discipline.</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">Structured guidance in clarity, emotional mastery, and balanced growth — designed for Indian professionals and students who demand more from themselves.</p>
+    <div class="hero-actions">
+      <a href="programs.html" class="btn btn-outline"><span>View Programs</span></a>
+      <a href="#mentor" class="btn btn-ghost btn-sm" style="font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;">Meet Jayashankar →</a>
+    </div>
+  </div>
+  <div class="hero-right fade-up" id="hero-quote-box">
+    <span class="quote-mark">&ldquo;</span>
+    <p class="hero-quote" id="hero-quote-text">The cost of discipline is always less than the cost of regret. The question is not whether you can — it is whether you will.</p>
+    <div class="hero-cite" id="hero-quote-author">— Jayashankar Lingaiah · Lifestyle &amp; Mindset Coach</div>
+  </div>
+</div>
+
+<div class="section-rule"></div>
+
+<!-- PILLARS -->
+<section class="section-dark" style="padding-left:0;padding-right:0;">
+  <div style="max-width:var(--max); margin:0 auto; padding:0 5%; margin-bottom:3rem;">
+    <div class="caption fade-up">Core Philosophy</div>
+    <div class="gold-line fade-up"></div>
+    <h2 class="fade-up" style="max-width:480px;">What We Build,<br><em>Together</em></h2>
+  </div>
+  <div class="pillars-grid">
+    <div class="pillar fade-up"><div class="pillar-num">I</div><h4>Mental Clarity</h4><p>Silence the noise. Develop a grounded mind that chooses from clarity rather than reacts from chaos.</p></div>
+    <div class="pillar fade-up"><div class="pillar-num">II</div><h4>Daily Discipline</h4><p>Small, consistent action creates identity-level change. We build systems, not fragile willpower.</p></div>
+    <div class="pillar fade-up"><div class="pillar-num">III</div><h4>Emotional Mastery</h4><p>Respond, do not react. Navigate life's pressures with steady presence and inner equilibrium.</p></div>
+    <div class="pillar fade-up"><div class="pillar-num">IV</div><h4>Balanced Growth</h4><p>Success without balance is unsustainable. We grow across all dimensions — career, health, relationships.</p></div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- PROGRAMS PREVIEW -->
+<section>
+  <div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:3.5rem;">
+      <div class="fade-up">
+        <div class="caption">Programs</div>
+        <div class="gold-line"></div>
+        <h2>Choose Your Path</h2>
+      </div>
+      <a href="programs.html" class="btn btn-ghost btn-sm fade-up">All Programs →</a>
+    </div>
+    <div class="programs-grid" id="home-programs">
+      <div class="loading" style="grid-column:1/-1;"></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- FROM THE MENTOR — YouTube Videos -->
+<section class="section-dark video-section" id="videos">
+  <div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <div class="caption fade-up">From the Mentor</div>
+        <div class="gold-line fade-up"></div>
+        <h2 class="fade-up" style="margin-bottom:0.5rem;">Perspectives on<br><em>Growth &amp; Discipline</em></h2>
+        <p class="fade-up" style="font-size:0.85rem; color:var(--text-3); margin-top:0.75rem;">
+          Watch Jayashankar's latest reflections on mindset, lifestyle, and intentional living.
+        </p>
+      </div>
+      <a href="https://www.youtube.com/@rediscoverulife" target="_blank" rel="noopener"
+         class="btn btn-ghost btn-sm fade-up"
+         style="display:inline-flex; align-items:center; gap:0.5rem; white-space:nowrap;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.7;">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+        YouTube Channel →
+      </a>
+    </div>
+    <div class="video-grid" id="video-grid">
+      <!-- Skeleton placeholders -->
+      <div class="video-card fade-up" style="opacity:0.4;">
+        <div class="video-embed-wrap" style="background:var(--ink-2);"></div>
+        <div class="video-card-body"><div class="video-card-label">Loading…</div></div>
+      </div>
+      <div class="video-card fade-up" style="opacity:0.4; animation-delay:0.08s;">
+        <div class="video-embed-wrap" style="background:var(--ink-2);"></div>
+        <div class="video-card-body"><div class="video-card-label">Loading…</div></div>
+      </div>
+      <div class="video-card fade-up" style="opacity:0.4; animation-delay:0.16s;">
+        <div class="video-embed-wrap" style="background:var(--ink-2);"></div>
+        <div class="video-card-body"><div class="video-card-label">Loading…</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- MENTOR -->
+<section class="section-dark" id="mentor">
+  <div class="container">
+    <div class="mentor-grid">
+      <div class="mentor-portrait fade-up">
+        <div class="mentor-initial">J</div>
+      </div>
+      <div class="fade-up">
+        <div class="caption">Your Mentor</div>
+        <div class="gold-line"></div>
+        <div class="mentor-name">Jayashankar Lingaiah</div>
+        <div class="mentor-role">Lifestyle &amp; Mindset Coach · Bengaluru, India</div>
+        <p class="mentor-bio">
+          Jayashankar is a Lifestyle and Mindset Coach dedicated to helping students and working professionals build structured, meaningful lives. His approach blends practical habit design, emotional intelligence, and personal accountability — free from hype, free from false promises.
+        </p>
+        <ul class="contact-list">
+          <li><span class="contact-label">Email</span><a href="mailto:jayashankarkol@gmail.com"><a href="mailto:jayashankarkol@gmail.com" style="color:inherit;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color=''">jayashankarkol@gmail.com</a></a></li>
+          <li><span class="contact-label">Phone</span><a href="tel:+919900532001"><a href="tel:+919900532001" style="color:inherit;text-decoration:none;">+91 9900532001</a></a></li>
+          <li><span class="contact-label">LinkedIn</span><a href="https://www.linkedin.com/in/jayashankarlingaiah/" target="_blank" rel="noopener">jayashankarlingaiah</a></li>
+          <li><span class="contact-label">Instagram</span><a href="https://www.instagram.com/jayashankarkol" target="_blank" rel="noopener">@jayashankarkol</a></li>
+          <li><span class="contact-label">YouTube</span><a href="https://youtube.com/@rediscoverulife" target="_blank" rel="noopener">@rediscoverulife</a></li>
+          <li><span class="contact-label">Newsletter</span><a href="https://www.linkedin.com/newsletters/lifestyle-self-mastery-7425779728147591168/" target="_blank" rel="noopener">Lifestyle &amp; Self Mastery</a></li>
+          <li><span class="contact-label">Location</span>Bengaluru, Karnataka, India</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DAILY INSPIRATION -->
+<section class="section-dark" id="inspiration" style="padding:var(--section-v) 5%;">
+  <div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem; margin-bottom:3rem;">
+      <div>
+        <div class="caption fade-up">Daily Inspiration</div>
+        <div class="gold-line fade-up"></div>
+        <h2 class="fade-up" style="margin-bottom:0;">Fuel for the Day</h2>
+      </div>
+    </div>
+    <div class="inspiration-grid" id="inspiration-grid">
+      <div class="loading"></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- STATEMENT BAND -->
+<div class="statement-band">
+  <p class="statement">"The goal is not to become extraordinary overnight. It is to show up, consistently, for the ordinary — and let that become your extraordinary."</p>
+  <a href="programs.html" class="btn btn-outline"><span>Begin Your Journey</span></a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Re<span>Discover</span>U</div>
+      <p class="footer-note">A structured mentorship platform for Indian professionals and students committed to deliberate growth.</p>
+      <div class="social-links">
+        <!-- YouTube -->
+        <a href="https://youtube.com/@rediscoverulife" target="_blank" rel="noopener" class="social-link" title="YouTube">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+          YouTube
+        </a>
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/jayashankarkol" target="_blank" rel="noopener" class="social-link" title="Instagram">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+          </svg>
+          Instagram
+        </a>
+        <!-- LinkedIn -->
+        <a href="https://www.linkedin.com/in/jayashankarlingaiah/" target="_blank" rel="noopener" class="social-link" title="LinkedIn">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+          LinkedIn
+        </a>
+        <!-- Email -->
+        <a href="mailto:jayashankarkol@gmail.com" class="social-link" title="Email">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+          Email
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="programs.html">Programs</a>
+      <a href="login.html">Sign In</a>
+      <a href="signup.html">Register</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <a href="mailto:jayashankarkol@gmail.com"><a href="mailto:jayashankarkol@gmail.com" style="color:inherit;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color=''">jayashankarkol@gmail.com</a></a>
+      <a href="tel:+919900532001"><a href="tel:+919900532001" style="color:inherit;text-decoration:none;">+91 9900532001</a></a>
+      <a href="https://www.linkedin.com/in/jayashankarlingaiah/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://youtube.com/@rediscoverulife" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.instagram.com/jayashankarkol" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="footer-year"></span> ReDiscoverU · Jayashankar Lingaiah</span>
+    <span>Bengaluru, Karnataka, India</span>
+  </div>
+</footer>
+
+<!-- Image Viewer Modal -->
+<div class="img-modal" id="img-modal" onclick="closeImgModal(event)">
+  <button class="img-modal-close" onclick="closeImgModalDirect()">✕</button>
+  <img id="img-modal-src" src="" alt="">
+  <div class="img-modal-caption" id="img-modal-cap"></div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  // ── Nav update for logged-in users ────────────────────────────────
+  const token = getToken();
+  if (token) {
+    const role = getRole();
+    document.getElementById('nav-links').innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="programs.html">Programs</a>
+      <a href="#mentor">Mentor</a>
+      <a href="${role === 'ROLE_ADMIN' ? 'admin/dashboard.html' : 'user/dashboard.html'}">Dashboard</a>
+      <button onclick="logoutRoot()" class="btn btn-ghost btn-sm" style="font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; border:none; background:none; color:var(--text-2);">Sign Out</button>
+    `;
+  }
+
+  // ── Programs preview ──────────────────────────────────────────────
+  async function loadHomePrograms() {
+    try {
+      const res      = await fetch(`${API}/programs/public`);
+      const data = await res.json();
+      const programs = Array.isArray(data) ? data : [];
+      const el       = document.getElementById('home-programs');
+
+      if (!programs.length) {
+        el.innerHTML = '<p style="padding:3rem; color:var(--text-3); font-size:0.85rem;">Programs coming soon.</p>';
+        return;
+      }
+
+      el.innerHTML = programs.slice(0, 3).map(p => `
+        <div class="program-panel fade-up" style="padding:2rem;">
+          <div class="program-category" style="font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); opacity:0.8; margin-bottom:0.75rem;">${typeLabel(p.type)}</div>
+          <div style="font-family:var(--serif); font-size:1.35rem; font-weight:400; margin-bottom:0.75rem; line-height:1.25;">${p.title}</div>
+          <p style="font-size:0.85rem; color:var(--text-2); line-height:1.7; margin-bottom:0;">${p.description ? p.description.substring(0, 110) + '…' : ''}</p>
+          <div class="program-panel-footer">
+            <span style="font-size:0.72rem; color:var(--text-3); letter-spacing:0.06em;">${p.duration || 'Lifetime access'}</span>
+            <a href="programs.html" class="btn btn-outline btn-sm"><span>Learn More</span></a>
+          </div>
+        </div>
+      `).join('');
+      initFadeUp();
+    } catch (e) {
+      console.error('[loadPublicPrograms]', e);
+      document.getElementById('home-programs').innerHTML =
+        '<p style="padding:3rem; color:var(--text-3);">Unable to load programs.</p>';
+    }
+  }
+
+  // ── Homepage videos — from backend ───────────────────────────────
+  async function loadVideos() {
+    const grid = document.getElementById('video-grid');
+    try {
+      const res    = await fetch(`${API}/homepage/videos`);
+      const vdata = await res.json();
+      const videos = Array.isArray(vdata) ? vdata : [];
+
+      if (!videos.length) {
+        grid.innerHTML = '<div class="video-empty">No videos published yet. Check back soon.</div>';
+        return;
+      }
+
+      grid.innerHTML = videos.map((v, i) => `
+        <div class="video-card fade-up" style="animation-delay:${i * 0.09}s;">
+          <div class="video-embed-wrap">
+            <iframe
+              src="${embedUrl(v.youtubeUrl)}"
+              title="${escHtml(v.title)}"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+          <div class="video-card-body">
+            <div class="video-card-label">From the Mentor</div>
+            <div class="video-card-title">${escHtml(v.title)}</div>
+          </div>
+        </div>
+      `).join('');
+      initFadeUp();
+    } catch (e) {
+      console.error('[loadVideos]', e);
+      grid.innerHTML = '<div class="video-empty">Unable to load videos. Please refresh.</div>';
+    }
+  }
+
+  /** Convert any youtu.be or youtube.com/watch?v= URL → embed URL. */
+  function embedUrl(url) {
+    if (!url) return '';
+    let id = null;
+    if (url.includes('youtu.be/')) {
+      id = url.substring(url.indexOf('youtu.be/') + 9).split(/[?&]/)[0];
+    } else if (url.includes('v=')) {
+      id = url.substring(url.indexOf('v=') + 2).split(/[?&]/)[0];
+    } else if (url.includes('/embed/')) {
+      id = url.substring(url.indexOf('/embed/') + 7).split(/[?&]/)[0];
+    }
+    return id ? `https://www.youtube.com/embed/${id}` : url;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Dynamic quote ─────────────────────────────────────────────────
+  (async function loadQuote() {
+    try {
+      const res = await fetch(`${API}/homepage/quote`);
+      if (res.ok) {
+        const q = await res.json();
+        if (q && q.quoteText) {
+          document.getElementById('hero-quote-text').textContent = q.quoteText;
+          document.getElementById('hero-quote-author').textContent =
+            '— ' + (q.authorName || 'Jayashankar Lingaiah') + ' · Lifestyle & Mindset Coach';
+        }
+      }
+    } catch (e) { console.error('[loadQuote]', e); }
+  })();
+
+  // ── Dynamic year ───────────────────────────────────────────────────
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  // ── Daily Inspiration ────────────────────────────────────────────
+  async function loadInspiration() {
+    const grid = document.getElementById('inspiration-grid');
+    try {
+      const res   = await fetch(`${API}/homepage/motivation-posts`);
+      const pdata = await res.json();
+      const posts = Array.isArray(pdata) ? pdata : [];
+      if (!posts.length) {
+        grid.innerHTML = '<div class="inspiration-placeholder"><span style="font-size:2rem; opacity:0.2;">✦</span><span style="font-size:0.75rem; color:var(--text-3); letter-spacing:0.1em; text-transform:uppercase;">Coming Soon</span></div>';
+        return;
+      }
+      grid.innerHTML = posts.slice(0,6).map((p, i) => `
+        <div class="inspiration-card fade-up" style="animation-delay:${i*0.07}s;"
+             onclick="openImgModal('${p.imagePath}', '${(p.caption||'').replace(/'/g,"\'")}')">
+          <img src="${p.imagePath}" alt="${(p.caption||'Daily Inspiration').substring(0,40)}" loading="lazy"
+               onerror="this.style.display='none';">
+          ${p.caption ? `<div class="inspiration-overlay"><div class="inspiration-caption">${p.caption}</div></div>` : ''}
+        </div>`).join('');
+      initFadeUp();
+    } catch (e) { console.error('[loadInspiration]', e); grid.innerHTML = ''; }
+  }
+
+  function openImgModal(src, caption) {
+    document.getElementById('img-modal-src').src = src;
+    document.getElementById('img-modal-cap').textContent = caption;
+    document.getElementById('img-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeImgModal(e) {
+    if (e.target.id === 'img-modal') closeImgModalDirect();
+  }
+  function closeImgModalDirect() {
+    document.getElementById('img-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImgModalDirect(); });
+
+  loadHomePrograms();
+  loadVideos();
+  loadInspiration();
+</script>
+</body>
+</html>
