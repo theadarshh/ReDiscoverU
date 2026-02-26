@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — ReDiscoverU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:wght@300;400;500&display=swap">
+<style>
+/* ── Design tokens (mirror homepage) ─────────────────────────── */
+:root {
+  --ink:       #0B0F19;
+  --ink-2:     #0f1422;
+  --ink-3:     #141826;
+  --surface:   #191e2e;
+  --surface-2: #1e2436;
+  --border:    rgba(198,168,92,0.12);
+  --border-2:  rgba(198,168,92,0.22);
+  --gold:      #C6A85C;
+  --gold-hover:#E8D9A9;
+  --gold-glow: rgba(198,168,92,0.10);
+  --gold-faint:rgba(198,168,92,0.05);
+  --gold-line: rgba(198,168,92,0.35);
+  --text:      #E8E2D5;
+  --text-2:    #8a8170;
+  --text-3:    #4f4a3e;
+  --success:   #7aad89;
+  --error:     #c47070;
+  --info:      #7a9dc4;
+  --serif:     'Cormorant Garamond', Georgia, serif;
+  --sans:      'IBM Plex Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--ink);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+/* Grain + vignette (same as homepage) */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.45) 100%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Navbar ───────────────────────────────────────────────────── */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  padding: 0 5%;
+  height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(11,15,25,0.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; align-items: center; gap: 0; }
+.nav-links a, .nav-links button {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: color 0.25s;
+  background: none; border: none; cursor: pointer;
+}
+.nav-links a:hover, .nav-links button:hover { color: var(--text); }
+.nav-home-link { display: inline-flex; align-items: center; gap: 3px; }
+.nav-separator { color: var(--border-2); font-size: 0.7rem; padding: 0 0.25rem; user-select: none; }
+.nav-user-name { font-size: 0.75rem; color: var(--text-3); letter-spacing: 0.06em; padding: 0 0.5rem; }
+.nav-signout {
+  margin-left: 0.5rem;
+  padding: 0.45rem 1.25rem !important;
+  border: 1px solid var(--border-2) !important;
+  color: var(--text-3) !important;
+  border-radius: 0;
+  position: relative; overflow: hidden;
+  transition: all 0.25s !important;
+}
+.nav-signout:hover { border-color: rgba(196,112,112,0.4) !important; color: var(--error) !important; }
+
+/* ── Tab rail ─────────────────────────────────────────────────── */
+.tab-rail {
+  background: rgba(11,15,25,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 5%;
+  display: flex; overflow-x: auto;
+  position: sticky; top: 72px; z-index: 90;
+  scrollbar-width: none;
+}
+.tab-rail::-webkit-scrollbar { display: none; }
+.tab-btn {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 1.15rem 1.35rem;
+  background: none; border: none; border-bottom: 1px solid transparent;
+  cursor: pointer; white-space: nowrap; transition: all 0.25s;
+}
+.tab-btn:hover { color: var(--text-2); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── Main layout ──────────────────────────────────────────────── */
+.dash-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 4rem 5%;
+  position: relative; z-index: 1;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Welcome section ──────────────────────────────────────────── */
+.welcome-section {
+  margin-bottom: 3.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.welcome-section::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 140px; height: 1px;
+  background: linear-gradient(90deg, var(--gold-line), transparent);
+}
+.welcome-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+.welcome-section h1 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+.welcome-section h1 span { color: var(--gold); }
+.welcome-divider { width: 48px; height: 1px; background: var(--gold-line); margin: 1.25rem 0; }
+.welcome-sub { font-size: 0.9rem; color: var(--text-2); max-width: 520px; line-height: 1.85; }
+
+/* ── Membership banner ────────────────────────────────────────── */
+.mem-banner {
+  display: none;
+  align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  padding: 1.25rem 1.75rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+.mem-banner::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+}
+.mem-status {
+  font-family: var(--sans); font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold);
+}
+.mem-email { font-size: 0.78rem; color: var(--text-3); margin-top: 0.2rem; }
+
+/* ── Page header ──────────────────────────────────────────────── */
+.dash-header { margin-bottom: 2.5rem; }
+.dash-header h2 { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 400; margin-bottom: 0.25rem; }
+.dash-header p { font-size: 0.85rem; color: var(--text-3); }
+
+/* ── Program cards ────────────────────────────────────────────── */
+.prog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px; background: var(--border); border: 1px solid var(--border);
+}
+.prog-card {
+  background: var(--surface); cursor: pointer; transition: background 0.3s; position: relative;
+}
+.prog-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.prog-card:hover { background: var(--surface-2); }
+.prog-card:hover::before { opacity: 1; }
+.prog-card-cover {
+  height: 120px; background: var(--ink-2);
+  display: flex; align-items: center; justify-content: center; font-size: 2rem;
+  position: relative; overflow: hidden; border-bottom: 1px solid var(--border);
+}
+.prog-card-cover img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.prog-card-body { padding: 1.75rem; }
+.prog-card-body .cat {
+  font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem;
+}
+.prog-card-body h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 400; margin-bottom: 0.4rem; line-height: 1.2; }
+.prog-card-body .tagline { font-size: 0.82rem; color: var(--info); margin-bottom: 0.5rem; font-style: italic; }
+.prog-card-body p { font-size: 0.83rem; color: var(--text-2); line-height: 1.7; }
+.prog-card-body .meta { font-size: 0.72rem; color: var(--text-3); margin-top: 0.75rem; letter-spacing: 0.05em; }
+
+/* ── Program detail ───────────────────────────────────────────── */
+.prog-detail { display: none; }
+.prog-detail.open { display: block; }
+.prog-detail-header {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 2rem; padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.back-btn {
+  font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-2); background: none;
+  border: 1px solid var(--border); padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s;
+}
+.back-btn:hover { border-color: var(--gold-line); color: var(--gold); }
+.prog-detail-header h2 { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; }
+.detail-section { margin-bottom: 3rem; }
+.detail-section-title {
+  font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.detail-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Session cards ────────────────────────────────────────────── */
+.session-card {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  padding: 1.25rem 1.5rem; border: 1px solid var(--border); background: var(--surface);
+  margin-bottom: 1px; transition: border-color 0.2s;
+}
+.session-card:hover { border-color: var(--border-2); }
+.session-card:last-child { margin-bottom: 0; }
+.session-info .title { font-family: var(--sans); font-size: 0.9rem; font-weight: 500; color: var(--text); }
+.session-info .schedule { font-size: 0.78rem; color: var(--info); margin-top: 0.3rem; }
+.session-info .program-name { font-size: 0.72rem; color: var(--text-3); margin-top: 0.2rem; }
+.join-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.55rem 1.25rem; font-family: var(--sans); font-size: 0.72rem;
+  font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+  border: 1px solid var(--gold-line); color: var(--gold); background: transparent;
+  transition: all 0.25s; position: relative; overflow: hidden;
+}
+.join-btn::after {
+  content: ''; position: absolute; inset: 0; background: var(--gold);
+  transform: translateX(-100%); transition: transform 0.3s; z-index: -1;
+}
+.join-btn:hover { color: var(--ink); }
+.join-btn:hover::after { transform: translateX(0); }
+
+/* ── File cards ───────────────────────────────────────────────── */
+.file-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 1px; background: var(--border); border: 1px solid var(--border);
+}
+.file-card {
+  background: var(--surface); padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 0.6rem; transition: background 0.2s;
+}
+.file-card:hover { background: var(--surface-2); }
+.file-card-icon { font-size: 1.75rem; text-align: center; }
+.file-card-name { font-size: 0.82rem; font-weight: 400; text-align: center; word-break: break-word; color: var(--text); line-height: 1.4; }
+.file-card-meta { font-size: 0.7rem; color: var(--text-3); text-align: center; }
+.file-card-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 0.25rem; }
+.file-card-actions a, .file-card-actions button {
+  padding: 0.4rem 0.85rem; font-family: var(--sans); font-size: 0.7rem;
+  letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; text-decoration: none;
+  border: 1px solid var(--border); transition: all 0.2s; background: transparent; color: var(--text-2);
+}
+.btn-play { border-color: rgba(122,173,137,0.3) !important; color: var(--success) !important; }
+.btn-play:hover { background: rgba(122,173,137,0.1) !important; }
+.btn-view { border-color: rgba(122,157,196,0.3) !important; color: var(--info) !important; }
+.btn-view:hover { background: rgba(122,157,196,0.1) !important; }
+.btn-dl:hover { border-color: var(--gold-line) !important; color: var(--gold) !important; }
+
+/* ── Community cards ──────────────────────────────────────────── */
+.community-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px; background: var(--border); border: 1px solid var(--border);
+}
+.community-card {
+  background: var(--surface); padding: 2rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  position: relative; transition: background 0.2s;
+}
+.community-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.community-card:hover { background: var(--surface-2); }
+.community-card:hover::before { opacity: 1; }
+.community-card h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; }
+.community-card p { font-size: 0.83rem; color: var(--text-2); line-height: 1.7; }
+.join-link {
+  display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start;
+  padding: 0.6rem 1.25rem; font-family: var(--sans); font-size: 0.72rem;
+  letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+  border: 1px solid rgba(37,211,102,0.3); color: #25d366;
+  background: transparent; transition: all 0.2s;
+}
+.join-link:hover { background: rgba(37,211,102,0.08); border-color: rgba(37,211,102,0.5); }
+
+/* ── Badges ───────────────────────────────────────────────────── */
+.badge {
+  display: inline-block; padding: 0.15rem 0.65rem; border-radius: 1px;
+  font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.badge-gold   { border: 1px solid rgba(198,168,92,0.3);  color: var(--gold); }
+.badge-green  { border: 1px solid rgba(122,173,137,0.3); color: var(--success); }
+.badge-blue   { border: 1px solid rgba(122,157,196,0.3); color: var(--info); }
+.badge-gray   { border: 1px solid var(--border);         color: var(--text-3); }
+
+/* ── Empty / loading ──────────────────────────────────────────── */
+.empty-state { padding: 5rem 0; text-align: center; }
+.empty-state .icon { font-size: 2.5rem; opacity: 0.3; margin-bottom: 1rem; }
+.empty-state p { font-size: 0.87rem; color: var(--text-2); }
+.empty-state small { font-size: 0.78rem; color: var(--text-3); margin-top: 0.4rem; display: block; }
+.loading {
+  text-align: center; padding: 4rem 0; color: var(--text-3); font-size: 0.8rem; letter-spacing: 0.12em;
+}
+.loading::after {
+  content: ''; display: inline-block; width: 10px; height: 10px; margin-left: 0.6rem;
+  border: 1px solid var(--border-2); border-top-color: var(--gold);
+  border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Table ────────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+th {
+  font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3);
+  padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border);
+  text-align: left; white-space: nowrap;
+}
+td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+
+/* ── Modals ───────────────────────────────────────────────────── */
+.img-modal-overlay {
+  position: fixed; inset: 0; background: rgba(7,10,18,0.95); backdrop-filter: blur(8px);
+  z-index: 999; display: none; align-items: center; justify-content: center; padding: 1.5rem;
+}
+.img-modal-overlay.open { display: flex; }
+.img-modal-overlay img { max-width: 90%; max-height: 85vh; }
+.modal-close {
+  position: fixed; top: 1.5rem; right: 2rem; background: transparent;
+  border: 1px solid var(--border); color: var(--text-2); font-size: 1.1rem;
+  cursor: pointer; padding: 0.35rem 0.75rem; transition: all 0.2s;
+}
+.modal-close:hover { border-color: var(--gold-line); color: var(--text); }
+.video-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 999;
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem; padding: 1.5rem;
+}
+.video-modal-overlay.open { display: flex; }
+video { max-width: 90%; max-height: 80vh; background: #000; }
+#vid-title { font-size: 0.8rem; color: var(--text-2); letter-spacing: 0.05em; }
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 3px; }
+
+@media (max-width: 640px) {
+  .dash-main { padding: 2.5rem 5%; }
+  .topnav { padding: 0 4%; }
+  .nav-user-name { display: none; }
+  .tab-rail { padding: 0 4%; }
+  .prog-grid { grid-template-columns: 1fr; }
+  .welcome-section h1 { font-size: 1.8rem; }
+}
+
+/* ── Mentor tab ───────────────────────────────────────────────── */
+.mentor-profile-card {
+  display: grid; grid-template-columns: 180px 1fr; gap: 2.5rem;
+  padding: 2.5rem; border: 1px solid var(--border); background: var(--surface);
+  position: relative;
+}
+.mentor-profile-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+}
+.mentor-avatar {
+  width: 100%; aspect-ratio: 4/5; background: var(--ink-2);
+  border: 1px solid var(--border); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 5rem; color: rgba(198,168,92,0.2);
+}
+.mentor-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mentor-info-name { font-family: var(--serif); font-size: 1.85rem; font-weight: 400; margin-bottom: 0.25rem; }
+.mentor-info-role { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.75rem; }
+.mentor-info-bio { font-size: 0.9rem; color: var(--text-2); line-height: 1.85; margin-bottom: 1.75rem; }
+.mentor-contact-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.mentor-contact-btns a {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 1.25rem; font-family: var(--sans); font-size: 0.72rem;
+  letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+  border: 1px solid var(--gold-line); color: var(--gold);
+  background: transparent; transition: all 0.25s;
+}
+.mentor-contact-btns a:hover { background: var(--gold); color: var(--ink); }
+.mentor-contact-btns a.wa-btn { border-color: rgba(37,211,102,0.35); color: #25d366; }
+.mentor-contact-btns a.wa-btn:hover { background: rgba(37,211,102,0.12); }
+@media (max-width: 640px) {
+  .mentor-profile-card { grid-template-columns: 1fr; }
+  .mentor-avatar { max-height: 220px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="topnav">
+  <a href="../index.html" class="nav-logo">Rediscover<span>U</span></a>
+  <div class="nav-links">
+    <a href="../index.html" class="nav-home-link">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-right:2px;vertical-align:-1px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Home
+    </a>
+    <a href="../programs.html">Programs</a>
+    <span class="nav-separator">|</span>
+    <span class="nav-user-name" id="user-name-nav"></span>
+    <button onclick="logout()" class="nav-signout">Sign Out</button>
+  </div>
+</nav>
+
+<!-- TAB RAIL -->
+<div class="tab-rail">
+  <button class="tab-btn active" onclick="switchTab('programs', this)">Programs</button>
+  <button class="tab-btn" onclick="switchTab('sessions', this)">Live Sessions</button>
+  <button class="tab-btn" onclick="switchTab('community', this)">Community</button>
+  <button class="tab-btn" onclick="switchTab('payments', this)">My Payments</button>
+  <button class="tab-btn" onclick="switchTab('mentor', this)">Your Mentor</button>
+</div>
+
+<!-- MAIN -->
+<main class="dash-main">
+
+  <!-- WELCOME -->
+  <div class="welcome-section" id="welcome-section" style="display:none">
+    <div class="welcome-eyebrow">Member Dashboard · ReDiscoverU</div>
+    <h1>Welcome back, <span id="user-name">…</span></h1>
+    <div class="welcome-divider"></div>
+    <p class="welcome-sub" id="welcome-sub">Your lifetime membership gives you full access to all programs, sessions, and community.</p>
+  </div>
+
+  <!-- MEMBERSHIP BANNER -->
+  <div class="mem-banner" id="sub-banner">
+    <div>
+      <div class="mem-status" id="sub-status">✦ Lifetime Member</div>
+      <div class="mem-email" id="sub-email"></div>
+    </div>
+    <span class="badge badge-gold" id="sub-badge">Lifetime Access</span>
+  </div>
+
+  <!-- PROGRAMS TAB -->
+  <div class="tab-content active" id="tab-programs">
+    <div id="prog-list-view"><div class="loading">Loading programs</div></div>
+    <div class="prog-detail" id="prog-detail-view"></div>
+  </div>
+
+  <!-- SESSIONS TAB -->
+  <div class="tab-content" id="tab-sessions">
+    <div class="dash-header">
+      <h2>Live Sessions</h2>
+      <p>Scheduled group sessions across all your programs.</p>
+    </div>
+    <div id="sessions-container"><div class="loading">Loading sessions</div></div>
+  </div>
+
+  <!-- COMMUNITY TAB -->
+  <div class="tab-content" id="tab-community">
+    <div class="dash-header">
+      <h2>Community</h2>
+      <p>Join the WhatsApp groups and channels to stay connected.</p>
+    </div>
+    <div id="community-container"><div class="loading">Loading community</div></div>
+  </div>
+
+  <!-- PAYMENTS TAB -->
+  <div class="tab-content" id="tab-payments">
+    <div class="dash-header">
+      <h2>My Payments</h2>
+      <p>Your transaction history.</p>
+    </div>
+    <div id="payments-container"><div class="loading">Loading</div></div>
+  </div>
+
+</main>
+
+  <!-- MENTOR TAB -->
+  <div class="tab-content" id="tab-mentor">
+    <div class="dash-header">
+      <h2>Your Mentor</h2>
+      <p>Connect directly with your coach.</p>
+    </div>
+    <div id="mentor-tab-container"><div class="loading">Loading mentor</div></div>
+  </div>
+
+<!-- IMAGE MODAL -->
+<div class="img-modal-overlay" id="img-modal" onclick="this.classList.remove('open')">
+  <button class="modal-close" onclick="event.stopPropagation();document.getElementById('img-modal').classList.remove('open')">✕</button>
+  <img id="img-modal-src" src="" alt="">
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="video-modal-overlay" id="vid-modal">
+  <button class="modal-close" onclick="closeVideoModal()">✕</button>
+  <video id="vid-player" controls></video>
+  <p id="vid-title"></p>
+</div>
+
+<script>
+const API = 'http://localhost:8080';
+function token() { return localStorage.getItem('rdu_token'); }
+function H() { return { 'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json' }; }
+function logout() { localStorage.clear(); location.href = '../login.html'; }
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let _programs = [];
+let _loaded = { programs: false, sessions: false, community: false, payments: false, mentor: false };
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (!_loaded[name]) {
+    _loaded[name] = true;
+    if (name === 'programs') loadPrograms();
+    if (name === 'sessions') loadSessions();
+    if (name === 'community') loadCommunity();
+    if (name === 'payments') loadPayments();
+    if (name === 'mentor') loadMentorTab();
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+(async function init() {
+  const tok = token();
+  if (!tok) { location.href = '../login.html'; return; }
+  try {
+    const res = await fetch(`${API}/api/user/status`, {
+      headers: { 'Authorization': 'Bearer ' + tok }
+    });
+    if (!res.ok) throw new Error('Auth failed');
+    const u = await res.json();
+
+    if (u.role === 'ROLE_ADMIN') {
+      window.location.href = '../admin/dashboard.html';
+      return;
+    }
+
+    const displayName = u.name || u.email;
+    document.getElementById('user-name').textContent = displayName;
+    document.getElementById('user-name-nav').textContent = displayName;
+    document.getElementById('welcome-section').style.display = 'block';
+
+    const isPaid = u.subscriptionStatus === 'PAID';
+    document.getElementById('welcome-sub').textContent = isPaid
+      ? 'Your lifetime membership gives you full access to all programs, sessions, and community.'
+      : 'Complete your enrolment to unlock all programs and sessions.';
+
+    document.getElementById('sub-status').textContent = isPaid ? '✦ Lifetime Member' : '○ Free Account';
+    document.getElementById('sub-email').textContent = u.email;
+    document.getElementById('sub-banner').style.display = 'flex';
+
+    if (!isPaid) showPaywallBanner();
+
+    _loaded.programs = true;
+    loadPrograms();
+  } catch (e) {
+    console.error('[init]', e);
+    location.href = '../login.html';
+  }
+})();
+
+function showPaywallBanner() {
+  const banner = document.getElementById('sub-banner');
+  banner.style.borderColor = 'rgba(196,112,112,0.25)';
+  banner.style.background = 'rgba(196,112,112,0.04)';
+  document.getElementById('sub-status').style.color = 'var(--error)';
+  document.getElementById('sub-status').textContent = '○ Free Account — Content Locked';
+  document.getElementById('sub-badge').textContent = 'Unlock Required';
+  document.getElementById('sub-badge').className = 'badge badge-gray';
+  banner.insertAdjacentHTML('beforeend',
+    `<a href="../subscribe.html" style="
+        display:inline-flex;align-items:center;padding:.55rem 1.25rem;
+        font-family:var(--sans);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+        text-decoration:none;border:1px solid var(--gold-line);color:var(--gold);background:transparent;
+        transition:all .25s" 
+       onmouseover="this.style.background='var(--gold)';this.style.color='var(--ink)'"
+       onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">
+      Unlock Lifetime Access →
+    </a>`);
+}
+
+// ── PROGRAMS ──────────────────────────────────────────────────────
+async function loadPrograms() {
+  const listView = document.getElementById('prog-list-view');
+  try {
+    const res = await fetch(`${API}/api/user/programs`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.status === 402) { listView.innerHTML = paywall(); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    _programs = Array.isArray(data) ? data : [];
+
+    if (!_programs.length) {
+      listView.innerHTML = '<div class="empty-state"><div class="icon">📚</div><p>No programs available yet.</p><small>Check back soon.</small></div>';
+      return;
+    }
+
+    listView.innerHTML = `<div class="prog-grid">` + _programs.map(p => `
+      <div class="prog-card" onclick="openProgram(${p.id})">
+        <div class="prog-card-cover">
+          ${p.coverImageUrl ? `<img src="${esc(p.coverImageUrl)}" alt="${esc(p.title)}" onerror="this.remove()">` : ''}
+          <span style="z-index:1;position:relative">${programIcon(p)}</span>
+        </div>
+        <div class="prog-card-body">
+          ${p.category ? `<div class="cat">${esc(p.category.name)}</div>` : ''}
+          <h3>${esc(p.title)}</h3>
+          ${p.tagline ? `<p class="tagline">${esc(p.tagline)}</p>` : ''}
+          <p>${esc((p.description||'').substring(0,100))}${(p.description||'').length > 100 ? '…' : ''}</p>
+          ${p.duration ? `<div class="meta">⏱ ${esc(p.duration)}</div>` : ''}
+        </div>
+      </div>`).join('') + `</div>`;
+  } catch (e) {
+    console.error('[loadPrograms]', e);
+    listView.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load programs.</p><small>${e.message}</small></div>`;
+  }
+}
+
+function programIcon(p) {
+  const t = p.type || '';
+  if (t === 'LIVE') return '🔴';
+  if (t === 'MENTORSHIP') return '🎯';
+  return '📖';
+}
+
+async function openProgram(id) {
+  const listView = document.getElementById('prog-list-view');
+  const detailView = document.getElementById('prog-detail-view');
+  listView.style.display = 'none';
+  detailView.className = 'prog-detail open';
+  detailView.innerHTML = '<div class="loading">Loading program details</div>';
+
+  try {
+    const res = await fetch(`${API}/api/program/${id}/details`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const { program, contents, files, liveSessions } = data;
+
+    const sessions = Array.isArray(liveSessions) ? liveSessions : [];
+    const contentItems = Array.isArray(contents) ? contents : [];
+    const uploadedFiles = Array.isArray(files) ? files : [];
+
+    const videos = uploadedFiles.filter(f => f.fileCategory === 'VIDEO');
+    const pdfs   = uploadedFiles.filter(f => f.fileCategory === 'PDF');
+    const docs   = uploadedFiles.filter(f => f.fileCategory === 'DOC');
+    const ppts   = uploadedFiles.filter(f => f.fileCategory === 'PPT');
+    const images = uploadedFiles.filter(f => f.fileCategory === 'IMAGE');
+    const others = uploadedFiles.filter(f => ['OTHER'].includes(f.fileCategory));
+
+    detailView.innerHTML = `
+      <div class="prog-detail-header">
+        <button class="back-btn" onclick="closeProgram()">← Back</button>
+        <h2>${esc(program.title)}</h2>
+        ${program.category ? `<span class="badge badge-blue">${esc(program.category.name)}</span>` : ''}
+      </div>
+      ${program.description ? `<p style="color:var(--text-2);font-size:.87rem;margin-bottom:2.5rem;line-height:1.8;max-width:680px">${esc(program.description)}</p>` : ''}
+
+      ${sessions.length > 0 ? `
+        <div class="detail-section">
+          <div class="detail-section-title">Live Sessions</div>
+          ${sessions.map(s => `
+            <div class="session-card">
+              <div class="session-info">
+                <div class="title">${esc(s.title)}</div>
+                <div class="schedule">${esc(s.scheduleText || buildScheduleText(s))}</div>
+              </div>
+              ${s.meetingLink ? `<a class="join-btn" href="${esc(s.meetingLink)}" target="_blank">Join Session →</a>` : ''}
+            </div>`).join('')}
+        </div>` : ''}
+
+      ${videos.length > 0 ? `
+        <div class="detail-section">
+          <div class="detail-section-title">Recorded Videos</div>
+          <div class="file-grid">
+            ${videos.map(f => `
+              <div class="file-card">
+                <div class="file-card-icon">🎬</div>
+                <div class="file-card-name">${esc(f.title)}</div>
+                <div class="file-card-meta">${formatSize(f.fileSizeBytes)}</div>
+                <div class="file-card-actions">
+                  <button class="btn-play" onclick="playVideo('${API}${esc(f.filePath)}','${esc(f.title)}')">▶ Play</button>
+                  <a class="btn-dl" href="${API}${esc(f.filePath)}" download>↓</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      ${pdfs.length > 0 ? `
+        <div class="detail-section">
+          <div class="detail-section-title">Documents</div>
+          <div class="file-grid">
+            ${pdfs.map(f => `
+              <div class="file-card">
+                <div class="file-card-icon">📄</div>
+                <div class="file-card-name">${esc(f.title)}</div>
+                <div class="file-card-meta">${formatSize(f.fileSizeBytes)}</div>
+                <div class="file-card-actions">
+                  <a class="btn-view" href="${API}${esc(f.filePath)}" target="_blank">Open</a>
+                  <a class="btn-dl" href="${API}${esc(f.filePath)}" download>↓</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      ${(docs.length + ppts.length + others.length > 0) ? `
+        <div class="detail-section">
+          <div class="detail-section-title">Resources</div>
+          <div class="file-grid">
+            ${[...docs, ...ppts, ...others].map(f => `
+              <div class="file-card">
+                <div class="file-card-icon">${f.fileCategory==='DOC'?'📝':f.fileCategory==='PPT'?'📊':'📎'}</div>
+                <div class="file-card-name">${esc(f.title)}</div>
+                <div class="file-card-meta">${f.fileCategory} · ${formatSize(f.fileSizeBytes)}</div>
+                <div class="file-card-actions">
+                  <a class="btn-dl" href="${API}${esc(f.filePath)}" download>↓ Download</a>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      ${images.length > 0 ? `
+        <div class="detail-section">
+          <div class="detail-section-title">Images</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)">
+            ${images.map(f => `
+              <div style="cursor:pointer;background:var(--surface);overflow:hidden;transition:background .2s"
+                   onclick="openImage('${API}${esc(f.filePath)}')"
+                   onmouseover="this.style.background='var(--surface-2)'"
+                   onmouseout="this.style.background='var(--surface)'">
+                <img src="${API}${esc(f.filePath)}" alt="${esc(f.title)}" style="width:100%;height:120px;object-fit:cover;display:block" onerror="this.parentElement.remove()">
+                <p style="padding:.5rem .75rem;font-size:.7rem;color:var(--text-3)">${esc(f.title)}</p>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+      ${contentItems.filter(c => c.contentType !== 'MEETING').length > 0 ? `
+        <div class="detail-section">
+          <div class="detail-section-title">Additional Content</div>
+          ${contentItems.filter(c => c.contentType !== 'MEETING').map(c => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border:1px solid var(--border);background:var(--surface);margin-bottom:1px;flex-wrap:wrap;gap:.75rem">
+              <div>
+                <span class="badge badge-gray" style="margin-right:.6rem">${c.contentType}</span>
+                <span style="font-size:.85rem">${esc(c.title)}</span>
+              </div>
+              ${c.contentUrl ? `<a href="${esc(c.contentUrl)}" target="_blank" style="font-family:var(--sans);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--info);text-decoration:none">Open →</a>` : ''}
+            </div>`).join('')}
+        </div>` : ''}
+
+      ${sessions.length === 0 && uploadedFiles.length === 0 && contentItems.length === 0 ? `
+        <div class="empty-state"><div class="icon">📭</div><p>Content coming soon.</p></div>` : ''}
+    `;
+  } catch (e) {
+    console.error('[openProgram]', e);
+    detailView.innerHTML = `<div class="prog-detail-header"><button class="back-btn" onclick="closeProgram()">← Back</button></div>
+      <div class="empty-state"><div class="icon">⚠</div><p>Could not load details.</p><small>${e.message}</small></div>`;
+  }
+}
+
+function closeProgram() {
+  document.getElementById('prog-list-view').style.display = 'block';
+  document.getElementById('prog-detail-view').className = 'prog-detail';
+}
+
+function buildScheduleText(s) {
+  if (!s) return '';
+  let text = '';
+  switch(s.recurrenceType) {
+    case 'DAILY': text = 'Every Day'; break;
+    case 'WEEKDAYS': text = 'Mon – Fri'; break;
+    case 'WEEKENDS': text = 'Sat & Sun'; break;
+    case 'CUSTOM_DAYS': text = (s.recurrenceDays || 'Custom').replace(/,/g,' · '); break;
+    case 'SPECIFIC_DATE_RANGE': text = (s.validFrom||'') + (s.validTo?' to '+s.validTo:''); break;
+    default: text = s.specificDate || 'One-time';
+  }
+  if (s.startTime) {
+    text += ' · ' + s.startTime;
+    if (s.endTime) text += ' – ' + s.endTime;
+    text += ' ' + (s.timezone||'IST').replace('Asia/Kolkata','IST');
+  }
+  return text;
+}
+
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+// ── SESSIONS ──────────────────────────────────────────────────────
+async function loadSessions() {
+  const el = document.getElementById('sessions-container');
+  try {
+    const res = await fetch(`${API}/api/user/sessions`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.status === 402) { el.innerHTML = paywall(); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const sessions = Array.isArray(data) ? data : [];
+
+    if (!sessions.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">🗓</div><p>No sessions scheduled yet.</p></div>';
+      return;
+    }
+
+    el.innerHTML = sessions.map(s => `
+      <div class="session-card">
+        <div class="session-info">
+          <div class="title">${esc(s.title)}</div>
+          <div class="schedule">${esc(s.scheduleText || buildScheduleText(s))}</div>
+          ${s.programTitle ? `<div class="program-name">${esc(s.programTitle)}</div>` : ''}
+        </div>
+        ${s.meetingLink ? `<a class="join-btn" href="${esc(s.meetingLink)}" target="_blank">Join Session →</a>` : '<span style="font-size:.78rem;color:var(--text-3)">Link coming soon</span>'}
+      </div>`).join('');
+  } catch (e) {
+    console.error('[loadSessions]', e);
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load sessions.</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ── COMMUNITY ─────────────────────────────────────────────────────
+async function loadCommunity() {
+  const el = document.getElementById('community-container');
+  try {
+    const res = await fetch(`${API}/api/user/community`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.status === 402) { el.innerHTML = paywall(); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const groups = Array.isArray(data) ? data : [];
+
+    if (!groups.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>No community groups yet.</p><small>The mentor will add WhatsApp groups soon.</small></div>';
+      return;
+    }
+
+    el.innerHTML = `<div class="community-grid">
+      ${groups.map(g => `
+        <div class="community-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem">
+            <h3>${esc(g.name)}</h3>
+            <span class="badge ${g.type==='CHANNEL'?'badge-gold':'badge-green'}">${g.type||'GROUP'}</span>
+          </div>
+          ${g.description ? `<p>${esc(g.description)}</p>` : ''}
+          <a href="${esc(g.url)}" target="_blank" class="join-link">💬 Join ${g.type==='CHANNEL'?'Channel':'Group'}</a>
+        </div>`).join('')}
+    </div>`;
+  } catch (e) {
+    console.error('[loadCommunity]', e);
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load community.</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ── PAYMENTS ──────────────────────────────────────────────────────
+async function loadPayments() {
+  const el = document.getElementById('payments-container');
+  try {
+    const res = await fetch(`${API}/api/user/payments`, {
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const pays = Array.isArray(data) ? data : [];
+
+    if (!pays.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">💳</div><p>No payment history yet.</p></div>';
+      return;
+    }
+
+    el.innerHTML = `<div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Amount</th><th>Status</th><th>Date</th>
+        </tr></thead>
+        <tbody>${pays.map(p => `<tr>
+          <td style="font-family:var(--serif);font-size:1.05rem;color:var(--gold)">₹${p.amount||0}</td>
+          <td><span class="badge ${p.status==='SUCCESS'?'badge-green':'badge-gray'}">${esc(p.status||'PENDING')}</span></td>
+          <td style="color:var(--text-3)">${p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : '—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  } catch (e) {
+    console.error('[loadPayments]', e);
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load payments.</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ── MEDIA ─────────────────────────────────────────────────────────
+function openImage(src) {
+  document.getElementById('img-modal-src').src = src;
+  document.getElementById('img-modal').classList.add('open');
+}
+function playVideo(src, title) {
+  const vid = document.getElementById('vid-player');
+  vid.src = src;
+  document.getElementById('vid-title').textContent = title;
+  document.getElementById('vid-modal').classList.add('open');
+}
+function closeVideoModal() {
+  const vid = document.getElementById('vid-player');
+  vid.pause(); vid.src = '';
+  document.getElementById('vid-modal').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeVideoModal();
+    document.getElementById('img-modal').classList.remove('open');
+  }
+});
+
+function paywall() {
+  return `<div class="empty-state">
+    <div class="icon">🔒</div>
+    <p>Lifetime membership required.</p>
+    <small>Purchase access to unlock all programs, sessions, and content.</small>
+    <a href="../subscribe.html" style="display:inline-flex;align-items:center;margin-top:1.5rem;padding:.6rem 1.5rem;
+       font-family:var(--sans);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+       border:1px solid var(--gold-line);color:var(--gold);background:transparent;
+       transition:all .25s"
+       onmouseover="this.style.background='var(--gold)';this.style.color='var(--ink)'"
+       onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">
+      Unlock Lifetime Access →
+    </a>
+  </div>`;
+}
+
+// ── MENTOR ────────────────────────────────────────────────────────
+async function loadMentorTab() {
+  const el = document.getElementById('mentor-tab-container');
+  try {
+    const res = await fetch(`${API}/api/homepage/mentors`);
+    if (!res.ok) throw new Error('Could not load mentor');
+    const mentors = await res.json();
+    if (!Array.isArray(mentors) || !mentors.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">👤</div><p>Mentor information coming soon.</p></div>';
+      return;
+    }
+    el.innerHTML = mentors.map(m => `
+      <div class="mentor-profile-card" style="margin-bottom:20px">
+        <div class="mentor-avatar">
+          ${m.imageUrl ? `<img src="${m.imageUrl.startsWith('http') ? m.imageUrl : API + m.imageUrl}" alt="${esc(m.name)}" onerror="this.parentElement.innerHTML='${(m.name||'J')[0]}'">` : (m.name||'J')[0]}
+        </div>
+        <div>
+          <div class="mentor-info-name">${esc(m.name)}</div>
+          <div class="mentor-info-role">${esc(m.roleTitle || 'Lifestyle & Mindset Coach')}</div>
+          ${m.bio ? `<p class="mentor-info-bio">${esc(m.bio)}</p>` : ''}
+          <div class="mentor-contact-btns">
+            ${m.email ? `<a href="mailto:${esc(m.email)}">✉ Email Mentor</a>` : ''}
+            ${m.whatsappLink ? `<a href="${esc(m.whatsappLink)}" target="_blank" class="wa-btn">💬 WhatsApp</a>` : ''}
+          </div>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠</div><p>Could not load mentor details.</p><small>${e.message}</small></div>`;
+  }
+}
+</script>
+</body>
+</html>

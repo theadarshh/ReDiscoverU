@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programs — ReDiscoverU</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .programs-header { padding: 5rem 5% 3rem; background: var(--ink-2); border-bottom: 1px solid var(--border); }
+
+    /* Lifetime access banner — shown to non-paid visitors */
+    .access-banner {
+      background: rgba(198,168,92,0.05);
+      border: 1px solid rgba(198,168,92,0.25);
+      border-left: 3px solid var(--gold);
+      padding: 2rem 2.5rem;
+      margin-bottom: 3rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .access-banner.visible { display: flex; }
+    .access-banner-price {
+      font-family: var(--serif);
+      font-size: 2.4rem;
+      color: var(--gold);
+      font-weight: 300;
+      line-height: 1;
+    }
+    .access-banner-price small {
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      color: var(--text-3);
+      display: block;
+      margin-top: 0.3rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .access-banner-text h4 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 0.3rem;
+    }
+    .access-banner-text p { font-size: 0.82rem; color: var(--text-2); }
+
+    /* PAID member badge — shown when subscribed */
+    .member-badge {
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: rgba(22,163,74,0.07);
+      border: 1px solid rgba(22,163,74,0.2);
+      border-left: 3px solid #16a34a;
+      margin-bottom: 2.5rem;
+      font-size: 0.82rem;
+      color: var(--text-2);
+    }
+    .member-badge.visible { display: flex; }
+    .member-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; flex-shrink: 0; }
+
+    .filter-row { display: flex; gap: 0; margin-bottom: 0; border-bottom: 1px solid var(--border); }
+    .filter-btn { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); background: none; border: none; border-right: 1px solid var(--border); padding: 0.9rem 1.5rem; cursor: pointer; transition: all 0.2s; border-top: 2px solid transparent; }
+    .filter-btn:hover { color: var(--text); }
+    .filter-btn.active { color: var(--gold); border-top-color: var(--gold); }
+
+    .prog-row { display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: start; padding: 3rem 0; border-bottom: 1px solid var(--border); }
+    .prog-row:first-child { padding-top: 0; }
+    .prog-row:last-child { border-bottom: none; }
+    .pr-num   { font-family: var(--serif); font-size: 0.9rem; color: var(--text-3); font-weight: 300; }
+    .pr-title { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; margin: 0.5rem 0 0.75rem; line-height: 1.2; }
+    .pr-desc  { font-size: 0.88rem; color: var(--text-2); line-height: 1.8; max-width: 540px; }
+    .pr-incl  { margin-top: 1.25rem; list-style: none; }
+    .pr-incl li { font-size: 0.78rem; color: var(--text-3); padding: 0.3rem 0; letter-spacing: 0.04em; }
+    .pr-incl li::before { content: '— '; color: var(--gold); opacity: 0.5; }
+    .pr-action { text-align: right; flex-shrink: 0; }
+    .pr-included { font-family: var(--serif); font-size: 0.85rem; color: #16a34a; margin-bottom: 0.5rem; letter-spacing: 0.04em; }
+    @media (max-width: 640px) { .prog-row { grid-template-columns: 1fr; } .pr-action { text-align: left; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Re<span>Discover</span>U</a>
+  <div class="nav-links" id="main-nav">
+    <a href="index.html">Home</a>
+    <a href="programs.html" class="active">Programs</a>
+    <a href="index.html#mentor">Mentor</a>
+    <a href="login.html">Sign In</a>
+    <a href="signup.html" class="nav-cta">Register</a>
+  </div>
+</nav>
+
+<div class="programs-header">
+  <div class="container">
+    <div class="caption fade-up">Lifetime Membership</div>
+    <div class="gold-line fade-up"></div>
+    <h1 class="fade-up" style="font-size:clamp(2.5rem,5vw,4rem); margin-bottom:0.75rem;">One Membership.<br><em>All Programs.</em></h1>
+    <p class="fade-up" style="max-width:480px; font-size:0.92rem; padding-bottom:1rem;">Pay once. Access everything — recorded programs, live sessions, mentorship materials — for life.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+
+    <!-- Banner: shown to non-logged-in or PENDING users — unlock prompt -->
+    <div class="access-banner" id="access-banner">
+      <div class="access-banner-text">
+        <h4>Unlock Lifetime Access</h4>
+        <p>One-time payment. All programs, all content, all live sessions — forever.</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:2rem; flex-wrap:wrap;">
+        <div class="access-banner-price" id="banner-price">
+          ₹499
+          <small>Lifetime Membership</small>
+        </div>
+        <a href="subscribe.html" class="btn btn-outline" id="unlock-btn"><span>Unlock Full Access →</span></a>
+      </div>
+    </div>
+
+    <!-- Badge: shown to PAID members -->
+    <div class="member-badge" id="member-badge">
+      <div class="member-badge-dot"></div>
+      <span>You have <strong>Lifetime Access</strong> — all programs below are fully unlocked.</span>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-row">
+      <button class="filter-btn active" data-type="ALL">All Programs</button>
+      <button class="filter-btn" data-type="SELF_PACED">Self-Paced</button>
+      <button class="filter-btn" data-type="LIVE">Live Sessions</button>
+      <button class="filter-btn" data-type="MENTORSHIP">Mentorship</button>
+    </div>
+
+    <div id="programs-list" style="padding-top:0.5rem;"><div class="loading"></div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div><div class="footer-brand">Re<span>Discover</span>U</div><p class="footer-note">Structured mentorship for deliberate growth.</p></div>
+    <div class="footer-col"><h4>Platform</h4><a href="index.html">Home</a><a href="login.html">Sign In</a><a href="signup.html">Register</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="mailto:jayashankarkol@gmail.com"><a href="mailto:jayashankarkol@gmail.com" style="color:inherit;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color=''">jayashankarkol@gmail.com</a></a><a href="https://youtube.com/@rediscoverulife" target="_blank">YouTube</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 ReDiscoverU · Jayashankar Lingaiah</span><span>Bengaluru, Karnataka, India</span></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  const includes = {
+    SELF_PACED:  ['Recorded sessions', 'Lifetime replay access', 'Structured daily exercises', 'Journaling frameworks'],
+    LIVE:        ['Live Google Meet sessions (Tue & Thu)', 'Session recordings', 'Direct Q&A with Jayashankar', 'Accountability check-ins'],
+    MENTORSHIP:  ['Weekly 1-to-1 calls', 'Personalised action plan', 'Priority WhatsApp access', 'Custom growth roadmap'],
+  };
+
+  let allPrograms = [], currentFilter = 'ALL';
+  const loggedIn  = !!getToken();
+  const status    = getStatus(); // PENDING | PAID
+
+  // Update nav for logged-in users
+  if (loggedIn) {
+    const role = getRole();
+    document.getElementById('main-nav').innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="programs.html" class="active">Programs</a>
+      ${status === 'PAID' ? `<a href="${role === 'ROLE_ADMIN' ? 'admin/dashboard.html' : 'user/dashboard.html'}">Dashboard</a>` : ''}
+      <button onclick="logoutRoot()" class="btn btn-ghost btn-sm" style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--text-2);">Sign Out</button>
+    `;
+  }
+
+  // Show appropriate access UI based on status
+  if (status === 'PAID') {
+    document.getElementById('member-badge').classList.add('visible');
+  } else {
+    document.getElementById('access-banner').classList.add('visible');
+    // Set unlock button destination
+    const btn = document.getElementById('unlock-btn');
+    if (!loggedIn) {
+      btn.href = 'signup.html';
+      btn.querySelector('span').textContent = 'Register & Unlock →';
+    } else {
+      btn.href = 'subscribe.html';
+    }
+    // Load live price from API
+    fetch(`${API}/admin/settings`).then(r => r.json()).then(s => {
+      if (s.lifetimePrice) {
+        document.getElementById('banner-price').innerHTML =
+          formatINR(s.lifetimePrice) + '<small>Lifetime Membership</small>';
+      }
+    }).catch(() => {});
+  }
+
+  function renderPrograms(programs) {
+    const el = document.getElementById('programs-list');
+    if (!programs.length) {
+      el.innerHTML = '<p style="padding:3rem 0; color:var(--text-3); font-size:0.85rem;">No programs match this filter.</p>';
+      return;
+    }
+
+    el.innerHTML = programs.map((p, i) => {
+      const actionHtml = status === 'PAID'
+        ? `<div class="pr-included">✓ Included in your membership</div>
+           <a href="user/dashboard.html" class="btn btn-ghost btn-sm"><span>Go to Dashboard</span></a>`
+        : `<a href="${loggedIn ? 'subscribe.html' : 'signup.html'}" class="btn btn-outline"><span>Unlock Lifetime Access</span></a>`;
+
+      return `
+        <div class="prog-row fade-up">
+          <div>
+            <div style="display:flex; gap:1.25rem; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap;">
+              ${p.category ? `<span style="font-size:.72rem;color:#38bdf8;text-transform:uppercase;letter-spacing:.08em;font-weight:600">${p.category.name}</span>` : ''}
+              <span class="pr-num">0${i + 1}</span>
+              <span class="badge ${typeBadge(p.type)}">${typeLabel(p.type)}</span>
+              ${p.duration ? `<span style="font-size:0.72rem; color:var(--text-3); letter-spacing:0.06em;">${p.duration}</span>` : ''}
+            </div>
+            <div class="pr-title">${p.title}</div>
+            ${p.tagline ? `<p style="color:#38bdf8;font-size:.82rem;margin:.25rem 0 .5rem">${p.tagline}</p>` : ""}
+            <p class="pr-desc">${p.description || ''}</p>
+            ${includes[p.type] ? `<ul class="pr-incl">${includes[p.type].map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
+          </div>
+          <div class="pr-action">
+            ${actionHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+    initFadeUp();
+  }
+
+  async function loadPrograms() {
+    try {
+      const res  = await fetch(`${API}/programs/public`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      allPrograms = Array.isArray(data) ? data : [];
+      renderPrograms(allPrograms);
+    } catch (e) {
+      console.error('[loadPrograms]', e);
+      document.getElementById('programs-list').innerHTML =
+        '<p style="color:var(--text-3); padding:2rem 0;">Unable to load programs. Please try again.</p>';
+    }
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.type;
+      renderPrograms(currentFilter === 'ALL' ? allPrograms : allPrograms.filter(p => p.type === currentFilter));
+    });
+  });
+
+  loadPrograms();
+</script>
+</body>
+</html>

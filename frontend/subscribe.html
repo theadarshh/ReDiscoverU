@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlock Lifetime Access — ReDiscoverU</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .checkout-wrap { flex: 1; display: grid; grid-template-columns: 1fr 320px; min-height: calc(100vh - 72px); }
+    .checkout-main { padding: 4rem 5%; border-right: 1px solid var(--border); }
+    .checkout-main-inner { max-width: 520px; }
+    .checkout-sidebar { padding: 3rem 2.5rem; background: var(--ink-2); position: sticky; top: 72px; height: fit-content; }
+    .sum-row { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-total { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+    .coupon-row { display: flex; }
+    .coupon-row input { border-right: none; flex: 1; text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--mono); }
+    .coupon-apply { padding: 0.8rem 1.2rem; background: none; border: 1px solid var(--border); border-left: none; color: var(--gold); font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+    .coupon-apply:hover { background: var(--gold-faint); }
+    .coupon-apply:disabled { opacity: 0.4; cursor: default; }
+    .trust-items { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .trust-item { font-size: 0.75rem; color: var(--text-3); padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+    .trust-item:last-child { border-bottom: none; }
+    .trust-item::before { content: '— '; color: var(--gold); opacity: 0.5; }
+    .includes-list { list-style: none; margin: 1.5rem 0 2rem; }
+    .includes-list li { font-size: 0.85rem; color: var(--text-2); padding: 0.45rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.75rem; }
+    .includes-list li:last-child { border-bottom: none; }
+    .includes-list li::before { content: '✓'; color: var(--gold); font-size: 0.75rem; margin-top: 0.05rem; flex-shrink: 0; }
+    @media (max-width: 768px) { .checkout-wrap { grid-template-columns: 1fr; } .checkout-sidebar { position: static; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Re<span>Discover</span>U</a>
+  <div class="nav-links"><a href="programs.html">← Back to Programs</a></div>
+</nav>
+
+<div class="checkout-wrap">
+  <div class="checkout-main">
+    <div class="checkout-main-inner" id="checkout-inner">
+      <div class="loading"></div>
+    </div>
+  </div>
+  <div class="checkout-sidebar">
+    <div class="caption" style="margin-bottom:1.5rem;">What you unlock</div>
+    <div id="sidebar-content"><div class="loading"></div></div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  // ── Auth guard ─────────────────────────────────────────────────
+  const token = getToken();
+  if (!token) {
+    window.location.href = `signup.html`;
+  }
+
+  // Already PAID — no need to be here
+  if (token && getStatus() === 'PAID') {
+    window.location.href = 'user/dashboard.html';
+  }
+
+  let lifetimePrice = 499;
+  let priceInfo     = { original: 499, discount: 0, final: 499 };
+  let appliedCoupon = null;
+  let couponLocked  = false;
+
+  async function init() {
+    try {
+      // Load platform price
+      const sr = await fetch(`${API}/admin/settings`);
+      const settings = await sr.json();
+      lifetimePrice         = Number(settings.lifetimePrice || 499);
+      priceInfo.original    = lifetimePrice;
+      priceInfo.final       = lifetimePrice;
+    } catch (e) {
+      console.error("[error]", e);
+      // Use default if settings unreachable
+    }
+    renderMain();
+    renderSidebar();
+  }
+
+  function renderMain() {
+    const isPending = getStatus() === 'PENDING';
+    document.getElementById('checkout-inner').innerHTML = `
+
+      ${isPending ? `
+        <div class="alert alert-info" style="margin-bottom:2rem;">
+          Your email is verified. Complete payment to activate your ReDiscoverU membership.
+        </div>
+      ` : ''}
+
+      <div class="caption">Checkout</div>
+      <div class="gold-line"></div>
+      <h2 style="font-size:2rem; font-weight:300; margin-bottom:0.25rem;">Unlock Lifetime Access</h2>
+      <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:2.5rem;">
+        One-time payment. Access all programs, recorded content, and live sessions — forever.
+      </p>
+
+      <div id="alert-box"></div>
+
+      <ul class="includes-list">
+        <li>All self-paced programs with recorded sessions</li>
+        <li>Live Google Meet sessions (Tue & Thu Growth Circles)</li>
+        <li>1-to-1 Mentorship program materials</li>
+        <li>All future programs added to the platform</li>
+        <li>Session recordings and resources</li>
+      </ul>
+
+      <div style="margin-bottom:2.5rem;">
+        <label>Have a Coupon Code?</label>
+        <div class="coupon-row">
+          <input type="text" id="coupon-input" placeholder="ENTER CODE"
+            ${couponLocked ? `value="${appliedCoupon}" readonly` : ''}>
+          <button class="coupon-apply" onclick="applyCoupon()"
+            ${couponLocked ? 'disabled' : ''}>
+            ${couponLocked ? '✓ Applied' : 'Apply'}
+          </button>
+        </div>
+        <div id="coupon-msg" style="font-size:0.78rem; margin-top:0.5rem; color:var(--text-3);">
+          ${couponLocked ? `<span style="color:var(--success);">✓ ${priceInfo.discount}% discount applied</span>` : ''}
+        </div>
+      </div>
+
+      <button class="btn btn-outline btn-full" id="pay-btn" onclick="proceed()" style="padding:1rem;">
+        <span>${priceInfo.final === 0 ? 'Claim Lifetime Access — Free' : 'Pay ' + formatINR(priceInfo.final) + ' — Unlock Lifetime Access'}</span>
+      </button>
+      <p style="text-align:center; font-size:0.72rem; color:var(--text-3); margin-top:0.75rem; letter-spacing:0.04em;">
+        Secured by Razorpay · UPI · Cards · Net Banking · Wallets
+      </p>
+    `;
+  }
+
+  function renderSidebar() {
+    const { original, discount, final: finalAmt } = priceInfo;
+    const discountAmount = original * discount / 100;
+    document.getElementById('sidebar-content').innerHTML = `
+      <div class="sum-row"><span style="color:var(--text-3);">Membership</span><span style="font-size:0.82rem;">Lifetime Access</span></div>
+      <div class="sum-row"><span style="color:var(--text-3);">Listed Price</span><span>${formatINR(original)}</span></div>
+      ${discount > 0 ? `<div class="sum-row" style="color:var(--success);"><span>Discount (${discount}%)</span><span>−${formatINR(discountAmount)}</span></div>` : ''}
+      <div class="sum-row" style="padding-top:1rem;">
+        <span style="font-weight:500;">You Pay</span>
+        <span class="sum-total">${finalAmt === 0 ? 'Free' : formatINR(finalAmt)}</span>
+      </div>
+      <div class="trust-items">
+        <div class="trust-item">Access to all programs immediately</div>
+        <div class="trust-item">All future programs included</div>
+        <div class="trust-item">Live session links provided</div>
+        <div class="trust-item">One-time payment, never again</div>
+        <div class="trust-item">Razorpay secured checkout</div>
+      </div>
+    `;
+  }
+
+  async function applyCoupon() {
+    const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+    const msg  = document.getElementById('coupon-msg');
+    clearAlert('alert-box');
+    if (!code) return;
+
+    msg.innerHTML = '<span style="color:var(--text-3);">Validating…</span>';
+
+    try {
+      const res = await fetch(`${API}/payment/order`, {
+        method: 'POST', headers: authHeader(),
+        body: JSON.stringify({ couponCode: code })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        msg.innerHTML = `<span style="color:var(--error);">${data.error}</span>`;
+        return;
+      }
+
+      appliedCoupon = code;
+      couponLocked  = true;
+      priceInfo = {
+        original: Number(data.originalAmount),
+        discount: data.discountPercent,
+        final:    Number(data.finalAmount)
+      };
+
+      // Free access via 100% coupon (e.g. JAYCIRCLE)
+      if (data.freeAccess) {
+        showAlert('alert-box', '✓ Full discount applied. Your lifetime access is now active!', 'success');
+        localStorage.setItem('rdu_status', 'PAID');
+        setTimeout(() => window.location.href = 'user/dashboard.html', 1800);
+        return;
+      }
+
+      renderMain();
+      renderSidebar();
+    } catch (e) {
+      console.error("[error]", e);
+      msg.innerHTML = '<span style="color:var(--error);">Unable to validate coupon.</span>';
+    }
+  }
+
+  async function proceed() {
+    clearAlert('alert-box');
+    const btn = document.getElementById('pay-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span>Preparing…</span>';
+
+    try {
+      const res = await fetch(`${API}/payment/order`, {
+        method: 'POST', headers: authHeader(),
+        body: JSON.stringify({ couponCode: appliedCoupon || null })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showAlert('alert-box', data.error || 'Payment initiation failed. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = `<span>${priceInfo.final === 0 ? 'Claim Lifetime Access — Free' : 'Pay ' + formatINR(priceInfo.final) + ' — Unlock Lifetime Access'}</span>`;
+        return;
+      }
+
+      // Free via coupon — access already granted server-side
+      if (data.freeAccess) {
+        showAlert('alert-box', '✓ Access granted. Welcome to ReDiscoverU!', 'success');
+        localStorage.setItem('rdu_status', 'PAID');
+        setTimeout(() => window.location.href = 'user/dashboard.html', 1800);
+        return;
+      }
+
+      // Open Razorpay checkout
+      const rzpOpts = {
+        key:         data.keyId,
+        amount:      data.amount,
+        currency:    data.currency,
+        order_id:    data.orderId,
+        name:        'ReDiscoverU',
+        description: 'Lifetime Membership',
+        prefill:     { name: getName(), email: getEmail() },
+        theme:       { color: '#C6A85C' },
+        modal: {
+          ondismiss: () => {
+            showAlert('alert-box', 'Payment was cancelled. You can try again when ready.', 'info');
+            btn.disabled = false;
+            btn.innerHTML = `<span>Pay ${formatINR(priceInfo.final)} — Unlock Lifetime Access</span>`;
+          }
+        },
+        handler: function() {
+          // Razorpay success callback — UX feedback only.
+          // Actual activation via server-side webhook (HMAC-SHA256 verified).
+          showAlert('alert-box',
+            '✓ Payment received. Activating your lifetime access — this takes a few seconds…',
+            'success'
+          );
+          pollActivation(10);
+        }
+      };
+
+      const rzp = new Razorpay(rzpOpts);
+      rzp.open();
+
+    } catch (e) {
+      console.error("[error]", e);
+      showAlert('alert-box', 'Connection error. Please try again.');
+      btn.disabled = false;
+      btn.innerHTML = `<span>Pay ${formatINR(priceInfo.final)} — Unlock Lifetime Access</span>`;
+    }
+  }
+
+  /** Poll /api/user/status until PAID or timeout, then redirect to dashboard. */
+  async function pollActivation(tries) {
+    if (tries <= 0) {
+      localStorage.setItem('rdu_status', 'PAID');
+      window.location.href = 'user/dashboard.html';
+      return;
+    }
+    try {
+      const res  = await fetch(`${API}/user/status`, { headers: authHeader() });
+      const data = await res.json();
+      if (data.subscriptionStatus === 'PAID') {
+        localStorage.setItem('rdu_status', 'PAID');
+        window.location.href = 'user/dashboard.html';
+        return;
+      }
+    } catch (e) { console.error("[error]", e); }
+    setTimeout(() => pollActivation(tries - 1), 2000);
+  }
+
+  init();
+</script>
+</body>
+</html>

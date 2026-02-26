@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — ReDiscoverU</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .auth-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 72px); }
+    .auth-left { background: var(--ink-2); border-right: 1px solid var(--border); padding: 5rem; display: flex; flex-direction: column; justify-content: center; }
+    .auth-right { display: flex; align-items: center; justify-content: center; padding: 3rem 5rem; overflow-y: auto; }
+    .auth-form  { width: 100%; max-width: 380px; }
+    .feature-list { list-style: none; margin-top: 2rem; }
+    .feature-list li { padding: 0.65rem 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; color: var(--text-2); }
+    .feature-list li:last-child { border-bottom: none; }
+    .feature-list li::before { content: '— '; color: var(--gold); opacity: 0.6; }
+    .otp-input { text-align: center; letter-spacing: 0.4em; font-size: 1.6rem; font-family: var(--mono); padding: 1rem; }
+    .step { display: none; } .step.active { display: block; }
+
+    /* Flow progress indicator */
+    .flow-steps { display: flex; gap: 0; margin-bottom: 2.5rem; }
+    .flow-step {
+      flex: 1; padding: 0.6rem; text-align: center;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3); border-bottom: 2px solid var(--border);
+      transition: all 0.25s;
+    }
+    .flow-step.done  { color: var(--success); border-bottom-color: var(--success); }
+    .flow-step.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .info-box { background: rgba(122,157,196,0.06); border-left: 2px solid rgba(122,157,196,0.4); padding: 0.85rem 1rem; font-size: 0.8rem; color: #9abbd4; line-height: 1.6; margin-bottom: 1.5rem; }
+
+    @media (max-width: 768px) { .auth-wrap { grid-template-columns: 1fr; } .auth-left { display: none; } .auth-right { padding: 2rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Re<span>Discover</span>U</a>
+  <div class="nav-links"><a href="index.html">Home</a><a href="programs.html">Programs</a><a href="login.html">Sign In</a></div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-left">
+    <div class="caption">Begin</div>
+    <div class="gold-line"></div>
+    <h2 style="font-size:2.2rem; font-weight:300; line-height:1.3;">Your growth<br>journey starts here.</h2>
+    <ul class="feature-list">
+      <li>Register with email verification</li>
+      <li>Select your program</li>
+      <li>Complete one-time payment</li>
+      <li>Get instant lifetime access</li>
+    </ul>
+    <div class="info-box" style="margin-top:2rem;">
+      Registration requires email verification followed by a one-time enrolment payment. No recurring charges.
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form">
+
+      <!-- Progress steps -->
+      <div class="flow-steps">
+        <div class="flow-step active" id="fs-1">1. Register</div>
+        <div class="flow-step" id="fs-2">2. Verify Email</div>
+        <div class="flow-step" id="fs-3">3. Enrol</div>
+      </div>
+
+      <!-- STEP 1: Register form -->
+      <div class="step active" id="step-register">
+        <div class="caption">Step 1 of 3</div>
+        <div class="gold-line"></div>
+        <h2 style="font-size:1.8rem; font-weight:300; margin-bottom:0.25rem;">Create Account</h2>
+        <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:2rem;">A verification code will be sent to your email.</p>
+        <div id="alert-1"></div>
+        <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" placeholder="Your full name" autocomplete="name"></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="Minimum 8 characters" autocomplete="new-password"></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" id="reg-confirm" placeholder="Repeat password" autocomplete="new-password"></div>
+        <button class="btn btn-outline btn-full" id="btn-register" onclick="doRegister()"><span>Create Account & Send OTP</span></button>
+        <p style="text-align:center; font-size:0.8rem; color:var(--text-3); margin-top:1.5rem;">Already registered? <a href="login.html" style="color:var(--gold);">Sign in →</a></p>
+      </div>
+
+      <!-- STEP 2: OTP verification -->
+      <div class="step" id="step-otp">
+        <div class="caption">Step 2 of 3</div>
+        <div class="gold-line"></div>
+        <h2 style="font-size:1.8rem; font-weight:300; margin-bottom:0.25rem;">Verify Your Email</h2>
+        <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:0.5rem;">We sent a 6-digit code to</p>
+        <p style="font-size:0.92rem; color:var(--gold); margin-bottom:2rem;" id="otp-email-label">your email</p>
+        <div id="alert-2"></div>
+        <div class="form-group">
+          <label>Verification Code</label>
+          <input type="text" class="otp-input" id="otp-code" placeholder="000000" maxlength="6" autocomplete="one-time-code" inputmode="numeric">
+          <p style="font-size:0.72rem; color:var(--text-3); margin-top:0.5rem; text-align:center;">This code expires in 5 minutes</p>
+        </div>
+        <button class="btn btn-outline btn-full" id="btn-otp" onclick="doVerifyOtp()"><span>Verify & Continue to Payment</span></button>
+        <p style="text-align:center; font-size:0.8rem; color:var(--text-3); margin-top:1.25rem;">
+          Didn't receive it? <a href="#" id="resend-link" onclick="doResendOtp(event)" style="color:var(--gold);">Resend code</a>
+        </p>
+      </div>
+
+      <!-- STEP 3: Redirect to select program -->
+      <div class="step" id="step-done">
+        <div class="caption">Step 3 of 3</div>
+        <div class="gold-line"></div>
+        <h2 style="font-size:1.8rem; font-weight:300; margin-bottom:0.75rem;">Email Verified</h2>
+        <div class="alert alert-success" style="margin-bottom:1.5rem;">✓ Your email has been verified. Please select a program and complete payment to activate your account.</div>
+        <p style="font-size:0.85rem; color:var(--text-2); line-height:1.8; margin-bottom:2rem;">
+          Your account is now <strong style="color:var(--gold);">pending payment</strong>. 
+          Choose a program to enrol in and complete the one-time payment. 
+          Your full dashboard access will be activated immediately after payment.
+        </p>
+        <a href="programs.html" class="btn btn-outline btn-full"><span>Browse Programs & Enrol →</span></a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  let registeredEmail = '';
+
+  // Redirect if already active
+  if (getToken() && getStatus() === 'PAID') {
+    window.location.href = getRole() === 'ROLE_ADMIN' ? 'admin/dashboard.html' : 'user/dashboard.html';
+  }
+
+  function setFlowStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + ['register','otp','done'][n-1]).classList.add('active');
+    [1,2,3].forEach(i => {
+      const el = document.getElementById('fs-' + i);
+      el.classList.remove('active','done');
+      if (i < n) el.classList.add('done');
+      else if (i === n) el.classList.add('active');
+    });
+  }
+
+  async function doRegister() {
+    const name    = document.getElementById('reg-name').value.trim();
+    const email   = document.getElementById('reg-email').value.trim();
+    const pass    = document.getElementById('reg-pass').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const btn     = document.getElementById('btn-register');
+    clearAlert('alert-1');
+
+    if (!name || !email || !pass) { showAlert('alert-1', 'All fields are required.'); return; }
+    if (pass.length < 8) { showAlert('alert-1', 'Password must be at least 8 characters.'); return; }
+    if (pass !== confirm) { showAlert('alert-1', 'Passwords do not match.'); return; }
+
+    btn.disabled = true; btn.innerHTML = '<span>Sending OTP…</span>';
+    try {
+      const res = await fetch(`${API}/auth/register`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password: pass })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showAlert('alert-1', data.error || 'Registration failed.');
+        btn.disabled = false; btn.innerHTML = '<span>Create Account & Send OTP</span>';
+        return;
+      }
+      registeredEmail = email;
+      document.getElementById('otp-email-label').textContent = email;
+      setFlowStep(2);
+    } catch (e) {
+      console.error("[error]", e);
+      showAlert('alert-1', 'Connection error. Please try again.');
+      btn.disabled = false; btn.innerHTML = '<span>Create Account & Send OTP</span>';
+    }
+  }
+
+  async function doVerifyOtp() {
+    const otp = document.getElementById('otp-code').value.trim();
+    const btn = document.getElementById('btn-otp');
+    clearAlert('alert-2');
+
+    if (!otp || otp.length < 6) { showAlert('alert-2', 'Please enter the 6-digit code from your email.'); return; }
+
+    btn.disabled = true; btn.innerHTML = '<span>Verifying…</span>';
+    try {
+      const res = await fetch(`${API}/auth/verify-email`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: registeredEmail, otp })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showAlert('alert-2', data.error || 'Verification failed.');
+        btn.disabled = false; btn.innerHTML = '<span>Verify & Continue to Payment</span>';
+        return;
+      }
+      // Email verified → PENDING_PAYMENT status
+      // Show step 3 confirmation before redirecting to programs
+      setFlowStep(3);
+      document.getElementById('fs-2').classList.add('done');
+      document.getElementById('fs-2').classList.remove('active');
+    } catch (e) {
+      console.error("[error]", e);
+      showAlert('alert-2', 'Connection error. Please try again.');
+      btn.disabled = false; btn.innerHTML = '<span>Verify & Continue to Payment</span>';
+    }
+  }
+
+  async function doResendOtp(e) {
+    e.preventDefault();
+    const link = document.getElementById('resend-link');
+    clearAlert('alert-2');
+    link.textContent = 'Sending…';
+    try {
+      const res = await fetch(`${API}/auth/resend-otp`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: registeredEmail })
+      });
+      const data = await res.json();
+      if (!res.ok) { showAlert('alert-2', data.error || 'Could not resend.'); }
+      else { showAlert('alert-2', 'A new code has been sent to your email.', 'info'); }
+    } catch (e) { console.error("[error]", e); showAlert('alert-2', 'Connection error.'); }
+    // Rate-limit resend button
+    link.textContent = 'Resend (wait 30s)';
+    setTimeout(() => link.textContent = 'Resend code', 30000);
+  }
+</script>
+</body>
+</html>

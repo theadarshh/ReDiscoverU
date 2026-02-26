@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — ReDiscoverU</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .auth-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 72px); }
+    .auth-left { background: var(--ink-2); border-right: 1px solid var(--border); padding: 5rem; display: flex; flex-direction: column; justify-content: center; }
+    .auth-right { display: flex; align-items: center; justify-content: center; padding: 3rem 5rem; }
+    .auth-form  { width: 100%; max-width: 360px; }
+    .auth-pull-quote { font-family: var(--serif); font-size: 1.5rem; font-style: italic; font-weight: 300; line-height: 1.6; color: var(--text); margin-top: 2rem; }
+    .auth-cite { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); margin-top: 1rem; }
+    @media (max-width: 768px) { .auth-wrap { grid-template-columns: 1fr; } .auth-left { display: none; } .auth-right { padding: 2rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Re<span>Discover</span>U</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="programs.html">Programs</a>
+    <a href="signup.html">Register</a>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-left">
+    <div class="caption">Return</div>
+    <div class="gold-line"></div>
+    <h2 style="font-size:2.5rem; font-weight:300;">Welcome back.</h2>
+    <p class="auth-pull-quote">"Consistency is the currency of mastery. Every time you show up, you invest."</p>
+    <div class="auth-cite">— Jayashankar Lingaiah</div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form">
+      <div class="caption">Sign In</div>
+      <div class="gold-line"></div>
+      <h2 style="font-size:1.8rem; font-weight:300; margin-bottom:0.25rem;">Continue your journey</h2>
+      <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:2.5rem;">Access your enrolled programs and sessions.</p>
+
+      <div id="alert-box"></div>
+
+      <div class="form-group"><label>Email Address</label><input type="email" id="email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+      </div>
+
+      <div style="text-align:right; margin-bottom:1.5rem;">
+        <a href="forgot-password.html" style="color:var(--gold); font-size:0.75rem; text-decoration:none; letter-spacing:0.04em;">Forgot password?</a>
+      </div>
+
+      <button class="btn btn-outline btn-full" id="login-btn" onclick="login()"><span>Sign In</span></button>
+
+      <p style="text-align:center; font-size:0.8rem; color:var(--text-3); margin-top:1.5rem;">
+        New to ReDiscoverU? <a href="signup.html" style="color:var(--gold);">Create an account →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  // Redirect if already logged in
+  if (getToken()) {
+    const status = getStatus();
+    const role   = getRole();
+    if (role === 'ROLE_ADMIN') window.location.href = 'admin/dashboard.html';
+    else if (status === "PAID") window.location.href = 'user/dashboard.html';
+    else window.location.href = 'programs.html'; // PENDING_PAYMENT → go pay
+  }
+
+  async function login() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('login-btn');
+    clearAlert('alert-box');
+
+    if (!email || !password) { showAlert('alert-box', 'Please enter your email and password.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span>Signing in…</span>';
+
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showAlert('alert-box', data.error || 'Sign in failed. Please try again.');
+        btn.disabled = false; btn.innerHTML = '<span>Sign In</span>';
+        return;
+      }
+
+      saveSession(data);
+
+      // Route based on role and account status
+      const redirect = new URLSearchParams(location.search).get('redirect');
+      if (data.role === 'ROLE_ADMIN') {
+        window.location.href = redirect || 'admin/dashboard.html';
+      } else if (data.subscriptionStatus === 'PAID') {
+        window.location.href = redirect || 'user/dashboard.html';
+      } else {
+        // PENDING_PAYMENT — redirect to programs to complete enrolment
+        showAlert('alert-box',
+          '✓ Signed in. Please complete your enrolment to access the platform.',
+          'info'
+        );
+        setTimeout(() => { window.location.href = 'programs.html?wall=1'; }, 1800);
+      }
+
+    } catch (e) {
+      console.error("[error]", e);
+      showAlert('alert-box', 'Connection error. Please check your internet and try again.');
+      btn.disabled = false; btn.innerHTML = '<span>Sign In</span>';
+    }
+  }
+
+  document.addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>

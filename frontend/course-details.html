@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course — ReDiscoverU</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .course-wrap {
+      max-width: var(--max); margin: 0 auto; padding: 3rem 5%;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-3); text-decoration: none; margin-bottom: 3rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--gold); }
+
+    /* ── Header ──────────────────────────────────────────────────── */
+    .course-header {
+      border: 1px solid var(--border); background: var(--surface);
+      padding: 3rem 3.5rem; margin-bottom: 2.5rem; position: relative; overflow: hidden;
+    }
+    .course-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--gold-line), transparent 80%);
+    }
+    .course-type-tag {
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem; display: block;
+    }
+    .course-title {
+      font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 400; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .course-meta {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      font-size: 0.78rem; color: var(--text-3); margin-bottom: 1.5rem;
+    }
+    .course-desc { font-size: 0.93rem; color: var(--text-2); line-height: 1.85; max-width: 660px; }
+
+    /* ── Section headings ────────────────────────────────────────── */
+    .sec-head {
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-3); margin: 3rem 0 1.25rem; padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border); display: block;
+    }
+
+    /* ── Session cards ───────────────────────────────────────────── */
+    .session-card {
+      border: 1px solid var(--border); background: var(--surface);
+      padding: 1.6rem 2rem; margin-bottom: 1px;
+      display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 2rem; flex-wrap: wrap;
+      transition: border-color 0.2s;
+    }
+    .session-card:hover { border-color: rgba(198,168,92,0.3); }
+    .session-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; margin-bottom: 0.3rem; }
+    .session-schedule { font-size: 0.78rem; color: var(--gold); letter-spacing: 0.04em; }
+
+    /* ── Video grid ──────────────────────────────────────────────── */
+    .video-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+    .video-card {
+      background: var(--surface); cursor: pointer;
+      transition: background 0.15s;
+    }
+    .video-card:hover { background: #0f172a; }
+    .video-thumb {
+      width: 100%; aspect-ratio: 16/9; background: #000;
+      overflow: hidden; position: relative;
+    }
+    .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .video-thumb .play-icon {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35); opacity: 0; transition: opacity 0.2s;
+    }
+    .video-card:hover .play-icon { opacity: 1; }
+    .play-icon span {
+      width: 44px; height: 44px; background: rgba(198,168,92,0.9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; padding-left: 3px; color: #000;
+    }
+    .video-card-body { padding: 1rem 1.25rem 1.25rem; }
+    .video-card-type { font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.35rem; }
+    .video-card-title { font-size: 0.88rem; font-weight: 400; line-height: 1.4; }
+
+    /* ── Video player modal ──────────────────────────────────────── */
+    .video-modal {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(2,6,23,0.97); align-items: center; justify-content: center;
+      flex-direction: column; padding: 2rem;
+    }
+    .video-modal.open { display: flex; }
+    .video-modal-inner {
+      width: 100%; max-width: 900px;
+      background: #000; border: 1px solid var(--border); position: relative;
+    }
+    .video-modal-inner iframe, .video-modal-inner video {
+      width: 100%; aspect-ratio: 16/9; border: none; display: block;
+    }
+    .video-modal-title {
+      font-family: var(--serif); font-size: 1rem; color: var(--text-2);
+      text-align: center; margin-top: 1rem;
+    }
+    .vm-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: none; border: 1px solid var(--border);
+      color: var(--text-2); font-size: 1.2rem; cursor: pointer;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+    }
+
+    /* ── Resource rows ───────────────────────────────────────────── */
+    .resource-panel { border: 1px solid var(--border); background: var(--surface); }
+    .resource-row {
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 1rem 1.75rem; border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .resource-row:last-child { border-bottom: none; }
+    .resource-row:hover { background: rgba(198,168,92,0.03); }
+    .rr-icon {
+      width: 34px; height: 34px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border); font-size: 0.75rem; color: var(--text-3);
+    }
+    .rr-body { flex: 1; min-width: 0; }
+    .rr-title { font-size: 0.9rem; font-weight: 400; margin-bottom: 0.15rem; }
+    .rr-type { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+
+    /* ── Locked ──────────────────────────────────────────────────── */
+    .locked-box {
+      border: 1px solid rgba(198,168,92,0.2); background: rgba(198,168,92,0.03);
+      padding: 5rem 2rem; text-align: center; margin-top: 2rem;
+    }
+    .locked-icon { font-size: 2.5rem; opacity: 0.35; display: block; margin-bottom: 1.5rem; }
+    .locked-title { font-family: var(--serif); font-size: 1.75rem; font-weight: 300; margin-bottom: 0.75rem; }
+    .locked-sub { font-size: 0.9rem; color: var(--text-2); margin-bottom: 2.5rem; }
+
+    .empty-state { padding: 2rem 1.75rem; font-size: 0.83rem; color: var(--text-3); border: 1px solid var(--border); background: var(--surface); }
+
+    @media (max-width: 760px) { .course-header { padding: 2rem; } .video-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px) { .video-grid { grid-template-columns: 1fr; } .course-wrap { padding: 2rem 4%; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Re<span>Discover</span>U</a>
+  <div class="nav-links" id="nav-links">
+    <a href="programs.html">Programs</a>
+    <a href="user/dashboard.html">Dashboard</a>
+    <button onclick="doLogout()" class="btn btn-ghost btn-sm"
+      style="font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; border:none; background:none; color:var(--text-2);">Sign Out</button>
+  </div>
+</nav>
+
+<div class="course-wrap">
+  <a href="javascript:history.back()" class="back-link">← Back</a>
+  <div id="course-root"><div class="loading" style="height:200px;"></div></div>
+</div>
+
+<!-- Video Player Modal -->
+<div class="video-modal" id="video-modal" onclick="handleModalClick(event)">
+  <button class="vm-close" onclick="closeVideoModal()">✕</button>
+  <div class="video-modal-inner">
+    <div id="video-modal-player"></div>
+  </div>
+  <div class="video-modal-title" id="video-modal-title"></div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  if (!getToken()) { window.location.href = 'login.html'; }
+
+  const params    = new URLSearchParams(location.search);
+  const programId = params.get('id');
+  if (!programId) window.location.href = 'programs.html';
+
+  const root = document.getElementById('course-root');
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function embedUrl(url) {
+    if (!url) return '';
+    let id = null;
+    if (url.includes('youtu.be/'))    id = url.substring(url.indexOf('youtu.be/')+9).split(/[?&]/)[0];
+    else if (url.includes('v='))      id = url.substring(url.indexOf('v=')+2).split(/[?&]/)[0];
+    else if (url.includes('/embed/')) id = url.substring(url.indexOf('/embed/')+7).split(/[?&]/)[0];
+    return id ? `https://www.youtube.com/embed/${id}?autoplay=1` : url;
+  }
+  function ytThumb(url) {
+    let id = null;
+    if (url.includes('youtu.be/'))    id = url.substring(url.indexOf('youtu.be/')+9).split(/[?&]/)[0];
+    else if (url.includes('v='))      id = url.substring(url.indexOf('v=')+2).split(/[?&]/)[0];
+    else if (url.includes('/embed/')) id = url.substring(url.indexOf('/embed/')+7).split(/[?&]/)[0];
+    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
+  }
+
+  // ── Video modal ───────────────────────────────────────────────────
+  function openVideoModal(type, url, title) {
+    const player = document.getElementById('video-modal-player');
+    document.getElementById('video-modal-title').textContent = title;
+    if (type === 'YOUTUBE') {
+      player.innerHTML = `<iframe src="${embedUrl(url)}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    } else {
+      player.innerHTML = `<video src="${url}" controls autoplay style="width:100%;aspect-ratio:16/9;"></video>`;
+    }
+    document.getElementById('video-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeVideoModal() {
+    document.getElementById('video-modal').classList.remove('open');
+    document.getElementById('video-modal-player').innerHTML = '';
+    document.body.style.overflow = '';
+  }
+  function handleModalClick(e) { if (e.target.id === 'video-modal') closeVideoModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVideoModal(); });
+  function doLogout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+  // ── Main loader ───────────────────────────────────────────────────
+  async function loadCourse() {
+    try {
+      const res = await fetch(`${API}/program/${programId}/details`, { headers: authHeader() });
+
+      if (res.status === 401) { window.location.href = 'login.html'; return; }
+      if (res.status === 402) {
+        const data = await res.json();
+        root.innerHTML = `
+          <div class="locked-box">
+            <span class="locked-icon">🔒</span>
+            <div class="locked-title">Content Locked</div>
+            <p class="locked-sub">${esc(data.message || 'Unlock Lifetime Access to view content.')}</p>
+            <a href="subscribe.html" class="btn btn-outline"><span>Unlock Lifetime Access →</span></a>
+          </div>`;
+        return;
+      }
+      if (!res.ok) throw new Error('Failed to load');
+
+      const { program, contents, liveSessions } = await res.json();
+      document.title = `${program.title} — ReDiscoverU`;
+
+      const videos    = contents.filter(c => c.contentType === 'VIDEO');
+      const youtubes  = contents.filter(c => c.contentType === 'YOUTUBE');
+      const pdfs      = contents.filter(c => c.contentType === 'PDF');
+      const articles  = contents.filter(c => c.contentType === 'ARTICLE');
+      const links     = contents.filter(c => c.contentType === 'LINK');
+      const resources = [...pdfs, ...articles, ...links];
+      const allVideos = [...youtubes, ...videos];
+
+      let html = `
+        <div class="course-header fade-up">
+          <span class="course-type-tag">${typeLabel(program.type)}</span>
+          <h1 class="course-title">${esc(program.title)}</h1>
+          <div class="course-meta">
+            ${program.duration ? `<span>◷ ${esc(program.duration)}</span>` : ''}
+            <span style="color:var(--success,#16a34a);">✓ Lifetime Access</span>
+          </div>
+          ${program.description ? `<p class="course-desc">${esc(program.description)}</p>` : ''}
+        </div>`;
+
+      // ── 1. MEETING / LIVE SESSIONS (first)
+      html += `<span class="sec-head">Live Sessions</span>`;
+      if (!liveSessions.length) {
+        html += `<div class="empty-state">No live sessions scheduled for this program yet.</div>`;
+      } else {
+        html += liveSessions.map(s => `
+          <div class="session-card fade-up">
+            <div>
+              <div class="session-title">${esc(s.title)}</div>
+              ${s.scheduleText ? `<div class="session-schedule">${esc(s.scheduleText)}</div>` : ''}
+            </div>
+            ${s.meetingLink
+              ? `<a href="${esc(s.meetingLink)}" target="_blank" rel="noopener"
+                    class="btn btn-outline btn-sm"><span>Join Session →</span></a>`
+              : `<span style="font-size:0.72rem; color:var(--text-3);">Link coming soon</span>`}
+          </div>`).join('');
+      }
+
+      // ── 2. VIDEOS (grid with thumbnail + modal)
+      if (allVideos.length) {
+        html += `<span class="sec-head">Recorded Videos</span>
+          <div class="video-grid">
+          ${allVideos.map((v, i) => {
+            const isYT    = v.contentType === 'YOUTUBE';
+            const thumb   = isYT ? ytThumb(v.contentUrl) : '';
+            const safeUrl = (v.contentUrl || '').replace(/'/g, "\\'");
+            const safeTitle = (v.title || '').replace(/'/g, "\\'");
+            return `
+              <div class="video-card fade-up" style="animation-delay:${i*0.06}s;"
+                   onclick="openVideoModal('${v.contentType}','${safeUrl}','${safeTitle}')">
+                <div class="video-thumb">
+                  ${thumb ? `<img src="${thumb}" alt="${esc(v.title)}" loading="lazy">` :
+                    `<div style="width:100%;height:100%;background:#0b1120;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:0.25;">▶</div>`}
+                  <div class="play-icon"><span>▶</span></div>
+                </div>
+                <div class="video-card-body">
+                  <div class="video-card-type">${isYT ? 'YouTube' : 'Video'}</div>
+                  <div class="video-card-title">${esc(v.title)}</div>
+                </div>
+              </div>`;
+          }).join('')}
+          </div>`;
+      }
+
+      // ── 3. RESOURCES (PDF, ARTICLE, LINK)
+      if (resources.length) {
+        const iconMap = { PDF: '⬇', ARTICLE: '✦', LINK: '↗' };
+        html += `<span class="sec-head">Articles &amp; Resources</span>
+          <div class="resource-panel">
+          ${resources.map(r => `
+            <div class="resource-row">
+              <div class="rr-icon">${iconMap[r.contentType] || '•'}</div>
+              <div class="rr-body">
+                <div class="rr-title">${esc(r.title)}</div>
+                <div class="rr-type">${r.contentType}</div>
+              </div>
+              <a href="${esc(r.contentUrl)}" target="_blank" rel="noopener"
+                 class="btn btn-ghost btn-sm">
+                ${r.contentType === 'PDF' ? 'Download →' : 'Open →'}
+              </a>
+            </div>`).join('')}
+          </div>`;
+      }
+
+      root.innerHTML = html;
+      initFadeUp();
+
+    } catch (e) {
+      root.innerHTML = `
+        <div style="text-align:center; padding:4rem 2rem;">
+          <p style="color:var(--text-3); margin-bottom:1.5rem;">Unable to load course content. Please try again.</p>
+          <button onclick="loadCourse()" class="btn btn-ghost btn-sm">Retry</button>
+        </div>`;
+    }
+  }
+
+  loadCourse();
+</script>
+</body>
+</html>
