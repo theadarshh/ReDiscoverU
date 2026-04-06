@@ -1,0 +1,64 @@
+# ═══════════════════════════════════════════════════════════
+#  Render deployment config — render.yaml
+#  Docs: https://render.com/docs/render-yaml-spec
+# ═══════════════════════════════════════════════════════════
+
+services:
+  # ── Backend: Spring Boot API ─────────────────────────────
+  - type: web
+    name: rediscoveru-api
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_URL
+        fromDatabase:
+          name: rediscoveru-db
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: rediscoveru-db
+          property: user
+      - key: DB_PASS
+        fromDatabase:
+          name: rediscoveru-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PAYMENT_CONFIG_ENCRYPTION_KEY
+        generateValue: true
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Jayashankar Lingaiah
+      - key: APP_BASE_URL
+        value: https://rediscoveru.life
+      - key: FILE_UPLOAD_DIR
+        value: /opt/render/project/uploads
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/uploads
+      sizeGB: 1
+
+  # ── Frontend: Static HTML ─────────────────────────────────
+  - type: web
+    name: rediscoveru-frontend
+    runtime: static
+    staticPublishPath: frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: rediscoveru-db
+    databaseName: rediscoveru
+    plan: free

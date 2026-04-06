@@ -1,0 +1,25 @@
+# ── Java / Maven ─────────────────────────────────────
+target/
+*.class
+*.log
+*.jar
+!app.jar
+
+# ── Secrets (NEVER commit these) ─────────────────────
+.env
+.env.local
+application-local.properties
+application-prod.properties
+
+# ── Uploads (stored on server disk, not in git) ───────
+uploads/
+
+# ── IDE ───────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.DS_Store
+
+# ── OS ────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
