@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — ReDiscoverU</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+body{background:var(--bg);}
+.dash-topbar{background:var(--surface);border-bottom:1px solid var(--gold-border);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm);}
+.dash-topbar-logo{font-family:var(--serif);font-size:1.1rem;color:var(--text);text-decoration:none;}
+.dash-topbar-logo span{color:var(--gold);}
+
+/* Admin card */
+.admin-card{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm);}
+.admin-card h3{font-family:var(--serif);font-size:1.25rem;margin-bottom:1.25rem;padding-bottom:.85rem;border-bottom:1px solid var(--gold-border);}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
+.card-header h3{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+
+/* Form row */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+
+/* Upload zone */
+.upload-zone{border:2px dashed var(--gold-border);border-radius:var(--radius-lg);padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-2);}
+.upload-zone:hover{border-color:var(--gold);background:var(--gold-pale);}
+.upload-zone p{color:var(--text-3);font-size:.85rem;margin-top:.5rem;}
+input[type=file]{display:none;}
+
+/* Section tabs */
+.sec-toggle{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.sec-btn{padding:.5rem 1.1rem;background:var(--bg-2);border:1.5px solid var(--gold-border);border-radius:50px;font-size:.76rem;font-weight:600;color:var(--text-3);cursor:pointer;transition:all .2s;}
+.sec-btn:hover{border-color:var(--gold);color:var(--gold);}
+.sec-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+
+/* Program expand */
+.prog-row{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);margin-bottom:.85rem;overflow:hidden;}
+.prog-row-head{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;gap:1rem;flex-wrap:wrap;background:var(--bg-2);}
+.prog-detail{display:none;padding:1.5rem;border-top:1px solid var(--gold-border);}
+
+/* Secret field */
+.secret-wrap{position:relative;}
+.secret-wrap input{padding-right:70px;}
+.secret-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:.72rem;color:var(--gold);cursor:pointer;font-weight:600;}
+
+@media(max-width:700px){.form-row,.form-row-3{grid-template-columns:1fr;}.dash-main{padding:1.25rem;}}
+</style>
+</head>
+<body>
+<div class="dash-wrap">
+
+<!-- SIDEBAR -->
+<aside class="dash-sidebar">
+  <div class="dash-sidebar-logo">
+    <a href="../index.html">Rediscover<span>U</span></a>
+    <small>Admin Console</small>
+  </div>
+  <nav class="dash-nav">
+    <div class="dash-nav-section">Overview</div>
+    <button class="dash-nav-item active" data-page="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <div class="dash-nav-section">Content</div>
+    <button class="dash-nav-item" data-page="programs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Programs
+    </button>
+    <button class="dash-nav-item" data-page="sessions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Live Sessions
+    </button>
+    <button class="dash-nav-item" data-page="videos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      YouTube Videos
+    </button>
+    <button class="dash-nav-item" data-page="community">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      Community
+    </button>
+    <button class="dash-nav-item" data-page="mentors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Mentors
+    </button>
+    <div class="dash-nav-section">Communication</div>
+    <button class="dash-nav-item" data-page="announcements">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      Announcements
+    </button>
+    <button class="dash-nav-item" data-page="broadcast">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 19-7z"/></svg>
+      Broadcast Email
+    </button>
+    <div class="dash-nav-section">Management</div>
+    <button class="dash-nav-item" data-page="users">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Users
+    </button>
+    <button class="dash-nav-item" data-page="coupons">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/></svg>
+      Coupons
+    </button>
+    <button class="dash-nav-item" data-page="payments">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Payments
+    </button>
+    <div class="dash-nav-section">Settings</div>
+    <button class="dash-nav-item" data-page="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Platform Settings
+    </button>
+    <button class="dash-nav-item" data-page="payment-cfg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Razorpay Config
+    </button>
+  </nav>
+  <div class="dash-sidebar-footer">
+    <button onclick="logout()" class="btn btn-ghost btn-sm btn-full">Sign Out</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="dash-main">
+  <div class="dash-topbar" style="margin:-2.5rem -2.5rem 2rem;border-radius:0;">
+    <a href="../index.html" class="dash-topbar-logo">Rediscover<span>U</span></a>
+    <span style="font-size:.78rem;color:var(--text-3);" id="admin-name-top">Admin</span>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="dash-page active" id="page-overview">
+    <div class="dash-header"><h2>Platform Overview</h2><p>Real-time snapshot of ReDiscoverU.</p></div>
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card"><div class="label">Total Users</div><div class="value" id="s-users">—</div></div>
+      <div class="stat-card"><div class="label">Paid Members</div><div class="value" id="s-paid">—</div></div>
+      <div class="stat-card"><div class="label">Programs</div><div class="value" id="s-prog">—</div></div>
+      <div class="stat-card"><div class="label">Revenue</div><div class="value" id="s-rev">—</div><div class="sub">total</div></div>
+    </div>
+    <div class="admin-card">
+      <div class="card-header"><h3>Quick Price Update</h3></div>
+      <div class="form-row">
+        <div class="form-group"><label>Launchpad Price (₹)</label><input id="price-launch" type="number" min="0" placeholder="499"></div>
+        <div class="form-group"><label>Lifetime Membership Price (₹)</label><input id="price-lifetime" type="number" min="0" placeholder="4999"></div>
+      </div>
+      <div id="price-alert"></div>
+      <button class="btn btn-gold btn-sm" onclick="savePrice()">Save Prices</button>
+    </div>
+  </div>
+
+  <!-- PROGRAMS -->
+  <div class="dash-page" id="page-programs">
+    <div class="dash-header"><h2>Programs</h2><p>Manage content, files, and session links.</p></div>
+    <div class="admin-card">
+      <div class="card-header"><h3>All Programs</h3><button class="btn btn-gold btn-sm" onclick="openModal('prog-modal')">+ New Program</button></div>
+      <div id="programs-list"><div class="loading">Loading</div></div>
+    </div>
+  </div>
+
+  <!-- SESSIONS -->
+  <div class="dash-page" id="page-sessions">
+    <div class="dash-header"><h2>Live Sessions</h2><p>Schedule recurring or one-time sessions.</p></div>
+    <div class="admin-card">
+      <div class="card-header"><h3>All Sessions</h3><button class="btn btn-gold btn-sm" onclick="openModal('sess-modal')">+ New Session</button></div>
+      <div id="sessions-list"><div class="loading">Loading</div></div>
+    </div>
+  </div>
+
+  <!-- YOUTUBE VIDEOS -->
+  <div class="dash-page" id="page-videos">
+    <div class="dash-header"><h2>YouTube Videos</h2><p>Videos displayed on the homepage.</p></div>
+    <div class="admin-card">
+      <div class="card-header"><h3>Homepage Videos</h3><button class="btn btn-gold btn-sm" onclick="openModal('video-modal')">+ Add Video</button></div>
+      <div id="videos-list"><div class="loading">Loading</div></div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY -->
+  <div class="dash-page" id="page-community">
+    <div class="dash-header"><h2>Community</h2><p>WhatsApp groups and channels.</p></div>
+    <div class="admin-card">
+      <div class="card-header"><h3>Groups & Channels</h3><button class="btn btn-gold btn-sm" onclick="openModal('wa-modal')">+ Add</button></div>
+      <div id="wa-list"><div class="loading">Loading</div></div>
+    </div>
+  </div>
+
+  <!-- MENTORS -->
+  <div class="dash-page" id="page-mentors">
+    <div class="dash-header"><h2>Mentors</h2><p>Manage mentor profiles shown on homepage.</p></div>
+    <div class="admin-card">
+      <div class="card-header"><h3>Mentor Profiles</h3><button class="btn btn-gold btn-sm" onclick="openMentorModal(null)">+ Add Mentor</button></div>
+      <div id="mentors-list"><div class="loading">Loading</div></div>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENTS -->
+  <div class="dash-page" id="page-announcements">
+    <div class="dash-header"><h2>Announcements</h2><p>Post updates visible in member dashboards.</p></div>
+    <div class="admin-card" style="max-width:640px;margin-bottom:1.5rem;">
+      <h3>New Announcement</h3>
+      <div class="form-group"><label>Title *</label><input id="ann-title" placeholder="e.g. Session this Thursday at 8 PM"></div>
+      <div class="form-group"><label>Message *</label><textarea id="ann-message" rows="4" placeholder="Your announcement..."></textarea></div>
+      <div id="ann-alert"></div>
+      <button class="btn btn-gold" onclick="postAnnouncement()">Post Announcement</button>
+    </div>
+    <div class="admin-card"><h3>Posted Announcements</h3><div id="ann-list"><div class="loading">Loading</div></div></div>
+  </div>
+
+  <!-- BROADCAST -->
+  <div class="dash-page" id="page-broadcast">
+    <div class="dash-header"><h2>Broadcast Email</h2><p>Send email to all paid members instantly.</p></div>
+    <div class="admin-card" style="max-width:640px;">
+      <h3>Compose Broadcast</h3>
+      <div class="form-group"><label>Subject *</label><input id="bc-subject" placeholder="e.g. Important update from Jayashankar"></div>
+      <div class="form-group"><label>Message *</label><textarea id="bc-message" rows="6" placeholder="Your message..."></textarea></div>
+      <div id="bc-alert"></div>
+      <button class="btn btn-gold" onclick="sendBroadcast()">Send to All Paid Members</button>
+      <p style="font-size:.75rem;color:var(--text-3);margin-top:.75rem;">Sent asynchronously to all members with confirmed payment.</p>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div class="dash-page" id="page-users">
+    <div class="dash-header"><h2>Users</h2><p>Manage registered members and their access.</p></div>
+    <div class="admin-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Role</th><th>Actions</th></tr></thead>
+        <tbody id="users-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:2rem;">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- COUPONS -->
+  <div class="dash-page" id="page-coupons">
+    <div class="dash-header"><h2>Coupons</h2><p>Discount codes for both Launchpad and Lifetime plans.</p></div>
+    <div class="admin-card">
+      <div class="card-header"><h3>Coupon Codes</h3><button class="btn btn-gold btn-sm" onclick="openModal('coupon-modal')">+ New Coupon</button></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Code</th><th>Discount</th><th>Used / Max</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="coupons-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:2rem;">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div class="dash-page" id="page-payments">
+    <div class="dash-header"><h2>Payments</h2><p>All transaction records.</p></div>
+    <div class="admin-card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="payments-tbody"><tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:2rem;">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="dash-page" id="page-settings">
+    <div class="dash-header"><h2>Platform Settings</h2><p>Configure pricing, email, and display settings.</p></div>
+    <div class="admin-card" style="max-width:520px;margin-bottom:1.5rem;">
+      <h3>Pricing</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Launchpad Price (₹)</label><input id="set-launch-price" type="number" min="0"></div>
+        <div class="form-group"><label>Lifetime Price (₹)</label><input id="set-lifetime-price" type="number" min="0"></div>
+      </div>
+      <div id="settings-price-alert"></div>
+      <button class="btn btn-gold btn-sm" onclick="savePriceSettings()">Save Prices</button>
+    </div>
+    <div class="admin-card" style="max-width:520px;">
+      <h3>Email Configuration</h3>
+      <div class="form-group"><label>Contact Email</label><input id="set-contact-email" type="email"></div>
+      <div class="form-group"><label>Sender Email</label><input id="set-sender-email" type="email"></div>
+      <div class="form-group"><label>Sender Name</label><input id="set-sender-name"></div>
+      <div id="settings-email-alert"></div>
+      <button class="btn btn-gold btn-sm" onclick="saveEmailSettings()">Save Email Settings</button>
+    </div>
+  </div>
+
+  <!-- RAZORPAY CONFIG -->
+  <div class="dash-page" id="page-payment-cfg">
+    <div class="dash-header"><h2>Razorpay Configuration</h2><p>Payment gateway credentials — stored encrypted.</p></div>
+    <div id="pg-banner" style="margin-bottom:1.25rem;"></div>
+    <div class="admin-card" style="max-width:560px;margin-bottom:1.5rem;">
+      <h3>Credentials</h3>
+      <div class="form-group"><label>Key ID *</label><input id="pg-key-id" placeholder="rzp_live_xxxxx" autocomplete="off"></div>
+      <div class="form-group"><label>Key Secret</label>
+        <div class="secret-wrap"><input id="pg-key-secret" type="password" placeholder="Leave blank to keep existing" autocomplete="new-password">
+        <button class="secret-toggle" onclick="togglePwd('pg-key-secret',this)">Show</button></div>
+        <small style="color:var(--text-3);font-size:.72rem;" id="pg-secret-hint">Encrypted with AES-256 before storage.</small>
+      </div>
+      <div class="form-group"><label>Webhook Secret (optional)</label>
+        <div class="secret-wrap"><input id="pg-webhook" type="password" placeholder="Optional" autocomplete="new-password">
+        <button class="secret-toggle" onclick="togglePwd('pg-webhook',this)">Show</button></div>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.75rem;">
+        <input type="checkbox" id="pg-enabled" style="width:16px;height:16px;accent-color:var(--gold);">
+        <label style="margin:0;text-transform:none;font-size:.85rem;letter-spacing:0;">Enable Payment Gateway</label>
+      </div>
+      <div id="pg-alert" style="margin-bottom:.75rem;"></div>
+      <button class="btn btn-gold btn-sm" onclick="saveRazorpay()">Save Configuration</button>
+    </div>
+    <div class="admin-card" style="max-width:560px;"><h3>Current Status</h3><div id="pg-status"><div class="loading">Loading</div></div></div>
+  </div>
+</main>
+</div>
+
+<!-- MODALS -->
+<!-- Program Modal -->
+<div class="modal-overlay" id="prog-modal">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-header"><h3 id="prog-modal-title">New Program</h3><button class="modal-close" onclick="closeModal('prog-modal')">✕</button></div>
+    <input type="hidden" id="prog-id">
+    <div class="form-group"><label>Title *</label><input id="prog-title"></div>
+    <div class="form-group"><label>Tagline</label><input id="prog-tagline"></div>
+    <div class="form-group"><label>Description</label><textarea id="prog-desc" rows="3"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Duration</label><input id="prog-duration" placeholder="e.g. 6 Days · Structured"></div>
+      <div class="form-group"><label>Category</label><select id="prog-category"><option value="">— None —</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('prog-modal')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="saveProgram()">Save Program</button>
+    </div>
+  </div>
+</div>
+
+<!-- Session Modal -->
+<div class="modal-overlay" id="sess-modal">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-header"><h3>New Session</h3><button class="modal-close" onclick="closeModal('sess-modal')">✕</button></div>
+    <input type="hidden" id="sess-id">
+    <div class="form-group"><label>Title *</label><input id="sess-title"></div>
+    <div class="form-group"><label>Program</label><select id="sess-program"></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Recurrence</label>
+        <select id="sess-rec" onchange="onRecChange()">
+          <option value="ONE_TIME">One Time</option><option value="DAILY">Daily</option>
+          <option value="WEEKDAYS">Weekdays</option><option value="WEEKENDS">Weekends</option>
+          <option value="CUSTOM_DAYS">Custom Days</option>
+        </select>
+      </div>
+      <div class="form-group" id="sess-date-wrap"><label>Date</label><input id="sess-date" type="date"></div>
+    </div>
+    <div class="form-group" id="sess-days-wrap" style="display:none;">
+      <label>Days</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="MON">Mon</label>
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="TUE">Tue</label>
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="WED">Wed</label>
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="THU">Thu</label>
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="FRI">Fri</label>
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="SAT">Sat</label>
+        <label style="display:flex;gap:.3rem;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;"><input type="checkbox" value="SUN">Sun</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Start Time</label><input id="sess-start" type="time"></div>
+      <div class="form-group"><label>End Time</label><input id="sess-end" type="time"></div>
+    </div>
+    <div class="form-group"><label>Meeting Link</label><input id="sess-link" placeholder="https://meet.google.com/..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('sess-modal')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="saveSession()">Save Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- Video Modal -->
+<div class="modal-overlay" id="video-modal">
+  <div class="modal-box">
+    <div class="modal-header"><h3 id="video-modal-title">Add YouTube Video</h3><button class="modal-close" onclick="closeModal('video-modal')">✕</button></div>
+    <input type="hidden" id="video-id">
+    <div class="form-group"><label>Title *</label><input id="video-title" placeholder="Video title"></div>
+    <div class="form-group"><label>YouTube URL *</label><input id="video-url" placeholder="https://youtu.be/... or youtube.com/watch?v=..."></div>
+    <div class="form-group"><label>Display Order</label><input id="video-order" type="number" value="0"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('video-modal')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="saveVideo()">Save Video</button>
+    </div>
+  </div>
+</div>
+
+<!-- WhatsApp Modal -->
+<div class="modal-overlay" id="wa-modal">
+  <div class="modal-box">
+    <div class="modal-header"><h3 id="wa-modal-title">Add Community</h3><button class="modal-close" onclick="closeModal('wa-modal')">✕</button></div>
+    <input type="hidden" id="wa-id">
+    <div class="form-group"><label>Name *</label><input id="wa-name"></div>
+    <div class="form-group"><label>URL *</label><input id="wa-url" placeholder="https://chat.whatsapp.com/..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Type</label><select id="wa-type"><option value="GROUP">Group</option><option value="CHANNEL">Channel</option></select></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="wa-desc" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('wa-modal')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="saveWA()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mentor Modal -->
+<div class="modal-overlay" id="mentor-modal">
+  <div class="modal-box" style="max-width:580px;">
+    <div class="modal-header"><h3 id="mentor-modal-title">Add Mentor</h3><button class="modal-close" onclick="closeModal('mentor-modal')">✕</button></div>
+    <input type="hidden" id="mentor-id">
+    <div class="form-row">
+      <div class="form-group"><label>Name *</label><input id="mentor-name"></div>
+      <div class="form-group"><label>Role Title</label><input id="mentor-role" placeholder="Lifestyle & Mindset Coach"></div>
+    </div>
+    <div class="form-group"><label>Bio</label><textarea id="mentor-bio" rows="3"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input id="mentor-email" type="email"></div>
+      <div class="form-group"><label>WhatsApp Link</label><input id="mentor-wa"></div>
+    </div>
+    <div class="form-group"><label>Photo URL (or upload)</label><input id="mentor-img-url" oninput="prevMentor(this.value)"></div>
+    <div style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem;">
+      <div class="upload-zone" style="flex:1;padding:1.25rem;" onclick="document.getElementById('mentor-file').click()">
+        <div style="font-size:1.5rem;">📷</div><p style="font-size:.78rem;">Upload photo</p>
+      </div>
+      <div id="mentor-prev" style="width:90px;height:110px;border:1px solid var(--gold-border);border-radius:var(--radius);background:var(--bg-2);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:2.5rem;color:var(--gold-border);">J</div>
+    </div>
+    <input type="file" id="mentor-file" accept="image/*" onchange="prevMentorFile(this)">
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('mentor-modal')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="saveMentor()">Save Mentor</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coupon Modal -->
+<div class="modal-overlay" id="coupon-modal">
+  <div class="modal-box">
+    <div class="modal-header"><h3>New Coupon</h3><button class="modal-close" onclick="closeModal('coupon-modal')">✕</button></div>
+    <div class="form-group"><label>Code *</label><input id="c-code" placeholder="e.g. RESET50" style="text-transform:uppercase;"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Discount %</label><input id="c-pct" type="number" min="1" max="100" value="10"></div>
+      <div class="form-group"><label>Max Usage (blank = unlimited)</label><input id="c-max" type="number" min="1"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('coupon-modal')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="saveCoupon()">Create Coupon</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="admin-toast"></div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+const H = (json=true) => { const h={'Authorization':'Bearer '+getToken()}; if(json) h['Content-Type']='application/json'; return h; };
+let _programs=[], _waGroups=[], _videos=[];
+
+function toast(msg,type='info'){
+  const t=document.getElementById('admin-toast');
+  t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function togglePwd(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'Show':'Hide';}
+function onRecChange(){
+  const v=document.getElementById('sess-rec').value;
+  document.getElementById('sess-date-wrap').style.display=v==='ONE_TIME'?'block':'none';
+  document.getElementById('sess-days-wrap').style.display=v==='CUSTOM_DAYS'?'block':'none';
+}
+
+// ── INIT ──
+(async()=>{
+  if(!requireAdmin()) return;
+  try{
+    const r=await fetch(`${API}/user/status`,{headers:H()});
+    const d=await r.json();
+    document.getElementById('admin-name-top').textContent=d.name||'Admin';
+  }catch(e){}
+  loadStats();
+})();
+
+function onPageChange(page){
+  const loaded={};
+  if(!loaded[page]){
+    if(page==='programs') loadPrograms();
+    if(page==='sessions') loadSessions();
+    if(page==='videos') loadVideos();
+    if(page==='community') loadWA();
+    if(page==='mentors') loadMentors();
+    if(page==='announcements') loadAnnouncements();
+    if(page==='users') loadUsers();
+    if(page==='coupons') loadCoupons();
+    if(page==='payments') loadPayments();
+    if(page==='settings') loadSettings();
+    if(page==='payment-cfg') loadRazorpay();
+  }
+}
+
+// ── STATS ──
+async function loadStats(){
+  try{
+    const [sr,pr]=await Promise.all([
+      fetch(`${API}/admin/stats`,{headers:H()}),
+      fetch(`${API}/admin/settings`,{headers:H()})
+    ]);
+    const s=await sr.json();
+    document.getElementById('s-users').textContent=s.totalUsers??0;
+    document.getElementById('s-paid').textContent=s.paidUsers??0;
+    document.getElementById('s-prog').textContent=s.totalPrograms??0;
+    document.getElementById('s-rev').textContent='₹'+Number(s.totalRevenue||0).toLocaleString('en-IN');
+    if(pr.ok){const p=await pr.json();document.getElementById('price-launch').value=p.launchpadPrice||499;document.getElementById('price-lifetime').value=p.lifetimePrice||4999;}
+  }catch(e){}
+}
+
+async function savePrice(){
+  const lp=document.getElementById('price-launch').value;
+  const lf=document.getElementById('price-lifetime').value;
+  try{
+    await fetch(`${API}/admin/settings/price`,{method:'PATCH',headers:H(),body:JSON.stringify({launchpadPrice:parseFloat(lp),lifetimePrice:parseFloat(lf)})});
+    toast('Prices updated','success');
+    document.getElementById('price-alert').innerHTML='<div class="alert alert-success">Saved!</div>';
+  }catch(e){toast('Error saving prices','error');}
+}
+
+// ── PROGRAMS ──
+async function loadPrograms(){
+  const el=document.getElementById('programs-list');
+  try{
+    const r=await fetch(`${API}/admin/programs`,{headers:H()});
+    _programs=await r.json();
+    if(!_programs.length){el.innerHTML='<div class="empty-state"><div class="icon">📚</div><p>No programs yet.</p></div>';return;}
+    el.innerHTML=_programs.map(p=>`
+      <div class="prog-row">
+        <div class="prog-row-head">
+          <div><strong style="font-size:.92rem;">${esc(p.title)}</strong>
+            <span class="badge ${p.active?'badge-green':'badge-gray'}" style="margin-left:.5rem;">${p.active?'Active':'Hidden'}</span></div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="editProgram(${p.id})">Edit</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleProg(${p.id})">${p.active?'Hide':'Show'}</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleProgDetail(${p.id})">Content ▾</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProgram(${p.id})">Delete</button>
+          </div>
+        </div>
+        <div class="prog-detail" id="prog-detail-${p.id}">
+          <div class="sec-toggle">
+            <button class="sec-btn active" onclick="showProgSec(${p.id},'sessions',this)">Sessions</button>
+            <button class="sec-btn" onclick="showProgSec(${p.id},'files',this)">Files</button>
+          </div>
+          <div id="prog-sessions-${p.id}"></div>
+          <div id="prog-files-${p.id}" style="display:none;"></div>
+        </div>
+      </div>`).join('');
+  }catch(e){el.innerHTML=`<p style="color:var(--error);">Error: ${e.message}</p>`;}
+}
+
+function toggleProgDetail(id){
+  const el=document.getElementById(`prog-detail-${id}`);
+  const visible=el.style.display==='block';
+  el.style.display=visible?'none':'block';
+  if(!visible) loadProgSessions(id);
+}
+
+function showProgSec(pid,sec,btn){
+  ['sessions','files'].forEach(s=>{document.getElementById(`prog-${s}-${pid}`).style.display=s===sec?'block':'none';});
+  btn.closest('.sec-toggle').querySelectorAll('.sec-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(sec==='sessions') loadProgSessions(pid);
+  if(sec==='files') loadProgFiles(pid);
+}
+
+async function loadProgSessions(pid){
+  const el=document.getElementById(`prog-sessions-${pid}`);
+  el.innerHTML='<div class="loading" style="padding:1rem;">Loading</div>';
+  try{
+    const r=await fetch(`${API}/admin/programs/${pid}/sessions`,{headers:H()});
+    const ss=await r.json();
+    el.innerHTML=`<div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+      <button class="btn btn-gold btn-sm" onclick="openSessionForProg(${pid})">+ Add Session</button></div>`+
+      (ss.length?ss.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;background:var(--bg-2);border-radius:var(--radius);margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;">
+        <div><strong style="font-size:.85rem;">${esc(s.title)}</strong><br><small style="color:var(--text-3);">${esc(s.recurrenceType||'')} ${s.startTime?'· '+s.startTime:''}</small></div>
+        <button class="btn btn-danger btn-sm" onclick="deleteSession(${s.id},${pid})">Delete</button>
+      </div>`).join(''):'<p style="color:var(--text-3);font-size:.84rem;">No sessions.</p>');
+  }catch(e){el.innerHTML=`<p style="color:var(--error);">Error</p>`;}
+}
+
+async function loadProgFiles(pid){
+  const el=document.getElementById(`prog-files-${pid}`);
+  el.innerHTML='<div class="loading" style="padding:1rem;">Loading</div>';
+  try{
+    const r=await fetch(`${API}/admin/programs/${pid}/files`,{headers:H()});
+    const files=await r.json();
+    el.innerHTML=`<div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+      <button class="btn btn-gold btn-sm" onclick="openUpload(${pid})">↑ Upload File</button></div>`+
+      (files.length?files.map(f=>`<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--bg-2);border-radius:var(--radius);margin-bottom:.5rem;">
+        <span style="font-size:1.2rem;">${f.fileCategory==='VIDEO'?'🎬':f.fileCategory==='PDF'?'📄':'📎'}</span>
+        <div style="flex:1;"><div style="font-size:.85rem;">${esc(f.title)}</div><div style="font-size:.72rem;color:var(--text-3);">${f.fileCategory}·${(f.fileSizeBytes/1048576).toFixed(1)}MB</div></div>
+        <a href="${imgSrc(f.filePath)}" target="_blank" class="btn btn-ghost btn-sm">Open</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteFile(${f.id},${pid})">Delete</button>
+      </div>`).join(''):'<p style="color:var(--text-3);font-size:.84rem;">No files uploaded.</p>');
+  }catch(e){}
+}
+
+function openProgModal(){openModal('prog-modal');}
+function editProgram(id){
+  const p=_programs.find(x=>x.id===id);if(!p)return;
+  document.getElementById('prog-id').value=id;
+  document.getElementById('prog-title').value=p.title||'';
+  document.getElementById('prog-tagline').value=p.tagline||'';
+  document.getElementById('prog-desc').value=p.description||'';
+  document.getElementById('prog-duration').value=p.duration||'';
+  document.getElementById('prog-modal-title').textContent='Edit Program';
+  openModal('prog-modal');
+}
+async function saveProgram(){
+  const id=document.getElementById('prog-id').value;
+  const body={title:document.getElementById('prog-title').value.trim(),tagline:document.getElementById('prog-tagline').value,description:document.getElementById('prog-desc').value,duration:document.getElementById('prog-duration').value,active:true};
+  if(!body.title){toast('Title required','error');return;}
+  try{
+    const url=id?`${API}/admin/programs/${id}`:`${API}/admin/programs`;
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok){toast(d.error||'Error','error');return;}
+    closeModal('prog-modal');toast(id?'Updated':'Created','success');loadPrograms();
+  }catch(e){toast('Error','error');}
+}
+async function toggleProg(id){
+  await fetch(`${API}/admin/programs/${id}/toggle`,{method:'PATCH',headers:H()});loadPrograms();
+}
+async function deleteProgram(id){
+  if(!confirm('Delete this program and all its content?'))return;
+  await fetch(`${API}/admin/programs/${id}`,{method:'DELETE',headers:H()});toast('Deleted','success');loadPrograms();
+}
+
+// ── SESSIONS ──
+async function loadSessions(){
+  const el=document.getElementById('sessions-list');
+  el.innerHTML='<div class="loading">Loading</div>';
+  try{
+    const pr=await fetch(`${API}/admin/programs`,{headers:H()});
+    const programs=await pr.json();
+    let allSess=[];
+    for(const p of (Array.isArray(programs)?programs:[])){
+      const sr=await fetch(`${API}/admin/programs/${p.id}/sessions`,{headers:H()});
+      const ss=await sr.json();
+      if(Array.isArray(ss)) ss.forEach(s=>{s._progTitle=p.title;s._progId=p.id;allSess.push(s);});
+    }
+    if(!allSess.length){el.innerHTML='<div class="empty-state"><div class="icon">📅</div><p>No sessions yet.</p></div>';return;}
+    el.innerHTML=allSess.map(s=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;background:var(--bg-2);border-radius:var(--radius-lg);margin-bottom:.75rem;flex-wrap:wrap;gap:.75rem;">
+        <div><strong style="font-size:.9rem;">${esc(s.title)}</strong> <span class="badge badge-launch">${esc(s._progTitle)}</span><br>
+          <small style="color:var(--text-3);">${esc(s.recurrenceType||'')} ${s.startTime?'· '+s.startTime:''}</small>
+          ${s.meetingLink?`<br><a href="${esc(s.meetingLink)}" style="font-size:.75rem;color:var(--gold);" target="_blank">Join link ↗</a>`:''}
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteSession(${s.id},${s._progId})">Delete</button>
+      </div>`).join('');
+  }catch(e){el.innerHTML=`<p style="color:var(--error);">Error: ${e.message}</p>`;}
+}
+
+function openSessionForProg(pid){
+  document.getElementById('sess-id').value='';
+  document.getElementById('sess-title').value='';
+  document.getElementById('sess-link').value='';
+  document.getElementById('sess-start').value='';
+  document.getElementById('sess-end').value='';
+  populateProgramDrop('sess-program',pid);
+  openModal('sess-modal');
+}
+
+async function populateProgramDrop(selId,selectedId){
+  const sel=document.getElementById(selId);
+  sel.innerHTML='<option value="">— Select —</option>';
+  try{
+    const r=await fetch(`${API}/admin/programs`,{headers:H()});
+    const ps=await r.json();
+    (Array.isArray(ps)?ps:[]).filter(p=>p.active).forEach(p=>{
+      const o=document.createElement('option');o.value=p.id;o.textContent=p.title;
+      if(p.id===selectedId)o.selected=true;sel.appendChild(o);
+    });
+  }catch(e){}
+}
+
+async function saveSession(){
+  const id=document.getElementById('sess-id').value;
+  const pid=document.getElementById('sess-program').value;
+  const rec=document.getElementById('sess-rec').value;
+  let days=null;
+  if(rec==='CUSTOM_DAYS') days=Array.from(document.querySelectorAll('#sess-days-wrap input:checked')).map(c=>c.value).join(',');
+  const body={title:document.getElementById('sess-title').value.trim(),meetingLink:document.getElementById('sess-link').value,recurrenceType:rec,recurrenceDays:days,startTime:document.getElementById('sess-start').value||null,endTime:document.getElementById('sess-end').value||null,timezone:'Asia/Kolkata',active:true};
+  if(!body.title){toast('Title required','error');return;}
+  if(!pid){toast('Select a program','error');return;}
+  try{
+    const url=id?`${API}/admin/sessions/${id}`:`${API}/admin/programs/${pid}/sessions`;
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok){toast(d.error||'Error','error');return;}
+    closeModal('sess-modal');toast('Session saved','success');loadSessions();
+  }catch(e){toast('Error','error');}
+}
+
+async function deleteSession(sid,pid){
+  if(!confirm('Delete session?'))return;
+  await fetch(`${API}/admin/sessions/${sid}`,{method:'DELETE',headers:H()});
+  toast('Deleted','success');loadSessions();if(pid)loadProgSessions(pid);
+}
+
+// ── VIDEOS ──
+async function loadVideos(){
+  const el=document.getElementById('videos-list');
+  try{
+    const r=await fetch(`${API}/admin/homepage-video`,{headers:H()});
+    _videos=await r.json();
+    if(!_videos.length){el.innerHTML='<div class="empty-state"><div class="icon">🎬</div><p>No videos yet.</p></div>';return;}
+    el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;">
+    ${_videos.map(v=>`<div class="card" style="padding:1.25rem;">
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;">Order ${v.displayOrder}</div>
+      <div style="font-family:var(--serif);font-size:1rem;margin-bottom:.5rem;">${esc(v.title)}</div>
+      <div style="font-size:.75rem;color:var(--text-3);word-break:break-all;margin-bottom:.75rem;">${esc(v.youtubeUrl)}</div>
+      <span class="badge ${v.active?'badge-green':'badge-gray'}" style="margin-bottom:.75rem;display:inline-flex;">${v.active?'Active':'Hidden'}</span>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="editVideo(${v.id})">Edit</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleVideo(${v.id})">${v.active?'Hide':'Show'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteVideo(${v.id})">Delete</button>
+      </div>
+    </div>`).join('')}</div>`;
+  }catch(e){el.innerHTML=`<p style="color:var(--error);">Error</p>`;}
+}
+
+function editVideo(id){
+  const v=_videos.find(x=>x.id===id);if(!v)return;
+  document.getElementById('video-id').value=id;
+  document.getElementById('video-title').value=v.title||'';
+  document.getElementById('video-url').value=v.youtubeUrl||'';
+  document.getElementById('video-order').value=v.displayOrder||0;
+  document.getElementById('video-modal-title').textContent='Edit Video';
+  openModal('video-modal');
+}
+async function saveVideo(){
+  const id=document.getElementById('video-id').value;
+  const body={title:document.getElementById('video-title').value.trim(),youtubeUrl:document.getElementById('video-url').value.trim(),displayOrder:parseInt(document.getElementById('video-order').value)||0,active:true};
+  if(!body.title||!body.youtubeUrl){toast('Title and URL required','error');return;}
+  try{
+    const url=id?`${API}/admin/homepage-video/${id}`:`${API}/admin/homepage-video`;
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok){toast(d.error||'Error','error');return;}
+    closeModal('video-modal');document.getElementById('video-id').value='';document.getElementById('video-modal-title').textContent='Add YouTube Video';
+    toast(id?'Updated':'Added','success');loadVideos();
+  }catch(e){toast('Error','error');}
+}
+async function toggleVideo(id){await fetch(`${API}/admin/homepage-video/${id}/toggle`,{method:'PATCH',headers:H()});loadVideos();}
+async function deleteVideo(id){if(!confirm('Delete video?'))return;await fetch(`${API}/admin/homepage-video/${id}`,{method:'DELETE',headers:H()});toast('Deleted','success');loadVideos();}
+
+// ── WHATSAPP ──
+async function loadWA(){
+  const el=document.getElementById('wa-list');
+  try{
+    const r=await fetch(`${API}/admin/whatsapp-groups`,{headers:H()});
+    _waGroups=await r.json();
+    if(!_waGroups.length){el.innerHTML='<div class="empty-state"><div class="icon">💬</div><p>No groups yet.</p></div>';return;}
+    el.innerHTML=_waGroups.map(g=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;background:var(--bg-2);border-radius:var(--radius-lg);margin-bottom:.75rem;flex-wrap:wrap;gap:.75rem;">
+        <div><strong style="font-size:.9rem;">${esc(g.name)}</strong> <span class="badge badge-green">${g.type||'GROUP'}</span>
+          <span class="badge ${g.active?'badge-green':'badge-gray'}" style="margin-left:.25rem;">${g.active?'Active':'Hidden'}</span>
+          ${g.description?`<br><small style="color:var(--text-3);">${esc(g.description)}</small>`:''}
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="editWA(${g.id})">Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleWA(${g.id})">${g.active?'Hide':'Show'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteWA(${g.id})">Delete</button>
+        </div>
+      </div>`).join('');
+  }catch(e){el.innerHTML=`<p style="color:var(--error);">Error</p>`;}
+}
+function editWA(id){const g=_waGroups.find(x=>x.id===id);if(!g)return;document.getElementById('wa-id').value=id;document.getElementById('wa-name').value=g.name||'';document.getElementById('wa-url').value=g.url||'';document.getElementById('wa-type').value=g.type||'GROUP';document.getElementById('wa-desc').value=g.description||'';document.getElementById('wa-modal-title').textContent='Edit Community';openModal('wa-modal');}
+async function saveWA(){
+  const id=document.getElementById('wa-id').value;
+  const body={name:document.getElementById('wa-name').value.trim(),url:document.getElementById('wa-url').value.trim(),type:document.getElementById('wa-type').value,description:document.getElementById('wa-desc').value,active:true};
+  if(!body.name||!body.url){toast('Name and URL required','error');return;}
+  try{
+    const url=id?`${API}/admin/whatsapp-groups/${id}`:`${API}/admin/whatsapp-groups`;
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json();if(!r.ok){toast(d.error||'Error','error');return;}
+    closeModal('wa-modal');toast('Saved','success');loadWA();
+  }catch(e){toast('Error','error');}
+}
+async function toggleWA(id){await fetch(`${API}/admin/whatsapp-groups/${id}/toggle`,{method:'PATCH',headers:H()});loadWA();}
+async function deleteWA(id){if(!confirm('Delete?'))return;await fetch(`${API}/admin/whatsapp-groups/${id}`,{method:'DELETE',headers:H()});toast('Deleted','success');loadWA();}
+
+// ── MENTORS ──
+let _mentors=[];
+async function loadMentors(){
+  const el=document.getElementById('mentors-list');
+  try{
+    const r=await fetch(`${API}/admin/mentors`,{headers:H()});
+    _mentors=await r.json();
+    if(!_mentors.length){el.innerHTML='<div class="empty-state"><div class="icon">👤</div><p>No mentors yet.</p></div>';return;}
+    el.innerHTML=_mentors.map(m=>`
+      <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:var(--bg-2);border-radius:var(--radius-lg);margin-bottom:.75rem;flex-wrap:wrap;">
+        <div style="width:48px;height:60px;border-radius:var(--radius);background:var(--bg-3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.5rem;color:var(--gold-border);">
+          ${m.imageUrl?`<img src="${imgSrc(m.imageUrl)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='J'">`:'J'}
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <div style="font-family:var(--serif);font-size:1rem;">${esc(m.name)}</div>
+          <div style="font-size:.72rem;color:var(--gold);">${esc(m.roleTitle||'')}</div>
+        </div>
+        <span class="badge ${m.active?'badge-green':'badge-gray'}">${m.active?'Active':'Hidden'}</span>
+        <div style="display:flex;gap:.5rem;">
+          <button class="btn btn-ghost btn-sm" data-mentor-id="${m.id}">Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleMentor(${m.id})">${m.active?'Hide':'Show'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMentor(${m.id})">Delete</button>
+        </div>
+      </div>`).join('');
+    _mentors.forEach(m=>{const btn=el.querySelector(`[data-mentor-id="${m.id}"]`);if(btn)btn.onclick=()=>openMentorModal(m);});
+  }catch(e){el.innerHTML=`<p style="color:var(--error);">Error</p>`;}
+}
+function openMentorModal(m){
+  document.getElementById('mentor-id').value=m?m.id:'';
+  document.getElementById('mentor-name').value=m?m.name||'':'';
+  document.getElementById('mentor-role').value=m?m.roleTitle||'Lifestyle & Mindset Coach':'Lifestyle & Mindset Coach';
+  document.getElementById('mentor-bio').value=m?m.bio||'':'';
+  document.getElementById('mentor-email').value=m?m.email||'':'';
+  document.getElementById('mentor-wa').value=m?m.whatsappLink||'':'';
+  document.getElementById('mentor-img-url').value=m?m.imageUrl||'':'';
+  document.getElementById('mentor-prev').innerHTML=m&&m.imageUrl?`<img src="${imgSrc(m.imageUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);" onerror="this.parentElement.textContent='J'">`:'J';
+  document.getElementById('mentor-modal-title').textContent=m?'Edit Mentor':'Add Mentor';
+  openModal('mentor-modal');
+}
+function prevMentor(url){const p=document.getElementById('mentor-prev');p.innerHTML=url?`<img src="${imgSrc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);" onerror="this.parentElement.textContent='J'">`:'J';}
+function prevMentorFile(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>prevMentor(e.target.result);r.readAsDataURL(f);}
+async function saveMentor(){
+  const id=document.getElementById('mentor-id').value;
+  const body={name:document.getElementById('mentor-name').value.trim(),roleTitle:document.getElementById('mentor-role').value||'Lifestyle & Mindset Coach',bio:document.getElementById('mentor-bio').value,email:document.getElementById('mentor-email').value,whatsappLink:document.getElementById('mentor-wa').value,imageUrl:document.getElementById('mentor-img-url').value,active:true};
+  if(!body.name){toast('Name required','error');return;}
+  try{
+    const url=id?`${API}/admin/mentors/${id}`:`${API}/admin/mentors`;
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:H(),body:JSON.stringify(body)});
+    const saved=await r.json();if(!r.ok){toast(saved.error||'Error','error');return;}
+    // Upload file if selected
+    const fi=document.getElementById('mentor-file');
+    if(fi.files[0]){const fd=new FormData();fd.append('image',fi.files[0]);await fetch(`${API}/admin/mentors/${saved.id}/image`,{method:'POST',headers:{'Authorization':'Bearer '+getToken()},body:fd});}
+    closeModal('mentor-modal');toast(id?'Updated':'Added','success');loadMentors();
+  }catch(e){toast('Error','error');}
+}
+async function toggleMentor(id){await fetch(`${API}/admin/mentors/${id}/toggle`,{method:'PATCH',headers:H()});loadMentors();}
+async function deleteMentor(id){if(!confirm('Delete mentor?'))return;await fetch(`${API}/admin/mentors/${id}`,{method:'DELETE',headers:H()});toast('Deleted','success');loadMentors();}
+
+// ── ANNOUNCEMENTS ──
+async function loadAnnouncements(){
+  const el=document.getElementById('ann-list');
+  try{
+    const r=await fetch(`${API}/admin/announcements`,{headers:H()});
+    const list=await r.json();
+    if(!list.length){el.innerHTML='<p style="color:var(--text-3);font-size:.85rem;">None yet.</p>';return;}
+    el.innerHTML=list.map(a=>`
+      <div style="padding:1rem 1.25rem;background:var(--bg-2);border-radius:var(--radius-lg);margin-bottom:.75rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+          <div style="flex:1;"><strong style="font-size:.9rem;">${esc(a.title)}</strong><br><p style="font-size:.82rem;margin-top:.25rem;">${esc((a.message||'').slice(0,100))}…</p></div>
+          <div style="display:flex;gap:.5rem;flex-shrink:0;">
+            <button class="btn btn-danger btn-sm" onclick="deleteAnn(${a.id})">Delete</button>
+          </div>
+        </div>
+        <div style="font-size:.7rem;color:var(--text-4);margin-top:.5rem;">${formatDate(a.createdAt)}</div>
+      </div>`).join('');
+  }catch(e){}
+}
+async function postAnnouncement(){
+  const title=document.getElementById('ann-title').value.trim();
+  const message=document.getElementById('ann-message').value.trim();
+  if(!title||!message){showAlert('ann-alert','Title and message required.');return;}
+  try{
+    const r=await fetch(`${API}/admin/announcements`,{method:'POST',headers:H(),body:JSON.stringify({title,message})});
+    const d=await r.json();if(!r.ok){showAlert('ann-alert',d.error||'Error');return;}
+    document.getElementById('ann-title').value='';document.getElementById('ann-message').value='';
+    showAlert('ann-alert','✓ Posted and emailed to members.','success');loadAnnouncements();
+  }catch(e){showAlert('ann-alert','Error');}
+}
+async function deleteAnn(id){if(!confirm('Delete?'))return;await fetch(`${API}/admin/announcements/${id}`,{method:'DELETE',headers:H()});loadAnnouncements();}
+
+// ── BROADCAST ──
+async function sendBroadcast(){
+  const subject=document.getElementById('bc-subject').value.trim();
+  const message=document.getElementById('bc-message').value.trim();
+  if(!subject||!message){showAlert('bc-alert','Subject and message required.');return;}
+  if(!confirm(`Send to ALL paid members?\nSubject: "${subject}"`))return;
+  try{
+    const r=await fetch(`${API}/admin/broadcast-email`,{method:'POST',headers:H(),body:JSON.stringify({subject,message})});
+    const d=await r.json();if(!r.ok){showAlert('bc-alert',d.error||'Error');return;}
+    document.getElementById('bc-subject').value='';document.getElementById('bc-message').value='';
+    showAlert('bc-alert','✓ Broadcast queued. Emails being sent.','success');
+  }catch(e){showAlert('bc-alert','Error');}
+}
+
+// ── USERS ──
+async function loadUsers(){
+  try{
+    const r=await fetch(`${API}/admin/users`,{headers:H()});
+    const users=await r.json();
+    document.getElementById('users-tbody').innerHTML=users.map(u=>`<tr>
+      <td style="font-weight:500;">${esc(u.name||'')}</td>
+      <td style="color:var(--text-3);font-size:.82rem;">${esc(u.email||'')}</td>
+      <td><span class="badge ${u.subscriptionStatus==='PAID'||u.subscriptionStatus==='LIFETIME'?'badge-green':u.subscriptionStatus==='LAUNCHPAD'?'badge-launch':'badge-gray'}">${esc(u.subscriptionStatus||'PENDING')}</span></td>
+      <td><span class="badge ${u.role==='ROLE_ADMIN'?'badge-gold':'badge-gray'}">${u.role==='ROLE_ADMIN'?'Admin':'User'}</span></td>
+      <td><div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        ${u.subscriptionStatus!=='PAID'&&u.subscriptionStatus!=='LIFETIME'?`<button class="btn btn-success btn-sm" onclick="activateUser(${u.id})">Activate</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="toggleUser(${u.id})">${u.enabled?'Disable':'Enable'}</button>
+      </div></td>
+    </tr>`).join('');
+  }catch(e){}
+}
+async function activateUser(id){await fetch(`${API}/admin/users/${id}/activate`,{method:'PATCH',headers:H()});toast('User activated','success');loadUsers();}
+async function toggleUser(id){await fetch(`${API}/admin/users/${id}/toggle`,{method:'PATCH',headers:H()});loadUsers();}
+
+// ── COUPONS ──
+async function loadCoupons(){
+  try{
+    const r=await fetch(`${API}/admin/coupons`,{headers:H()});
+    const cs=await r.json();
+    document.getElementById('coupons-tbody').innerHTML=cs.map(c=>`<tr>
+      <td><code style="color:var(--gold);font-family:var(--mono);">${esc(c.code)}</code></td>
+      <td>${c.discountPercentage}%</td>
+      <td>${c.usageCount||0} / ${c.maxUsage||'∞'}</td>
+      <td><span class="badge ${c.active?'badge-green':'badge-gray'}">${c.active?'Active':'Off'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="toggleCoupon(${c.id})">${c.active?'Disable':'Enable'}</button></td>
+    </tr>`).join('');
+  }catch(e){}
+}
+async function saveCoupon(){
+  const body={code:document.getElementById('c-code').value.toUpperCase().trim(),discountPercentage:parseInt(document.getElementById('c-pct').value)||10,maxUsage:document.getElementById('c-max').value?parseInt(document.getElementById('c-max').value):null};
+  if(!body.code){toast('Code required','error');return;}
+  try{
+    const r=await fetch(`${API}/admin/coupons`,{method:'POST',headers:H(),body:JSON.stringify(body)});
+    const d=await r.json();if(!r.ok){toast(d.error||'Error','error');return;}
+    closeModal('coupon-modal');toast('Coupon created','success');loadCoupons();
+  }catch(e){toast('Error','error');}
+}
+async function toggleCoupon(id){await fetch(`${API}/admin/coupons/${id}/toggle`,{method:'PATCH',headers:H()});loadCoupons();}
+
+// ── PAYMENTS ──
+async function loadPayments(){
+  try{
+    const r=await fetch(`${API}/admin/payments`,{headers:H()});
+    const ps=await r.json();
+    document.getElementById('payments-tbody').innerHTML=ps.map(p=>`<tr>
+      <td>${esc(p.user?.name||p.userId||'—')}</td>
+      <td style="font-family:var(--serif);color:var(--gold);">₹${p.finalAmount||0}</td>
+      <td><span class="badge ${p.paymentStatus==='SUCCESS'||p.paymentStatus==='FREE'?'badge-green':'badge-gray'}">${esc(p.paymentStatus||'')}</span></td>
+      <td style="color:var(--text-3);">${formatDate(p.createdAt)}</td>
+    </tr>`).join('');
+  }catch(e){}
+}
+
+// ── SETTINGS ──
+async function loadSettings(){
+  try{
+    const r=await fetch(`${API}/admin/settings`,{headers:H()});
+    const d=await r.json();
+    document.getElementById('set-launch-price').value=d.launchpadPrice||499;
+    document.getElementById('set-lifetime-price').value=d.lifetimePrice||4999;
+    document.getElementById('set-contact-email').value=d.contactEmail||'';
+    document.getElementById('set-sender-email').value=d.senderEmail||'';
+    document.getElementById('set-sender-name').value=d.senderName||'';
+  }catch(e){}
+}
+async function savePriceSettings(){
+  try{
+    await fetch(`${API}/admin/settings/price`,{method:'PATCH',headers:H(),body:JSON.stringify({launchpadPrice:parseFloat(document.getElementById('set-launch-price').value),lifetimePrice:parseFloat(document.getElementById('set-lifetime-price').value)})});
+    showAlert('settings-price-alert','✓ Prices saved.','success');
+  }catch(e){showAlert('settings-price-alert','Error saving.');}
+}
+async function saveEmailSettings(){
+  try{
+    await fetch(`${API}/admin/settings/email`,{method:'PATCH',headers:H(),body:JSON.stringify({contactEmail:document.getElementById('set-contact-email').value,senderEmail:document.getElementById('set-sender-email').value,senderName:document.getElementById('set-sender-name').value})});
+    showAlert('settings-email-alert','✓ Email settings saved.','success');
+  }catch(e){showAlert('settings-email-alert','Error saving.');}
+}
+
+// ── RAZORPAY CONFIG ──
+let _pgHasSecret=false;
+async function loadRazorpay(){
+  try{
+    const r=await fetch(`${API}/admin/payment-config`,{headers:H()});
+    const d=await r.json();
+    document.getElementById('pg-key-id').value=d.keyId||'';
+    _pgHasSecret=d.hasKeySecret===true;
+    const hint=document.getElementById('pg-secret-hint');
+    hint.textContent=_pgHasSecret?'✓ Secret saved & encrypted. Leave blank to keep.':'No secret saved yet.';
+    hint.style.color=_pgHasSecret?'var(--success)':'var(--gold)';
+    document.getElementById('pg-enabled').checked=d.isEnabled===true;
+    const banner=document.getElementById('pg-banner');
+    banner.innerHTML=d.isEnabled?'<div class="alert alert-success">✓ Payment gateway is active. Payments will be processed via Razorpay.</div>':'<div class="alert alert-error">✗ Payment gateway is disabled. Users cannot complete payments.</div>';
+    document.getElementById('pg-status').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div style="background:var(--bg-2);border-radius:var(--radius);padding:.85rem 1rem;font-size:.82rem;"><div style="color:var(--text-3);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem;">Key ID</div>${esc(d.keyId)||'Not set'}</div>
+        <div style="background:var(--bg-2);border-radius:var(--radius);padding:.85rem 1rem;font-size:.82rem;"><div style="color:var(--text-3);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem;">Secret</div>${d.hasKeySecret?'<span style="color:var(--success);">✓ Saved</span>':'<span style="color:var(--gold);">Not set</span>'}</div>
+        <div style="background:var(--bg-2);border-radius:var(--radius);padding:.85rem 1rem;font-size:.82rem;"><div style="color:var(--text-3);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem;">Webhook</div>${d.hasWebhookSecret?'<span style="color:var(--success);">✓ Saved</span>':'<span style="color:var(--text-4);">Optional</span>'}</div>
+        <div style="background:var(--bg-2);border-radius:var(--radius);padding:.85rem 1rem;font-size:.82rem;"><div style="color:var(--text-3);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem;">Status</div><span class="badge ${d.isEnabled?'badge-green':'badge-gray'}">${d.isEnabled?'Enabled':'Disabled'}</span></div>
+      </div>`;
+  }catch(e){}
+}
+async function saveRazorpay(){
+  const keyId=document.getElementById('pg-key-id').value.trim();
+  const keySecret=document.getElementById('pg-key-secret').value.trim();
+  const webhook=document.getElementById('pg-webhook').value.trim();
+  const enabled=document.getElementById('pg-enabled').checked;
+  if(!keyId){showAlert('pg-alert','Key ID required.');return;}
+  if(!_pgHasSecret&&!keySecret){showAlert('pg-alert','Key Secret required for first setup.');return;}
+  const payload={keyId,enabled};
+  if(keySecret) payload.keySecret=keySecret;
+  payload.webhookSecret=webhook||'';
+  try{
+    const r=await fetch(`${API}/admin/payment-config`,{method:'POST',headers:H(),body:JSON.stringify(payload)});
+    const d=await r.json();if(!r.ok){showAlert('pg-alert',d.error||'Error');return;}
+    document.getElementById('pg-key-secret').value='';document.getElementById('pg-webhook').value='';
+    showAlert('pg-alert','✓ Configuration saved.','success');loadRazorpay();
+  }catch(e){showAlert('pg-alert','Connection error.');}
+}
+
+// ── UPLOAD ──
+function openUpload(pid){
+  const input=document.createElement('input');input.type='file';
+  input.accept='.mp4,.pdf,.doc,.docx,.ppt,.pptx,.jpg,.png,.webp';
+  input.onchange=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    const title=prompt('Title for this file (or press Enter for filename):',file.name.replace(/\.[^.]+$/,''));
+    const fd=new FormData();fd.append('file',file);if(title)fd.append('title',title);fd.append('orderIndex','0');
+    try{
+      toast('Uploading…','info');
+      const r=await fetch(`${API}/admin/programs/${pid}/files/upload`,{method:'POST',headers:{'Authorization':'Bearer '+getToken()},body:fd});
+      const d=await r.json();if(!r.ok){toast(d.error||'Upload failed','error');return;}
+      toast('✓ Uploaded','success');loadProgFiles(pid);
+    }catch(err){toast('Upload error','error');}
+  };
+  input.click();
+}
+
+async function deleteFile(fid,pid){
+  if(!confirm('Delete file?'))return;
+  await fetch(`${API}/admin/files/${fid}`,{method:'DELETE',headers:H()});
+  toast('Deleted','success');loadProgFiles(pid);
+}
+</script>
+</body>
+</html>

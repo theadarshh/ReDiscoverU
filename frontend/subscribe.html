@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lifetime Membership — ReDiscoverU</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+.sub-hero{background:linear-gradient(135deg,var(--bg-2) 0%,var(--bg-3) 100%);padding:4rem 5% 3rem;border-bottom:1px solid var(--gold-border);}
+.sub-hero h1{font-size:clamp(2rem,4vw,3.2rem);}
+.checkout-grid{max-width:960px;margin:0 auto;padding:4rem 5%;display:grid;grid-template-columns:1fr 340px;gap:3rem;align-items:start;}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem;}
+.feature-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.88rem;color:var(--text-2);padding:.65rem .9rem;background:var(--bg-2);border-radius:var(--radius);border:1px solid var(--gold-border);}
+.feature-list li::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px;}
+.order-card{background:var(--surface);border:2px solid var(--gold-border);border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow-gold);position:sticky;top:88px;}
+.order-card::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px 3px 0 0;margin:-2rem -2rem 1.5rem;}
+.price-big{font-family:var(--serif);font-size:3.2rem;color:var(--gold);line-height:1;}
+.coupon-row{display:flex;gap:0;margin-bottom:.75rem;}
+.coupon-row input{border-radius:var(--radius) 0 0 var(--radius);border-right:none;text-transform:uppercase;font-family:var(--mono);letter-spacing:.1em;}
+.coupon-btn{padding:.82rem 1rem;background:var(--bg-2);border:1.5px solid var(--gold-border);border-left:none;border-radius:0 var(--radius) var(--radius) 0;font-size:.75rem;font-weight:600;color:var(--gold);cursor:pointer;transition:all .2s;}
+.coupon-btn:hover{background:var(--gold-pale);}
+.order-divider{height:1px;background:var(--gold-border);margin:1.25rem 0;}
+.order-row{display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:.5rem;color:var(--text-2);}
+.order-row.total{font-weight:700;color:var(--text);font-size:1.05rem;}
+.trust-row{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--text-3);margin-top:1rem;}
+@media(max-width:720px){.checkout-grid{grid-template-columns:1fr;}.order-card{position:static;}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">Rediscover<span>U</span></a>
+  <div class="nav-links"><a href="index.html">← Home</a><a href="login.html">Sign In</a></div>
+</nav>
+
+<div class="sub-hero">
+  <div class="container">
+    <div class="caption" style="margin-bottom:.75rem;">⭐ Premium Access</div>
+    <h1>Lifetime Membership</h1>
+    <p style="max-width:520px;margin:.75rem 0 0;font-size:1rem;">One payment. Lifetime access to every program, live session, and resource — now and everything added in the future.</p>
+  </div>
+</div>
+
+<div class="checkout-grid">
+  <div>
+    <h3 style="font-family:var(--serif);font-size:1.4rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--gold-border);">Everything in Lifetime Membership</h3>
+    <ul class="feature-list">
+      <li>6-Day Launchpad + all future launchpad cohorts</li>
+      <li>Complete program library — all programs, forever</li>
+      <li>Weekly live Growth Circle sessions (Google Meet)</li>
+      <li>1-to-1 mentorship access with Jayashankar</li>
+      <li>Premium WhatsApp community & channels</li>
+      <li>Session recordings & resource library</li>
+      <li>All future programs at no extra cost</li>
+      <li>Personalised growth roadmap</li>
+      <li>Priority mentor support</li>
+    </ul>
+
+    <div style="background:var(--bg-2);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem;">
+      <div class="caption" style="margin-bottom:.5rem;">Already have the Launchpad?</div>
+      <p style="font-size:.84rem;">Your ₹499 investment counts. Upgrade and build on the foundation you already started.</p>
+    </div>
+    <div id="alert-main"></div>
+  </div>
+
+  <div>
+    <div class="order-card">
+      <div class="caption" style="margin-bottom:.5rem;">Lifetime Membership</div>
+      <div style="margin-bottom:1.25rem;">
+        <div><span class="price-big" id="display-price">₹4,999</span></div>
+        <div style="font-size:.78rem;color:var(--text-3);margin-top:.25rem;">One-time · Lifetime access</div>
+      </div>
+
+      <div class="form-group">
+        <label>Coupon Code</label>
+        <div class="coupon-row">
+          <input type="text" id="coupon-input" placeholder="ENTER CODE" maxlength="20">
+          <button class="coupon-btn" onclick="applyCoupon()" id="coupon-btn">Apply</button>
+        </div>
+        <div id="coupon-msg" style="font-size:.78rem;min-height:1.2em;color:var(--text-3);"></div>
+      </div>
+
+      <div class="order-divider"></div>
+      <div class="order-row"><span>Membership</span><span>₹4,999</span></div>
+      <div class="order-row" id="discount-row" style="display:none;color:var(--success);"><span>Discount</span><span id="discount-val">−₹0</span></div>
+      <div class="order-row total"><span>Total</span><span id="total-val">₹4,999</span></div>
+      <div class="order-divider"></div>
+
+      <div id="alert-card"></div>
+      <button class="btn btn-gold btn-full btn-lg" id="pay-btn" onclick="proceed()">Get Lifetime Access →</button>
+      <div class="trust-row"><span>🔒</span><span>Secured by Razorpay · UPI · Cards · Wallets</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><div class="footer-brand">Rediscover<span>U</span></div><p class="footer-note">Structured lifestyle coaching for intentional living.</p></div>
+    <div class="footer-col"><h4>Platform</h4><a href="index.html">Home</a><a href="launchpad.html">6-Day Launchpad</a><a href="programs.html">Programs</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="mailto:jayashankarkol@gmail.com">jayashankarkol@gmail.com</a></div>
+  </div>
+  <div class="footer-bottom"><span>© <span id="footer-year"></span> ReDiscoverU</span><span>Bengaluru, India</span></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script>
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+if (getToken() && getAccess() === 'LIFETIME') {
+  document.getElementById('checkout-grid')?.insertAdjacentHTML('afterbegin',
+    '<div class="alert alert-success">✓ You already have Lifetime Access. <a href="user/dashboard.html">Go to Dashboard →</a></div>');
+}
+
+let priceInfo = { original: 4999, final: 4999, discount: 0, coupon: null };
+let couponLocked = false;
+
+async function applyCoupon() {
+  if (couponLocked) return;
+  const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+  const msg = document.getElementById('coupon-msg');
+  if (!code) { msg.textContent='Enter a coupon code.'; msg.style.color='var(--error)'; return; }
+  msg.textContent='Validating…'; msg.style.color='var(--text-3)';
+  if (!getToken()) { location.href=`login.html?redirect=${encodeURIComponent('subscribe.html')}`; return; }
+  try {
+    const r = await fetch(`${API}/payment/order`, {
+      method:'POST', headers: authHeader(),
+      body: JSON.stringify({ couponCode: code, productType: 'LIFETIME' })
+    });
+    const d = await r.json();
+    if (!r.ok) { msg.textContent=d.error||'Invalid coupon.'; msg.style.color='var(--error)'; return; }
+    priceInfo.discount = d.discountPercent||0;
+    priceInfo.final = Number(d.finalAmount);
+    priceInfo.coupon = code;
+    couponLocked = true;
+    if (d.freeAccess) {
+      msg.textContent='✓ 100% discount applied!'; msg.style.color='var(--success)';
+      localStorage.setItem('rdu_access','LIFETIME');
+      setTimeout(()=>location.href='user/dashboard.html',1500);
+      return;
+    }
+    msg.textContent=`✓ ${priceInfo.discount}% discount applied.`; msg.style.color='var(--success)';
+    document.getElementById('coupon-btn').textContent='✓'; document.getElementById('coupon-btn').disabled=true;
+    updateUI();
+  } catch(e) { msg.textContent='Connection error.'; msg.style.color='var(--error)'; }
+}
+
+function updateUI() {
+  document.getElementById('display-price').textContent=formatINR(priceInfo.final);
+  document.getElementById('total-val').textContent=priceInfo.final===0?'FREE':formatINR(priceInfo.final);
+  const dr=document.getElementById('discount-row');
+  if(priceInfo.discount>0){dr.style.display='flex';document.getElementById('discount-val').textContent=`−${formatINR(priceInfo.original*priceInfo.discount/100)}`;}
+  document.getElementById('pay-btn').textContent=priceInfo.final===0?'Claim Free Access →':`Get Lifetime Access — ${formatINR(priceInfo.final)}`;
+}
+
+async function proceed() {
+  if (!getToken()) { location.href=`login.html?redirect=${encodeURIComponent('subscribe.html')}`; return; }
+  clearAlert('alert-card');
+  const btn=document.getElementById('pay-btn');
+  btn.disabled=true; btn.textContent='Preparing…';
+  try {
+    const r=await fetch(`${API}/payment/order`,{method:'POST',headers:authHeader(),body:JSON.stringify({couponCode:priceInfo.coupon,productType:'LIFETIME'})});
+    const d=await r.json();
+    if(!r.ok){showAlert('alert-card',d.error||'Could not initiate payment.');btn.disabled=false;btn.textContent=`Get Lifetime Access — ${formatINR(priceInfo.final)}`;return;}
+    if(d.freeAccess){showAlert('alert-card','✓ Access granted!','success');localStorage.setItem('rdu_access','LIFETIME');setTimeout(()=>location.href='user/dashboard.html',1500);return;}
+    const rzp=new Razorpay({
+      key:d.keyId,amount:d.amount,currency:d.currency,order_id:d.orderId,
+      name:'ReDiscoverU',description:'Lifetime Membership',
+      prefill:{name:getName(),email:getEmail()},
+      theme:{color:'#B8923A'},
+      modal:{ondismiss:()=>{btn.disabled=false;btn.textContent=`Get Lifetime Access — ${formatINR(priceInfo.final)}`;}},
+      handler:()=>{showAlert('alert-card','✓ Payment received! Activating…','success');pollAccess(10);}
+    });
+    rzp.open();
+  } catch(e){showAlert('alert-card','Connection error. Please try again.');btn.disabled=false;btn.textContent=`Get Lifetime Access — ${formatINR(priceInfo.final)}`;}
+}
+
+async function pollAccess(tries){
+  if(tries<=0){localStorage.setItem('rdu_access','LIFETIME');location.href='user/dashboard.html';return;}
+  try{
+    const r=await fetch(`${API}/user/status`,{headers:authHeader()});
+    const d=await r.json();
+    if(d.subscriptionStatus==='LIFETIME'||d.subscriptionStatus==='PAID'){localStorage.setItem('rdu_access','LIFETIME');location.href='user/dashboard.html';return;}
+  }catch(e){}
+  setTimeout(()=>pollAccess(tries-1),2000);
+}
+</script>
+</body>
+</html>

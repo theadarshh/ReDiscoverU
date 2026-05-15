@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReDiscoverU — 6-Day Lifestyle Reset Launchpad</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* ── HERO ── */
+.hero{min-height:calc(100vh - 68px);display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;padding:0 5%;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg) 0%,var(--bg-2) 100%);}
+.hero::before{content:'';position:absolute;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(184,146,58,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-15%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(27,73,101,0.05) 0%,transparent 70%);pointer-events:none;}
+.hero-left{position:relative;z-index:1;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:50px;padding:.35rem 1rem;margin-bottom:1.5rem;}
+.hero-eyebrow span{font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.hero-h1{margin-bottom:.75rem;}
+.hero-h1 em{color:var(--gold);font-style:normal;}
+.hero-divider{width:60px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;margin:1.5rem 0;}
+.hero-sub{font-size:1rem;color:var(--text-2);line-height:1.85;max-width:460px;margin-bottom:2rem;}
+.hero-actions{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;}
+.hero-social{display:flex;align-items:center;gap:.6rem;margin-top:1.75rem;font-size:.78rem;color:var(--text-3);}
+.hero-social strong{color:var(--text-2);}
+.hero-right{position:relative;z-index:1;}
+.hero-card{background:var(--surface);border:1px solid var(--gold-border);border-radius:20px;padding:2.5rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));}
+.hero-price-tag{display:flex;align-items:baseline;gap:.5rem;margin-bottom:1.5rem;}
+.hero-price{font-family:var(--serif);font-size:3.5rem;font-weight:400;color:var(--gold);line-height:1;}
+.hero-price-label{font-size:.8rem;color:var(--text-3);}
+.hero-price-orig{font-size:.9rem;color:var(--text-4);text-decoration:line-through;}
+.launchpad-days{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:1.5rem 0;}
+.day-chip{background:var(--bg-2);border:1px solid var(--gold-border);border-radius:8px;padding:.6rem .85rem;font-size:.78rem;color:var(--text-2);}
+.day-chip strong{display:block;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.15rem;}
+.hero-guarantee{display:flex;align-items:center;gap:.6rem;margin-top:1.25rem;padding:.75rem 1rem;background:var(--success-bg);border-radius:8px;font-size:.78rem;color:var(--success);}
+
+/* ── WHAT YOU GET ── */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.pillar-card{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:2rem;text-align:center;transition:all .3s;}
+.pillar-card:hover{box-shadow:var(--shadow-gold);transform:translateY(-4px);border-color:var(--gold);}
+.pillar-icon{font-size:2.2rem;margin-bottom:1rem;display:block;}
+.pillar-card h4{font-family:var(--serif);font-size:1.2rem;margin-bottom:.5rem;}
+.pillar-card p{font-size:.84rem;color:var(--text-3);}
+
+/* ── 6-DAY CURRICULUM ── */
+.curriculum-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.day-card{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;gap:1.1rem;align-items:flex-start;transition:all .3s;cursor:default;}
+.day-card:hover{box-shadow:var(--shadow);border-color:var(--gold);transform:translateY(-2px);}
+.day-num{width:44px;height:44px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.1rem;color:#fff;font-weight:500;}
+.day-info h4{font-family:var(--serif);font-size:1.05rem;margin-bottom:.3rem;}
+.day-info p{font-size:.8rem;color:var(--text-3);line-height:1.6;}
+
+/* ── MENTOR STRIP ── */
+.mentor-strip{display:grid;grid-template-columns:280px 1fr;gap:4rem;align-items:center;}
+.mentor-photo{width:280px;height:340px;border-radius:20px;object-fit:cover;border:2px solid var(--gold-border);box-shadow:var(--shadow-lg);}
+.mentor-photo-placeholder{width:280px;height:340px;border-radius:20px;background:linear-gradient(135deg,var(--bg-2),var(--bg-3));border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:6rem;color:var(--gold-border);box-shadow:var(--shadow-lg);}
+.mentor-creds{display:flex;flex-direction:column;gap:.6rem;margin:1.5rem 0;}
+.mentor-cred{display:flex;align-items:center;gap:.65rem;font-size:.85rem;color:var(--text-2);}
+.mentor-cred::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0;}
+
+/* ── MEMBERSHIP UPSELL ── */
+.membership-compare{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem;}
+.plan-card{border-radius:var(--radius-lg);padding:2.5rem;border:2px solid var(--gold-border);position:relative;}
+.plan-card.basic{background:var(--surface);}
+.plan-card.premium{background:linear-gradient(135deg,#fffdf5 0%,#f8f2e4 100%);border-color:var(--gold);box-shadow:var(--shadow-gold);}
+.plan-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.12em;padding:.3rem 1rem;border-radius:50px;}
+.plan-price{font-family:var(--serif);font-size:2.8rem;color:var(--gold);line-height:1;margin:1rem 0 .5rem;}
+.plan-period{font-size:.78rem;color:var(--text-3);}
+.plan-features{list-style:none;margin:1.5rem 0;display:flex;flex-direction:column;gap:.65rem;}
+.plan-features li{display:flex;align-items:center;gap:.6rem;font-size:.85rem;color:var(--text-2);}
+.plan-features li::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0;}
+.plan-features li.locked{color:var(--text-4);}
+.plan-features li.locked::before{content:'✗';color:var(--text-4);}
+
+/* ── TRANSFORMATION SECTION ── */
+.transform-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.transform-card{background:var(--surface);border-radius:var(--radius-lg);padding:2rem;border:1px solid var(--gold-border);text-align:center;}
+.transform-before{font-size:.8rem;color:var(--text-3);margin-bottom:.3rem;letter-spacing:.06em;text-transform:uppercase;}
+.transform-arrow{font-size:1.4rem;color:var(--gold);margin:.5rem 0;}
+.transform-after{font-size:.88rem;color:var(--success);font-weight:600;}
+.transform-card h4{font-family:var(--serif);font-size:1.05rem;margin-bottom:.6rem;}
+
+/* ── FINAL CTA BAND ── */
+.cta-band{background:linear-gradient(135deg,var(--launch) 0%,#1e3a5f 100%);padding:5rem 5%;text-align:center;position:relative;overflow:hidden;}
+.cta-band::before{content:'';position:absolute;top:-50%;left:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);pointer-events:none;}
+.cta-band h2{color:#fff;font-size:clamp(2rem,4vw,3rem);margin-bottom:1rem;}
+.cta-band p{color:rgba(255,255,255,.75);max-width:520px;margin:0 auto 2.5rem;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;min-height:auto;padding:3rem 5%;gap:2.5rem;}
+  .hero-right{order:-1;}
+  .pillars{grid-template-columns:1fr 1fr;}
+  .curriculum-grid{grid-template-columns:1fr;}
+  .mentor-strip{grid-template-columns:1fr;text-align:center;}
+  .mentor-photo,.mentor-photo-placeholder{width:200px;height:240px;margin:0 auto;}
+  .membership-compare{grid-template-columns:1fr;}
+  .transform-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .pillars{grid-template-columns:1fr;}
+  .launchpad-days{grid-template-columns:1fr;}
+  .hero-actions{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">Rediscover<span>U</span></a>
+  <div class="nav-links" id="nav-links">
+    <a href="index.html" class="active hide-mobile">Home</a>
+    <a href="programs.html" class="hide-mobile">Programs</a>
+    <a href="#mentor" class="hide-mobile">Mentor</a>
+    <a href="login.html">Sign In</a>
+    <a href="launchpad.html" class="nav-cta">Start for ₹499</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span>🌅 6-Day Lifestyle Reset Launchpad</span>
+    </div>
+    <h1 class="hero-h1 fade-up">
+      Reset Your Life<br>in <em>6 Intentional</em><br>Days
+    </h1>
+    <div class="hero-divider fade-up"></div>
+    <p class="hero-sub fade-up">
+      A structured morning & evening routine, mindful eating framework, and daily accountability — designed for Indian professionals and students who want real change, not just motivation.
+    </p>
+    <div class="hero-actions fade-up">
+      <a href="launchpad.html" class="btn btn-gold btn-lg">Begin Today — ₹499 →</a>
+      <a href="#curriculum" class="btn btn-ghost btn-lg">See the Curriculum</a>
+    </div>
+    <div class="hero-social fade-up">
+      <span>🔥</span>
+      <strong>Limited spots available.</strong>
+      <span>Cohort starts every week.</span>
+    </div>
+  </div>
+
+  <div class="hero-right fade-up">
+    <div class="hero-card">
+      <div class="caption" style="margin-bottom:.75rem;">6-Day Launchpad</div>
+      <div class="hero-price-tag">
+        <div class="hero-price">₹499</div>
+        <div>
+          <div class="hero-price-orig">₹999</div>
+          <div class="hero-price-label">one-time</div>
+        </div>
+      </div>
+      <div class="launchpad-days">
+        <div class="day-chip"><strong>Day 1–2</strong>Morning Rituals</div>
+        <div class="day-chip"><strong>Day 3–4</strong>Mindful Eating</div>
+        <div class="day-chip"><strong>Day 5</strong>Evening Wind-Down</div>
+        <div class="day-chip"><strong>Day 6</strong>Lifestyle Integration</div>
+      </div>
+      <a href="launchpad.html" class="btn btn-gold btn-full" style="margin-top:.5rem;">Enrol Now →</a>
+      <div class="hero-guarantee">
+        <span>✓</span>
+        <span>Structured daily content + mentor support included</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-rule"></div>
+
+<!-- WHAT YOU BUILD -->
+<section>
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem;" class="fade-up">
+      <div class="caption" style="text-align:center;">What You Build</div>
+      <div class="gold-line gold-line-center"></div>
+      <h2>Six Areas of Intentional Living</h2>
+      <p style="max-width:500px;margin:.75rem auto 0;">Every day of the Launchpad addresses one critical pillar of a balanced, purposeful lifestyle.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar-card fade-up">
+        <span class="pillar-icon">🌅</span>
+        <h4>Morning Ritual</h4>
+        <p>A structured sunrise routine that builds clarity, energy, and direction for the entire day.</p>
+      </div>
+      <div class="pillar-card fade-up">
+        <span class="pillar-icon">🥗</span>
+        <h4>Mindful Eating</h4>
+        <p>Practical food framework aligned with your lifestyle — without diets or deprivation.</p>
+      </div>
+      <div class="pillar-card fade-up">
+        <span class="pillar-icon">🌙</span>
+        <h4>Evening Wind-Down</h4>
+        <p>A calming evening structure that promotes deep rest, reflection, and better sleep.</p>
+      </div>
+      <div class="pillar-card fade-up">
+        <span class="pillar-icon">🤝</span>
+        <h4>Support System</h4>
+        <p>Community, accountability circles, and direct mentor access when you need it most.</p>
+      </div>
+      <div class="pillar-card fade-up">
+        <span class="pillar-icon">⚡</span>
+        <h4>Clarity & Focus</h4>
+        <p>Daily journaling, breathwork, and intention-setting to sharpen your mental clarity.</p>
+      </div>
+      <div class="pillar-card fade-up">
+        <span class="pillar-icon">🔄</span>
+        <h4>Lifestyle Integration</h4>
+        <p>Making these habits stick — not just for 6 days, but for life.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- 6-DAY CURRICULUM -->
+<section class="section-dark" id="curriculum">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:3rem;">
+      <div class="fade-up">
+        <div class="caption">The Curriculum</div>
+        <div class="gold-line"></div>
+        <h2>Your 6-Day Journey</h2>
+      </div>
+      <a href="launchpad.html" class="btn btn-gold fade-up">Enrol for ₹499 →</a>
+    </div>
+    <div class="curriculum-grid">
+      <div class="day-card fade-up">
+        <div class="day-num">1</div>
+        <div class="day-info">
+          <h4>Morning Ritual Design</h4>
+          <p>Build your personalised morning routine — wake time, movement, hydration, and intention-setting. No rigid templates, just structure that fits your life.</p>
+        </div>
+      </div>
+      <div class="day-card fade-up">
+        <div class="day-num">2</div>
+        <div class="day-info">
+          <h4>Clarity & Mental Reset</h4>
+          <p>Journaling frameworks, breathwork basics, and a 10-minute clarity protocol to start every day with purpose rather than panic.</p>
+        </div>
+      </div>
+      <div class="day-card fade-up">
+        <div class="day-num">3</div>
+        <div class="day-info">
+          <h4>Mindful Eating Basics</h4>
+          <p>A simple, practical approach to food — meal timing, portion awareness, and eating with intention without calorie-counting obsession.</p>
+        </div>
+      </div>
+      <div class="day-card fade-up">
+        <div class="day-num">4</div>
+        <div class="day-info">
+          <h4>Energy Management</h4>
+          <p>Understand your natural energy cycles, plan tasks accordingly, and eliminate the mid-day crash that kills your productivity.</p>
+        </div>
+      </div>
+      <div class="day-card fade-up">
+        <div class="day-num">5</div>
+        <div class="day-info">
+          <h4>Evening Wind-Down</h4>
+          <p>A structured evening routine — screen discipline, light movement, reflection practice, and a sleep ritual that actually works.</p>
+        </div>
+      </div>
+      <div class="day-card fade-up">
+        <div class="day-num">6</div>
+        <div class="day-info">
+          <h4>Lifestyle Integration</h4>
+          <p>Combining everything into one personalised Lifestyle Blueprint — your system for consistency beyond these 6 days.</p>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:3rem;" class="fade-up">
+      <a href="launchpad.html" class="btn btn-gold btn-lg">Start Your 6-Day Reset — ₹499</a>
+      <p style="margin-top:1rem;font-size:.82rem;color:var(--text-3);">Instant access after payment · Live sessions included · Mentor support</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- TRANSFORMATION -->
+<section>
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem;" class="fade-up">
+      <div class="caption">The Shift</div>
+      <div class="gold-line gold-line-center"></div>
+      <h2>Before & After the Launchpad</h2>
+    </div>
+    <div class="transform-grid">
+      <div class="transform-card fade-up">
+        <h4>Morning Chaos</h4>
+        <div class="transform-before">Right now</div>
+        <div style="font-size:.84rem;color:var(--text-3);">Rushing, scrolling before you think, skipping breakfast, starting the day reactive.</div>
+        <div class="transform-arrow">↓</div>
+        <div class="transform-after">Calm, intentional starts every single day.</div>
+      </div>
+      <div class="transform-card fade-up">
+        <h4>Mindless Eating</h4>
+        <div class="transform-before">Right now</div>
+        <div style="font-size:.84rem;color:var(--text-3);">Skipping meals, ordering junk, eating while working, no real food structure.</div>
+        <div class="transform-arrow">↓</div>
+        <div class="transform-after">Simple, sustainable nutrition that fuels your goals.</div>
+      </div>
+      <div class="transform-card fade-up">
+        <h4>Poor Sleep</h4>
+        <div class="transform-before">Right now</div>
+        <div style="font-size:.84rem;color:var(--text-3);">Doomscrolling till midnight, waking up exhausted, no rest ritual whatsoever.</div>
+        <div class="transform-arrow">↓</div>
+        <div class="transform-after">Deep, restorative sleep with an evening wind-down system.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- MENTOR -->
+<section class="section-dark" id="mentor">
+  <div class="container">
+    <div class="mentor-strip">
+      <div class="fade-up">
+        <div id="mentor-photo-wrap">
+          <div class="mentor-photo-placeholder">J</div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="caption">Your Guide</div>
+        <div class="gold-line"></div>
+        <h2 id="mentor-name" style="margin-bottom:.25rem;">Jayashankar Lingaiah</h2>
+        <div style="font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;" id="mentor-role">Lifestyle & Mindset Coach · Bengaluru</div>
+        <p id="mentor-bio" style="max-width:540px;margin-bottom:1.75rem;">
+          Jayashankar is a Lifestyle and Mindset Coach who has helped hundreds of Indian professionals and students build structured, meaningful lives. His approach blends practical habit design, emotional intelligence, and personal accountability — free from hype and false promises.
+        </p>
+        <div class="mentor-creds">
+          <div class="mentor-cred">Structured lifestyle coaching for 5+ years</div>
+          <div class="mentor-cred">Founder of the ReDiscoverU methodology</div>
+          <div class="mentor-cred">Bengaluru-based, India-rooted approach</div>
+          <div class="mentor-cred">Morning ritual specialist</div>
+        </div>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <a href="launchpad.html" class="btn btn-gold">Join the Launchpad →</a>
+          <a href="mailto:jayashankarkol@gmail.com" class="btn btn-ghost">Contact Mentor</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- MEMBERSHIP UPSELL -->
+<section>
+  <div class="container">
+    <div style="text-align:center;margin-bottom:1rem;" class="fade-up">
+      <div class="caption">After the Launchpad</div>
+      <div class="gold-line gold-line-center"></div>
+      <h2>Continue Your Journey with<br>Lifetime Membership</h2>
+      <p style="max-width:540px;margin:.75rem auto 0;">The Launchpad is your ignition. Lifetime Membership is the engine that keeps you moving — forever.</p>
+    </div>
+    <div class="membership-compare fade-up">
+      <div class="plan-card basic">
+        <div class="caption" style="margin-bottom:.5rem;">6-Day Launchpad</div>
+        <div class="plan-price">₹499</div>
+        <div class="plan-period">one-time</div>
+        <ul class="plan-features">
+          <li>6-day structured curriculum</li>
+          <li>Morning & evening routines</li>
+          <li>Mindful eating framework</li>
+          <li>Live Q&A session</li>
+          <li>Lifestyle Blueprint template</li>
+          <li class="locked">Lifetime program library</li>
+          <li class="locked">1-to-1 mentorship sessions</li>
+          <li class="locked">Premium community access</li>
+          <li class="locked">All future programs</li>
+        </ul>
+        <a href="launchpad.html" class="btn btn-outline btn-full">Start Here</a>
+      </div>
+      <div class="plan-card premium">
+        <div class="plan-badge">BEST VALUE</div>
+        <div class="caption" style="margin-bottom:.5rem;">Lifetime Membership</div>
+        <div class="plan-price">₹4,999</div>
+        <div class="plan-period">lifetime · one-time</div>
+        <ul class="plan-features" style="margin-top:1.25rem;">
+          <li>Everything in Launchpad</li>
+          <li>Full program library — forever</li>
+          <li>Weekly live Growth Circle sessions</li>
+          <li>1-to-1 mentorship access</li>
+          <li>Premium WhatsApp community</li>
+          <li>All future programs included</li>
+          <li>Priority mentor support</li>
+          <li>Recorded session library</li>
+          <li>Personalised growth roadmap</li>
+        </ul>
+        <a href="subscribe.html" class="btn btn-gold btn-full">Upgrade to Lifetime →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- HOMEPAGE VIDEOS -->
+<section class="section-dark" id="videos">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:3rem;">
+      <div class="fade-up">
+        <div class="caption">From the Mentor</div>
+        <div class="gold-line"></div>
+        <h2>Watch Before You Decide</h2>
+      </div>
+      <a href="https://youtube.com/@rediscoverulife" target="_blank" class="btn btn-ghost fade-up">YouTube Channel →</a>
+    </div>
+    <div id="video-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
+      <div class="loading" style="grid-column:1/-1;"></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- FINAL CTA -->
+<div class="cta-band">
+  <div class="container">
+    <div class="caption" style="color:rgba(255,255,255,.6);text-align:center;margin-bottom:1rem;">Take the First Step</div>
+    <h2 class="fade-up">Your Reset Starts<br>with One Decision</h2>
+    <p class="fade-up">₹499 is not the cost of transformation. It is the cost of starting. The transformation is free — it comes from showing up every day.</p>
+    <div class="fade-up" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="launchpad.html" class="btn btn-gold btn-lg">Begin the 6-Day Reset — ₹499</a>
+      <a href="subscribe.html" class="btn btn-outline btn-lg" style="color:#fff;border-color:rgba(255,255,255,.4);">Lifetime Membership — ₹4,999</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Rediscover<span>U</span></div>
+      <p class="footer-note">A structured lifestyle coaching platform for Indian professionals and students committed to intentional living.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="launchpad.html">6-Day Launchpad</a>
+      <a href="programs.html">All Programs</a>
+      <a href="subscribe.html">Lifetime Membership</a>
+      <a href="login.html">Sign In</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <a href="mailto:jayashankarkol@gmail.com">jayashankarkol@gmail.com</a>
+      <a href="https://youtube.com/@rediscoverulife" target="_blank">YouTube</a>
+      <a href="https://www.instagram.com/jayashankarkol" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/jayashankarlingaiah/" target="_blank">LinkedIn</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="footer-year"></span> ReDiscoverU · Jayashankar Lingaiah</span>
+    <span>Bengaluru, Karnataka, India</span>
+  </div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script>
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+// Update nav for logged-in users
+const tok = getToken();
+if (tok) {
+  const role = getRole(), access = getAccess();
+  document.getElementById('nav-links').innerHTML = `
+    <a href="programs.html" class="hide-mobile">Programs</a>
+    <a href="${role==='ROLE_ADMIN'?'admin/dashboard.html':'user/dashboard.html'}">Dashboard</a>
+    <button onclick="logoutRoot()" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--text-3);font-family:var(--sans);padding:.45rem .85rem;">Sign Out</button>
+    ${access==='NONE'?'<a href="launchpad.html" class="nav-cta">Start for ₹499</a>':access==='LAUNCHPAD'?'<a href="subscribe.html" class="nav-cta" style="background:var(--launch)!important;">Upgrade ₹4,999</a>':''}
+  `;
+}
+
+// Load mentor
+(async()=>{
+  try{
+    const r=await fetch(`${API}/homepage/mentors`);
+    if(!r.ok)return;
+    const m=(await r.json())[0];
+    if(!m)return;
+    if(m.name)document.getElementById('mentor-name').textContent=m.name;
+    if(m.roleTitle)document.getElementById('mentor-role').textContent=m.roleTitle+' · Bengaluru';
+    if(m.bio)document.getElementById('mentor-bio').textContent=m.bio;
+    if(m.imageUrl){
+      document.getElementById('mentor-photo-wrap').innerHTML=
+        `<img src="${imgSrc(m.imageUrl)}" class="mentor-photo" alt="${esc(m.name)}">`;
+    }
+  }catch(e){}
+})();
+
+// Load videos
+(async()=>{
+  const grid=document.getElementById('video-grid');
+  try{
+    const r=await fetch(`${API}/homepage/videos`);
+    const videos=await r.json();
+    if(!Array.isArray(videos)||!videos.length){
+      grid.innerHTML='<p style="color:var(--text-3);padding:2rem;grid-column:1/-1;text-align:center;">Videos coming soon.</p>';
+      return;
+    }
+    function embedUrl(url){
+      let id=null;
+      if(url.includes('youtu.be/'))id=url.substring(url.indexOf('youtu.be/')+9).split(/[?&]/)[0];
+      else if(url.includes('v='))id=url.substring(url.indexOf('v=')+2).split(/[?&]/)[0];
+      else if(url.includes('/embed/'))id=url.substring(url.indexOf('/embed/')+7).split(/[?&]/)[0];
+      return id?`https://www.youtube.com/embed/${id}`:url;
+    }
+    grid.innerHTML=videos.slice(0,3).map(v=>`
+      <div style="background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);" class="fade-up">
+        <div style="position:relative;padding-bottom:56.25%;background:#000;">
+          <iframe src="${embedUrl(v.youtubeUrl)}" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div style="padding:1.1rem 1.25rem;">
+          <div class="caption" style="margin-bottom:.3rem;">From the Mentor</div>
+          <div style="font-family:var(--serif);font-size:1rem;color:var(--text);">${esc(v.title)}</div>
+        </div>
+      </div>`).join('');
+    initFadeUp();
+  }catch(e){grid.innerHTML='<p style="color:var(--text-3);padding:2rem;grid-column:1/-1;text-align:center;">Could not load videos.</p>';}
+})();
+</script>
+</body>
+</html>

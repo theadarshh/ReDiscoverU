@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programs — ReDiscoverU</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.programs-hero{padding:4rem 5% 3rem;background:linear-gradient(135deg,var(--bg) 0%,var(--bg-2) 100%);border-bottom:1px solid var(--gold-border);}
+.programs-hero h1{font-size:clamp(2rem,4vw,3rem);margin-bottom:.5rem;}
+.access-banner{background:linear-gradient(90deg,var(--gold-pale),var(--bg-2));border:1px solid var(--gold-border);border-left:4px solid var(--gold);border-radius:var(--radius-lg);padding:1.5rem 2rem;margin-bottom:2.5rem;display:none;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.access-banner.show{display:flex;}
+.member-bar{background:var(--success-bg);border:1px solid rgba(45,106,79,.2);border-left:4px solid var(--success);border-radius:var(--radius-lg);padding:1.1rem 1.5rem;margin-bottom:2rem;display:none;align-items:center;gap:.75rem;font-size:.88rem;color:var(--success);}
+.member-bar.show{display:flex;}
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--gold-border);}
+.filt-btn{padding:.5rem 1.2rem;background:var(--bg-2);border:1.5px solid var(--gold-border);border-radius:50px;font-size:.78rem;font-weight:600;color:var(--text-3);cursor:pointer;transition:all .2s;}
+.filt-btn:hover{border-color:var(--gold);color:var(--gold);}
+.filt-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.prog-list-item{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:2rem 2.5rem;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;margin-bottom:1rem;transition:all .3s;}
+.prog-list-item:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+.prog-num{font-family:var(--serif);font-size:.9rem;color:var(--text-4);margin-bottom:.3rem;}
+.prog-title{font-family:var(--serif);font-size:1.6rem;margin-bottom:.4rem;}
+.prog-tagline{font-size:.88rem;color:var(--gold);font-style:italic;margin-bottom:.6rem;}
+.prog-desc{font-size:.88rem;color:var(--text-2);max-width:560px;line-height:1.8;margin-bottom:.85rem;}
+.prog-meta{font-size:.75rem;color:var(--text-3);}
+.prog-includes{list-style:none;margin-top:.85rem;display:flex;flex-direction:column;gap:.3rem;}
+.prog-includes li{font-size:.8rem;color:var(--text-3);display:flex;align-items:center;gap:.5rem;}
+.prog-includes li::before{content:'—';color:var(--gold);opacity:.6;}
+.prog-action{text-align:right;flex-shrink:0;}
+.included-tag{font-family:var(--serif);font-size:.82rem;color:var(--success);margin-bottom:.5rem;display:block;}
+@media(max-width:680px){.prog-list-item{grid-template-columns:1fr;}.prog-action{text-align:left;}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">Rediscover<span>U</span></a>
+  <div class="nav-links" id="nav-links">
+    <a href="index.html">Home</a>
+    <a href="programs.html" class="active hide-mobile">Programs</a>
+    <a href="login.html">Sign In</a>
+    <a href="launchpad.html" class="nav-cta">Start for ₹499</a>
+  </div>
+</nav>
+
+<div class="programs-hero">
+  <div class="container">
+    <div class="caption fade-up">Structured Learning</div>
+    <div class="gold-line fade-up"></div>
+    <h1 class="fade-up">One Membership.<br><em>All Programs.</em></h1>
+    <p class="fade-up" style="max-width:480px;font-size:.95rem;">Start with the 6-Day Launchpad at ₹499, then upgrade to Lifetime Membership for complete access to every program, live session, and resource.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <!-- Access banner for non-paid -->
+    <div class="access-banner" id="access-banner">
+      <div>
+        <h4 style="font-family:var(--serif);font-size:1.15rem;margin-bottom:.3rem;">Start Your Journey</h4>
+        <p style="font-size:.84rem;margin:0;">Begin with the ₹499 Launchpad, then unlock everything with Lifetime Membership.</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;">
+        <div style="text-align:right;">
+          <div style="font-family:var(--serif);font-size:2rem;color:var(--gold);line-height:1;">₹499</div>
+          <div style="font-size:.72rem;color:var(--text-3);">Launchpad · One-time</div>
+        </div>
+        <a href="launchpad.html" class="btn btn-gold">Start Launchpad →</a>
+      </div>
+    </div>
+
+    <!-- Member bar -->
+    <div class="member-bar" id="member-bar">
+      <span>✓</span>
+      <span id="member-bar-text">You have Lifetime Access — all programs are fully unlocked.</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <button class="filt-btn active" data-filter="ALL">All Programs</button>
+      <button class="filt-btn" data-filter="SELF_PACED">Self-Paced</button>
+      <button class="filt-btn" data-filter="LIVE">Live Sessions</button>
+      <button class="filt-btn" data-filter="MENTORSHIP">Mentorship</button>
+    </div>
+
+    <div id="programs-list"><div class="loading">Loading programs</div></div>
+  </div>
+</section>
+
+<!-- Lifetime upsell section -->
+<section class="section-dark" id="lifetime-upsell" style="display:none;">
+  <div class="container" style="text-align:center;">
+    <div class="caption">After the Launchpad</div>
+    <div class="gold-line gold-line-center"></div>
+    <h2>Unlock Everything — ₹4,999</h2>
+    <p style="max-width:480px;margin:.75rem auto 2rem;">One payment. Lifetime access to all programs above, weekly live Growth Circles, and 1-to-1 mentorship.</p>
+    <a href="subscribe.html" class="btn btn-gold btn-lg">Get Lifetime Membership →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div><div class="footer-brand">Rediscover<span>U</span></div><p class="footer-note">Structured lifestyle coaching for intentional living.</p></div>
+    <div class="footer-col"><h4>Platform</h4><a href="launchpad.html">6-Day Launchpad</a><a href="subscribe.html">Lifetime Membership</a><a href="login.html">Sign In</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="mailto:jayashankarkol@gmail.com">jayashankarkol@gmail.com</a><a href="https://youtube.com/@rediscoverulife" target="_blank">YouTube</a></div>
+  </div>
+  <div class="footer-bottom"><span>© <span id="fy"></span> ReDiscoverU</span><span>Bengaluru, India</span></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script>
+document.getElementById('fy').textContent=new Date().getFullYear();
+
+const tok=getToken(), access=getAccess(), role=getRole();
+
+// Update nav
+if(tok){
+  document.getElementById('nav-links').innerHTML=`
+    <a href="index.html">Home</a>
+    <a href="programs.html" class="active hide-mobile">Programs</a>
+    <a href="${role==='ROLE_ADMIN'?'admin/dashboard.html':'user/dashboard.html'}">Dashboard</a>
+    <button onclick="logoutRoot()" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--text-3);font-family:var(--sans);padding:.45rem .85rem;">Sign Out</button>
+    ${access==='NONE'?'<a href="launchpad.html" class="nav-cta">Start for ₹499</a>':access==='LAUNCHPAD'?'<a href="subscribe.html" class="nav-cta" style="background:var(--launch)!important;">Upgrade ₹4,999</a>':''}
+  `;
+}
+
+// Access UI
+if(access==='LIFETIME'){
+  document.getElementById('member-bar').classList.add('show');
+} else if(access==='LAUNCHPAD'){
+  document.getElementById('member-bar').classList.add('show');
+  document.getElementById('member-bar-text').textContent='You have Launchpad access. Upgrade to Lifetime to unlock all programs.';
+  document.getElementById('member-bar').style.background='var(--info-bg)';
+  document.getElementById('member-bar').style.borderLeftColor='var(--info)';
+  document.getElementById('member-bar').style.color='var(--info)';
+  document.getElementById('lifetime-upsell').style.display='block';
+} else {
+  document.getElementById('access-banner').classList.add('show');
+  document.getElementById('lifetime-upsell').style.display='block';
+}
+
+const INCLUDES={
+  SELF_PACED:['Recorded sessions','Lifetime replay','Structured exercises','Journaling frameworks'],
+  LIVE:['Live Google Meet sessions','Session recordings','Direct Q&A with Jayashankar','Accountability check-ins'],
+  MENTORSHIP:['Weekly 1-to-1 calls','Personalised action plan','Priority WhatsApp access','Custom growth roadmap'],
+};
+let allProgs=[], filter='ALL';
+
+async function loadPrograms(){
+  const el=document.getElementById('programs-list');
+  try{
+    const r=await fetch(`${API}/programs/public`);
+    allProgs=await r.json();
+    renderProgs();
+  }catch(e){el.innerHTML='<p style="color:var(--text-3);">Could not load programs.</p>';}
+}
+
+function renderProgs(){
+  const el=document.getElementById('programs-list');
+  const list=filter==='ALL'?allProgs:allProgs.filter(p=>p.type===filter);
+  if(!list.length){el.innerHTML='<p style="color:var(--text-3);padding:2rem 0;">No programs match this filter.</p>';return;}
+  el.innerHTML=list.map((p,i)=>{
+    const isLaunch=i===0||p.title?.toLowerCase().includes('launchpad');
+    const isUnlocked=access==='LIFETIME'||(access==='LAUNCHPAD'&&isLaunch);
+    const action=isUnlocked
+      ?`<span class="included-tag">✓ Included</span><a href="user/dashboard.html" class="btn btn-outline btn-sm">Open in Dashboard →</a>`
+      :access==='LAUNCHPAD'
+        ?`<a href="subscribe.html" class="btn btn-gold btn-sm">Upgrade — ₹4,999</a>`
+        :`<a href="${tok?'launchpad.html':'signup.html'}" class="btn btn-gold btn-sm">Start for ₹499</a>`;
+    const incl=INCLUDES[p.type];
+    return `<div class="prog-list-item fade-up">
+      <div>
+        <div class="prog-num">0${i+1}</div>
+        ${p.category?`<div style="font-size:.65rem;color:var(--launch);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">${esc(p.category.name)}</div>`:''}
+        <div class="prog-title">${esc(p.title)}</div>
+        ${p.tagline?`<div class="prog-tagline">${esc(p.tagline)}</div>`:''}
+        <div class="prog-desc">${esc(p.description||'')}</div>
+        ${p.duration?`<div class="prog-meta">⏱ ${esc(p.duration)}</div>`:''}
+        ${incl?`<ul class="prog-includes">${incl.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}
+      </div>
+      <div class="prog-action">${action}</div>
+    </div>`;
+  }).join('');
+  initFadeUp();
+}
+
+document.querySelectorAll('.filt-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    filter=btn.dataset.filter;
+    renderProgs();
+  });
+});
+
+loadPrograms();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — ReDiscoverU</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+body{min-height:100vh;display:flex;flex-direction:column;}
+.auth-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 68px);}
+.auth-left{background:linear-gradient(135deg,var(--launch) 0%,#1e3a5f 100%);padding:5rem;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.auth-left::before{content:'';position:absolute;top:-20%;right:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 65%);pointer-events:none;}
+.auth-left .caption{color:rgba(255,255,255,.6);}
+.auth-left h2{color:#fff;font-size:2.4rem;font-weight:300;margin:.75rem 0;}
+.auth-quote{font-family:var(--serif);font-size:1.2rem;font-style:italic;color:rgba(255,255,255,.82);margin-top:1.5rem;border-left:3px solid var(--gold);padding-left:1.25rem;line-height:1.7;}
+.auth-cite{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:.75rem;}
+.auth-right{display:flex;align-items:center;justify-content:center;padding:3rem 5rem;background:var(--bg);}
+.auth-form{width:100%;max-width:380px;}
+.auth-form h3{font-family:var(--serif);font-size:2rem;margin-bottom:.25rem;}
+.auth-form .sub{font-size:.85rem;color:var(--text-3);margin-bottom:2rem;}
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:var(--text-4);font-size:.75rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gold-border);}
+@media(max-width:768px){.auth-wrap{grid-template-columns:1fr;}.auth-left{display:none;}.auth-right{padding:2.5rem 5%;}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">Rediscover<span>U</span></a>
+  <div class="nav-links"><a href="index.html">Home</a><a href="launchpad.html" class="nav-cta">Start for ₹499</a></div>
+</nav>
+<div class="auth-wrap">
+  <div class="auth-left">
+    <div class="caption">Welcome Back</div>
+    <div class="gold-line"></div>
+    <h2>Continue your journey.</h2>
+    <div class="auth-quote">"Consistency is the currency of mastery. Every time you show up, you invest in the person you are becoming."</div>
+    <div class="auth-cite">— Jayashankar Lingaiah</div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form">
+      <div class="caption">Sign In</div>
+      <div class="gold-line"></div>
+      <h3>Access Your Account</h3>
+      <div class="sub">Pick up where you left off.</div>
+      <div id="alert-box"></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+        <div style="text-align:right;margin-top:.35rem;"><a href="forgot-password.html" style="font-size:.75rem;color:var(--text-3);">Forgot password?</a></div>
+      </div>
+      <button class="btn btn-gold btn-full" id="login-btn" onclick="doLogin()">Sign In →</button>
+      <div class="divider">new here?</div>
+      <a href="signup.html" class="btn btn-outline btn-full">Create Account</a>
+      <div class="divider">or</div>
+      <a href="launchpad.html" class="btn btn-launch btn-full">Start 6-Day Launchpad — ₹499</a>
+    </div>
+  </div>
+</div>
+<script src="assets/js/utils.js"></script>
+<script>
+if(getToken()){
+  if(getRole()==='ROLE_ADMIN')location.href='admin/dashboard.html';
+  else if(getAccess()!=='NONE')location.href='user/dashboard.html';
+  else location.href='launchpad.html';
+}
+async function doLogin(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const btn=document.getElementById('login-btn');
+  clearAlert('alert-box');
+  if(!email||!password){showAlert('alert-box','Please enter email and password.');return;}
+  btn.disabled=true;btn.textContent='Signing in…';
+  try{
+    const r=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const d=await r.json();
+    if(!r.ok){showAlert('alert-box',d.error||'Sign in failed.');btn.disabled=false;btn.textContent='Sign In →';return;}
+    saveSession(d);
+    const redirect=new URLSearchParams(location.search).get('redirect');
+    if(d.role==='ROLE_ADMIN')location.href=redirect||'admin/dashboard.html';
+    else if(d.subscriptionStatus==='PAID'||d.subscriptionStatus==='LAUNCHPAD'||d.subscriptionStatus==='LIFETIME')location.href=redirect||'user/dashboard.html';
+    else{showAlert('alert-box','✓ Signed in. Complete enrolment to access content.','info');setTimeout(()=>location.href='launchpad.html',1500);}
+  }catch(e){showAlert('alert-box','Connection error. Please try again.');btn.disabled=false;btn.textContent='Sign In →';}
+}
+document.addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6-Day Lifestyle Reset Launchpad — ReDiscoverU</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+.launch-hero{background:linear-gradient(135deg,#0d2d42 0%,var(--launch) 50%,#1e3a5f 100%);padding:5rem 5% 4rem;text-align:center;position:relative;overflow:hidden;}
+.launch-hero::before{content:'';position:absolute;top:-30%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 65%);}
+.launch-hero::after{content:'';position:absolute;bottom:-20%;right:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(184,146,58,.15) 0%,transparent 65%);}
+.launch-hero .caption{color:rgba(255,255,255,.65);}
+.launch-hero h1{color:#fff;font-size:clamp(2.2rem,5vw,3.8rem);margin:.75rem 0;}
+.launch-hero p{color:rgba(255,255,255,.78);max-width:580px;margin:.75rem auto 2rem;font-size:1.02rem;}
+.hero-chips{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;}
+.hero-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:.35rem .9rem;font-size:.75rem;color:rgba(255,255,255,.85);backdrop-filter:blur(4px);}
+
+.checkout-wrap{max-width:900px;margin:0 auto;padding:4rem 5%;display:grid;grid-template-columns:1fr 360px;gap:3rem;align-items:start;}
+.checkout-main h3{font-family:var(--serif);font-size:1.4rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--gold-border);}
+.includes-list{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem;}
+.includes-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.88rem;color:var(--text-2);padding:.6rem .9rem;background:var(--bg-2);border-radius:var(--radius);border:1px solid var(--gold-border);}
+.includes-list li::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px;}
+
+.order-card{background:var(--surface);border:2px solid var(--gold-border);border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow-gold);position:sticky;top:88px;}
+.order-card::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px 3px 0 0;margin:-2rem -2rem 1.5rem;}
+.price-display{margin-bottom:1.5rem;}
+.price-big{font-family:var(--serif);font-size:3rem;color:var(--gold);line-height:1;}
+.price-orig{font-size:.88rem;color:var(--text-4);text-decoration:line-through;margin-left:.5rem;}
+.price-label{font-size:.75rem;color:var(--text-3);margin-top:.25rem;}
+.coupon-row{display:flex;gap:0;margin-bottom:.75rem;}
+.coupon-row input{border-radius:var(--radius) 0 0 var(--radius);border-right:none;text-transform:uppercase;font-family:var(--mono);letter-spacing:.1em;}
+.coupon-btn{padding:.82rem 1rem;background:var(--bg-2);border:1.5px solid var(--gold-border);border-left:none;border-radius:0 var(--radius) var(--radius) 0;font-size:.75rem;font-weight:600;color:var(--gold);cursor:pointer;white-space:nowrap;transition:all .2s;}
+.coupon-btn:hover{background:var(--gold-pale);}
+.order-divider{height:1px;background:var(--gold-border);margin:1.25rem 0;}
+.order-row{display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:.5rem;color:var(--text-2);}
+.order-row.total{font-weight:600;color:var(--text);font-size:1rem;}
+.trust-row{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--text-3);margin-top:1rem;}
+
+@media(max-width:780px){.checkout-wrap{grid-template-columns:1fr;}.order-card{position:static;}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">Rediscover<span>U</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Back to Home</a>
+    <a href="login.html">Sign In</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="launch-hero">
+  <div style="position:relative;z-index:1;">
+    <div class="caption">🌅 Limited Cohort</div>
+    <h1>6-Day Lifestyle Reset<br><em style="color:var(--gold-light);font-style:normal;">Launchpad</em></h1>
+    <p>Six structured days. Six transformative habits. One clear direction — for Indian professionals and students ready to take their life seriously.</p>
+    <div class="hero-chips">
+      <div class="hero-chip">🌅 Morning Ritual</div>
+      <div class="hero-chip">🥗 Mindful Eating</div>
+      <div class="hero-chip">🌙 Evening Wind-Down</div>
+      <div class="hero-chip">⚡ Clarity Protocol</div>
+      <div class="hero-chip">🤝 Mentor Support</div>
+      <div class="hero-chip">🔄 Lifestyle Blueprint</div>
+    </div>
+    <div style="font-size:.88rem;color:rgba(255,255,255,.6);">⏱ Cohort begins within 24 hours of enrollment</div>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="checkout-wrap">
+  <!-- LEFT: What's included -->
+  <div id="checkout-left">
+    <h3>What's Included in Your Launchpad</h3>
+    <ul class="includes-list">
+      <li>Daily structured curriculum — one focus area per day</li>
+      <li>Morning Ritual Design guide (PDF + video)</li>
+      <li>Mindful Eating Framework — practical, not restrictive</li>
+      <li>Evening Wind-Down Routine template</li>
+      <li>Clarity Journal prompts (Day 1–6)</li>
+      <li>Live Q&A session with Jayashankar</li>
+      <li>WhatsApp support group for cohort members</li>
+      <li>Personalised Lifestyle Blueprint (Day 6 deliverable)</li>
+    </ul>
+
+    <div style="background:var(--bg-2);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:2rem;">
+      <div class="caption" style="margin-bottom:.75rem;">After the Launchpad</div>
+      <h4 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:.5rem;">Continue with Lifetime Membership</h4>
+      <p style="font-size:.84rem;margin-bottom:1rem;">Upgrade to ₹4,999 Lifetime Membership and unlock the complete program library, weekly live sessions, and 1-to-1 mentorship — forever.</p>
+      <a href="subscribe.html" class="btn btn-ghost btn-sm">Learn about Lifetime Access →</a>
+    </div>
+
+    <div id="alert-main"></div>
+  </div>
+
+  <!-- RIGHT: Order card -->
+  <div>
+    <div class="order-card">
+      <div class="caption" style="margin-bottom:.5rem;">Your Order</div>
+      <div class="price-display">
+        <div>
+          <span class="price-big" id="display-price">₹499</span>
+          <span class="price-orig">₹999</span>
+        </div>
+        <div class="price-label">6-Day Lifestyle Reset Launchpad · One-time</div>
+      </div>
+
+      <div class="form-group">
+        <label>Coupon Code</label>
+        <div class="coupon-row">
+          <input type="text" id="coupon-input" placeholder="ENTER CODE" maxlength="20">
+          <button class="coupon-btn" onclick="applyCoupon()" id="coupon-btn">Apply</button>
+        </div>
+        <div id="coupon-msg" style="font-size:.78rem;min-height:1.2em;color:var(--text-3);"></div>
+      </div>
+
+      <div class="order-divider"></div>
+      <div class="order-row"><span>Launchpad</span><span>₹999</span></div>
+      <div class="order-row" id="discount-row" style="display:none;color:var(--success);"><span>Discount</span><span id="discount-val">−₹0</span></div>
+      <div class="order-row total"><span>Total</span><span id="total-val">₹499</span></div>
+      <div class="order-divider"></div>
+
+      <div id="alert-card"></div>
+      <button class="btn btn-gold btn-full btn-lg" id="pay-btn" onclick="proceed()">Enrol Now — Pay ₹499</button>
+      <div class="trust-row"><span>🔒</span><span>Secured by Razorpay · UPI · Cards · Wallets</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><div class="footer-brand">Rediscover<span>U</span></div><p class="footer-note">Structured lifestyle coaching for intentional living.</p></div>
+    <div class="footer-col"><h4>Platform</h4><a href="index.html">Home</a><a href="programs.html">Programs</a><a href="subscribe.html">Lifetime Membership</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="mailto:jayashankarkol@gmail.com">jayashankarkol@gmail.com</a></div>
+  </div>
+  <div class="footer-bottom"><span>© <span id="footer-year"></span> ReDiscoverU</span><span>Bengaluru, India</span></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script>
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+// Auth: if logged-in & LIFETIME, redirect to dashboard
+if (getToken() && getAccess() === 'LIFETIME') {
+  window.location.href = 'user/dashboard.html';
+}
+// If already has launchpad access
+if (getToken() && (getAccess() === 'LAUNCHPAD')) {
+  document.getElementById('checkout-left').insertAdjacentHTML('afterbegin',
+    '<div class="alert alert-success">✓ You already have Launchpad access. <a href="user/dashboard.html">Go to Dashboard →</a></div>');
+}
+
+let priceInfo = { original: 999, final: 499, discount: 0, coupon: null };
+let couponLocked = false;
+
+// Load actual price
+(async()=>{
+  try{
+    const r = await fetch(`${API}/admin/settings`);
+    const s = await r.json();
+    if (s.launchpadPrice) {
+      priceInfo.final = Number(s.launchpadPrice);
+      priceInfo.original = priceInfo.final * 2;
+      updatePriceUI();
+    }
+  }catch(e){}
+})();
+
+function updatePriceUI() {
+  document.getElementById('display-price').textContent = formatINR(priceInfo.final);
+  document.getElementById('total-val').textContent = priceInfo.final === 0 ? 'FREE' : formatINR(priceInfo.final);
+  const discRow = document.getElementById('discount-row');
+  if (priceInfo.discount > 0) {
+    discRow.style.display = 'flex';
+    document.getElementById('discount-val').textContent = `−${formatINR(priceInfo.original * priceInfo.discount / 100)}`;
+  }
+  document.getElementById('pay-btn').textContent = priceInfo.final === 0 ? 'Claim Free Access →' : `Enrol Now — Pay ${formatINR(priceInfo.final)}`;
+}
+
+async function applyCoupon() {
+  if (couponLocked) return;
+  const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+  const msg = document.getElementById('coupon-msg');
+  if (!code) { msg.textContent = 'Enter a coupon code.'; msg.style.color = 'var(--error)'; return; }
+  msg.textContent = 'Validating…'; msg.style.color = 'var(--text-3)';
+
+  if (!getToken()) { window.location.href = `login.html?redirect=${encodeURIComponent('launchpad.html')}`; return; }
+
+  try {
+    const r = await fetch(`${API}/payment/order`, {
+      method: 'POST', headers: authHeader(),
+      body: JSON.stringify({ couponCode: code, productType: 'LAUNCHPAD' })
+    });
+    const d = await r.json();
+    if (!r.ok) { msg.textContent = d.error || 'Invalid coupon.'; msg.style.color='var(--error)'; return; }
+
+    priceInfo.discount = d.discountPercent || 0;
+    priceInfo.final = Number(d.finalAmount);
+    priceInfo.coupon = code;
+    couponLocked = true;
+
+    if (d.freeAccess) {
+      msg.textContent = `✓ 100% discount applied! Access granted.`; msg.style.color = 'var(--success)';
+      localStorage.setItem('rdu_status', 'LAUNCHPAD');
+      localStorage.setItem('rdu_access', 'LAUNCHPAD');
+      updatePriceUI();
+      setTimeout(() => window.location.href = 'user/dashboard.html', 1500);
+      return;
+    }
+
+    msg.textContent = `✓ ${priceInfo.discount}% discount applied.`; msg.style.color = 'var(--success)';
+    document.getElementById('coupon-btn').textContent = '✓ Applied';
+    document.getElementById('coupon-btn').disabled = true;
+    updatePriceUI();
+  } catch(e) { msg.textContent = 'Connection error.'; msg.style.color = 'var(--error)'; }
+}
+
+async function proceed() {
+  if (!getToken()) { window.location.href = `login.html?redirect=${encodeURIComponent('launchpad.html')}`; return; }
+  clearAlert('alert-card');
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true; btn.textContent = 'Preparing…';
+
+  try {
+    const r = await fetch(`${API}/payment/order`, {
+      method: 'POST', headers: authHeader(),
+      body: JSON.stringify({ couponCode: priceInfo.coupon, productType: 'LAUNCHPAD' })
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      showAlert('alert-card', d.error || 'Could not initiate payment. Please try again.');
+      btn.disabled = false; btn.textContent = `Enrol Now — Pay ${formatINR(priceInfo.final)}`;
+      return;
+    }
+    if (d.freeAccess) {
+      showAlert('alert-card', '✓ Access granted!', 'success');
+      localStorage.setItem('rdu_access', 'LAUNCHPAD');
+      setTimeout(() => window.location.href = 'user/dashboard.html', 1500);
+      return;
+    }
+    // Open Razorpay
+    const rzp = new Razorpay({
+      key: d.keyId, amount: d.amount, currency: d.currency, order_id: d.orderId,
+      name: 'ReDiscoverU', description: '6-Day Lifestyle Reset Launchpad',
+      prefill: { name: getName(), email: getEmail() },
+      theme: { color: '#B8923A' },
+      modal: { ondismiss: () => { btn.disabled=false; btn.textContent=`Enrol Now — Pay ${formatINR(priceInfo.final)}`; } },
+      handler: () => {
+        showAlert('alert-card', '✓ Payment received! Setting up your access…', 'success');
+        pollAccess(10);
+      }
+    });
+    rzp.open();
+  } catch(e) {
+    showAlert('alert-card', 'Connection error. Please try again.');
+    btn.disabled=false; btn.textContent=`Enrol Now — Pay ${formatINR(priceInfo.final)}`;
+  }
+}
+
+async function pollAccess(tries) {
+  if (tries <= 0) { localStorage.setItem('rdu_access','LAUNCHPAD'); window.location.href='user/dashboard.html'; return; }
+  try {
+    const r = await fetch(`${API}/user/status`, { headers: authHeader() });
+    const d = await r.json();
+    const s = d.subscriptionStatus || '';
+    if (s === 'PAID' || s === 'LAUNCHPAD' || s === 'LIFETIME') {
+      localStorage.setItem('rdu_access', s === 'LIFETIME' ? 'LIFETIME' : 'LAUNCHPAD');
+      window.location.href = 'user/dashboard.html'; return;
+    }
+  } catch(e) {}
+  setTimeout(() => pollAccess(tries - 1), 2000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — ReDiscoverU</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+body{background:var(--bg);}
+.dash-topbar{background:var(--surface);border-bottom:1px solid var(--gold-border);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm);}
+.dash-topbar-logo{font-family:var(--serif);font-size:1.1rem;color:var(--text);text-decoration:none;}
+.dash-topbar-logo span{color:var(--gold);}
+.dash-user{display:flex;align-items:center;gap:.75rem;}
+.dash-user-name{font-size:.84rem;color:var(--text-2);}
+.dash-avatar{width:34px;height:34px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1rem;color:#fff;flex-shrink:0;}
+
+/* Upgrade banner */
+.upgrade-banner{background:linear-gradient(90deg,var(--launch) 0%,#1e3a5f 100%);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.upgrade-banner p{color:rgba(255,255,255,.88);font-size:.88rem;margin:0;}
+.upgrade-banner strong{color:#fff;}
+
+/* Welcome card */
+.welcome-card{background:linear-gradient(135deg,var(--surface) 0%,var(--bg-2) 100%);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.welcome-card::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(184,146,58,.08),transparent 70%);}
+.welcome-name{font-family:var(--serif);font-size:1.8rem;margin-bottom:.25rem;}
+.welcome-sub{font-size:.85rem;color:var(--text-3);}
+
+/* Day cards for launchpad */
+.day-progress-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.75rem;margin-bottom:1.5rem;}
+.day-progress-card{background:var(--surface);border:1.5px solid var(--gold-border);border-radius:var(--radius-lg);padding:1rem .75rem;text-align:center;cursor:pointer;transition:all .25s;}
+.day-progress-card:hover{border-color:var(--gold);box-shadow:var(--shadow-gold);}
+.day-progress-card.completed{background:var(--success-bg);border-color:rgba(45,106,79,.3);}
+.day-progress-card.active{background:var(--gold-pale);border-color:var(--gold);}
+.day-prog-num{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;}
+.day-prog-label{font-size:.65rem;color:var(--text-3);margin-top:.25rem;letter-spacing:.06em;}
+.day-prog-status{font-size:.7rem;margin-top:.35rem;}
+
+/* Session card */
+.session-item{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem;transition:all .25s;}
+.session-item:hover{box-shadow:var(--shadow);}
+.session-title{font-family:var(--serif);font-size:1.05rem;margin-bottom:.2rem;}
+.session-meta{font-size:.78rem;color:var(--text-3);}
+
+/* Premium locked card */
+.premium-section{margin-top:2rem;}
+.premium-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;}
+.premium-header h3{font-family:var(--serif);font-size:1.3rem;}
+.locked-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;}
+.locked-card-wrap{position:relative;border-radius:var(--radius-lg);overflow:hidden;}
+.locked-card-inner{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.5rem;filter:blur(3px);pointer-events:none;user-select:none;}
+.locked-overlay-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(250,250,247,.87);backdrop-filter:blur(2px);border-radius:var(--radius-lg);text-align:center;padding:1.5rem;border:2px solid var(--gold-border);}
+.locked-overlay-card .lock{font-size:1.8rem;margin-bottom:.5rem;}
+.locked-overlay-card h4{font-family:var(--serif);font-size:1rem;margin-bottom:.35rem;}
+.locked-overlay-card p{font-size:.75rem;color:var(--text-3);margin-bottom:.85rem;}
+
+/* Community */
+.community-card{background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;flex-direction:column;gap:.75rem;}
+.community-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
+.join-wa-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);border-radius:var(--radius);font-size:.78rem;font-weight:600;color:#16a34a;text-decoration:none;transition:all .2s;align-self:flex-start;}
+.join-wa-btn:hover{background:rgba(37,211,102,.18);color:#16a34a;}
+
+@media(max-width:700px){.day-progress-grid{grid-template-columns:repeat(3,1fr);}.dash-main{padding:1.25rem;}}
+</style>
+</head>
+<body>
+
+<div class="dash-wrap">
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="dash-sidebar-logo">
+      <a href="../index.html">Rediscover<span>U</span></a>
+      <small id="sidebar-badge">Member</small>
+    </div>
+    <nav class="dash-nav">
+      <div class="dash-nav-section">My Learning</div>
+      <button class="dash-nav-item active" data-page="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Dashboard
+      </button>
+      <button class="dash-nav-item" data-page="launchpad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        6-Day Launchpad
+      </button>
+      <button class="dash-nav-item" data-page="sessions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Live Sessions
+      </button>
+      <button class="dash-nav-item" data-page="community">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Community
+      </button>
+      <div class="dash-nav-section">Premium</div>
+      <button class="dash-nav-item" data-page="programs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        All Programs
+      </button>
+      <button class="dash-nav-item" data-page="membership">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Membership
+      </button>
+      <div class="dash-nav-section">Account</div>
+      <button class="dash-nav-item" data-page="announcements">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Announcements
+      </button>
+      <button class="dash-nav-item" data-page="payments">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Payments
+      </button>
+    </nav>
+    <div class="dash-sidebar-footer">
+      <button onclick="logout()" class="btn btn-ghost btn-sm btn-full" style="font-size:.76rem;">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+    <!-- Topbar -->
+    <div class="dash-topbar" style="margin:-2.5rem -2.5rem 2rem;border-radius:0;">
+      <a href="../index.html" class="dash-topbar-logo">Rediscover<span>U</span></a>
+      <div class="dash-user">
+        <span class="dash-user-name" id="user-name-top"></span>
+        <div class="dash-avatar" id="user-avatar">J</div>
+      </div>
+    </div>
+
+    <!-- Upgrade banner for LAUNCHPAD users -->
+    <div id="upgrade-banner" class="upgrade-banner" style="display:none;border-radius:var(--radius-lg);margin-bottom:1.5rem;">
+      <p><strong>🚀 Ready to go deeper?</strong> Upgrade to Lifetime Membership — unlock all programs, weekly live sessions & 1-to-1 mentorship.</p>
+      <a href="../subscribe.html" class="btn btn-gold btn-sm">Upgrade — ₹4,999 →</a>
+    </div>
+
+    <!-- ══ HOME PAGE ══ -->
+    <div class="dash-page active" id="page-home">
+      <div class="welcome-card fade-up">
+        <div class="welcome-name" id="welcome-name">Welcome back</div>
+        <div class="welcome-sub" id="welcome-sub">Continue your lifestyle reset journey.</div>
+        <div style="margin-top:1.25rem;display:flex;gap:.75rem;flex-wrap:wrap;" id="welcome-actions"></div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Access Level</div><div class="value" id="stat-access" style="font-size:1.2rem;margin-top:.25rem;">—</div></div>
+        <div class="stat-card"><div class="label">Days Completed</div><div class="value" id="stat-days">0</div><div class="sub">of 6 days</div></div>
+        <div class="stat-card"><div class="label">Live Sessions</div><div class="value" id="stat-sessions">—</div></div>
+        <div class="stat-card"><div class="label">Member Since</div><div class="value" id="stat-since" style="font-size:1rem;margin-top:.25rem;">—</div></div>
+      </div>
+
+      <!-- Quick day progress -->
+      <div class="dash-header" style="margin-top:1.5rem;">
+        <h2>Your 6-Day Progress</h2>
+        <p>Click a day to jump to that content.</p>
+      </div>
+      <div class="day-progress-grid" id="day-progress-grid">
+        <!-- populated by JS -->
+      </div>
+
+      <!-- Recent announcements -->
+      <div class="dash-header" style="margin-top:2rem;">
+        <h2>Recent Announcements</h2>
+      </div>
+      <div id="home-announcements"><div class="loading">Loading</div></div>
+    </div>
+
+    <!-- ══ LAUNCHPAD PAGE ══ -->
+    <div class="dash-page" id="page-launchpad">
+      <div class="dash-header">
+        <h2>6-Day Lifestyle Reset Launchpad</h2>
+        <p>Your structured daily curriculum — one focused area per day.</p>
+      </div>
+      <div id="launchpad-content"><div class="loading">Loading content</div></div>
+    </div>
+
+    <!-- ══ SESSIONS PAGE ══ -->
+    <div class="dash-page" id="page-sessions">
+      <div class="dash-header"><h2>Live Sessions</h2><p>Scheduled sessions with Jayashankar.</p></div>
+      <div id="sessions-content"><div class="loading">Loading</div></div>
+    </div>
+
+    <!-- ══ COMMUNITY PAGE ══ -->
+    <div class="dash-page" id="page-community">
+      <div class="dash-header"><h2>Community</h2><p>Join your cohort and the wider ReDiscoverU community.</p></div>
+      <div id="community-content"><div class="loading">Loading</div></div>
+    </div>
+
+    <!-- ══ ALL PROGRAMS (PREMIUM) ══ -->
+    <div class="dash-page" id="page-programs">
+      <div class="dash-header"><h2>All Programs</h2><p>The complete ReDiscoverU program library.</p></div>
+      <div id="programs-content"><div class="loading">Loading</div></div>
+    </div>
+
+    <!-- ══ MEMBERSHIP PAGE ══ -->
+    <div class="dash-page" id="page-membership">
+      <div class="dash-header"><h2>Membership</h2><p>Your current plan and upgrade options.</p></div>
+      <div id="membership-content"><div class="loading">Loading</div></div>
+    </div>
+
+    <!-- ══ ANNOUNCEMENTS ══ -->
+    <div class="dash-page" id="page-announcements">
+      <div class="dash-header"><h2>Announcements</h2><p>Updates from your mentor.</p></div>
+      <div id="announcements-content"><div class="loading">Loading</div></div>
+    </div>
+
+    <!-- ══ PAYMENTS ══ -->
+    <div class="dash-page" id="page-payments">
+      <div class="dash-header"><h2>My Payments</h2><p>Transaction history.</p></div>
+      <div id="payments-content"><div class="loading">Loading</div></div>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+const DAYS = [
+  { num:1, title:'Morning Ritual Design', desc:'Build your personalised morning routine — wake time, movement, hydration, intention.' },
+  { num:2, title:'Clarity & Mental Reset', desc:'Journaling frameworks, breathwork, and a 10-minute clarity protocol.' },
+  { num:3, title:'Mindful Eating Basics', desc:'Practical food approach — meal timing, portion awareness, mindful eating.' },
+  { num:4, title:'Energy Management', desc:'Understand your energy cycles and plan tasks accordingly.' },
+  { num:5, title:'Evening Wind-Down', desc:'Screen discipline, light movement, reflection, and a real sleep ritual.' },
+  { num:6, title:'Lifestyle Integration', desc:'Combine everything into your personalised Lifestyle Blueprint.' }
+];
+
+let _userData = null;
+let _access = getAccess(); // NONE | LAUNCHPAD | LIFETIME
+let _loaded = {};
+
+// ── INIT ──
+(async () => {
+  if (!requireAuth()) return;
+
+  try {
+    const r = await fetch(`${API}/user/status`, { headers: authHeader() });
+    if (!r.ok) throw new Error('auth');
+    _userData = await r.json();
+
+    if (_userData.role === 'ROLE_ADMIN') { location.href = '../admin/dashboard.html'; return; }
+
+    // Sync access
+    const s = _userData.subscriptionStatus || '';
+    if (s === 'LIFETIME') _access = 'LIFETIME';
+    else if (s === 'PAID' || s === 'LAUNCHPAD') _access = 'LAUNCHPAD';
+    else { location.href = '../launchpad.html'; return; }
+    localStorage.setItem('rdu_access', _access);
+
+    // UI updates
+    const name = _userData.name || _userData.email || '';
+    document.getElementById('welcome-name').textContent = `Welcome back, ${name.split(' ')[0]}`;
+    document.getElementById('user-name-top').textContent = name.split(' ')[0];
+    document.getElementById('user-avatar').textContent = (name[0]||'U').toUpperCase();
+    document.getElementById('sidebar-badge').textContent = _access === 'LIFETIME' ? '⭐ Lifetime Member' : '🚀 Launchpad';
+
+    // Upgrade banner for LAUNCHPAD only
+    if (_access === 'LAUNCHPAD') document.getElementById('upgrade-banner').style.display = 'flex';
+
+    // Welcome actions
+    const wa = document.getElementById('welcome-actions');
+    wa.innerHTML = `<button class="btn btn-gold btn-sm" onclick="showDashPage('launchpad')">Continue 6-Day Reset →</button>
+      <button class="btn btn-ghost btn-sm" onclick="showDashPage('sessions')">View Live Sessions</button>
+      ${_access==='LAUNCHPAD'?`<a href="../subscribe.html" class="btn btn-launch btn-sm">Upgrade to Lifetime ₹4,999</a>`:''}`;
+
+    // Stats
+    document.getElementById('stat-access').textContent = _access === 'LIFETIME' ? '⭐ Lifetime' : '🚀 Launchpad';
+    document.getElementById('stat-since').textContent = _userData.createdAt ? formatDate(_userData.createdAt) : 'Active';
+
+    renderDayGrid();
+    loadHomeAnnouncements();
+    initFadeUp();
+  } catch(e) { location.href = '../login.html'; }
+})();
+
+// ── DAY GRID ──
+function renderDayGrid() {
+  const grid = document.getElementById('day-progress-grid');
+  document.getElementById('stat-days').textContent = '0'; // dynamic progress TBD
+  grid.innerHTML = DAYS.map(d => `
+    <div class="day-progress-card" onclick="jumpToDay(${d.num})" title="${esc(d.title)}">
+      <div class="day-prog-num">${d.num}</div>
+      <div class="day-prog-label">Day ${d.num}</div>
+      <div class="day-prog-status" style="color:var(--text-4);">Tap →</div>
+    </div>`).join('');
+}
+
+function jumpToDay(n) {
+  showDashPage('launchpad');
+  setTimeout(() => {
+    const el = document.getElementById(`day-section-${n}`);
+    if (el) el.scrollIntoView({ behavior:'smooth' });
+  }, 200);
+}
+
+// ── PAGE CHANGE HANDLER ──
+function onPageChange(page) {
+  if (_loaded[page]) return;
+  _loaded[page] = true;
+  if (page === 'launchpad')      loadLaunchpad();
+  if (page === 'sessions')       loadSessions();
+  if (page === 'community')      loadCommunity();
+  if (page === 'programs')       loadPrograms();
+  if (page === 'membership')     loadMembership();
+  if (page === 'announcements')  loadAnnouncements();
+  if (page === 'payments')       loadPayments();
+}
+
+// ── LAUNCHPAD CONTENT ──
+async function loadLaunchpad() {
+  const el = document.getElementById('launchpad-content');
+  let programsHtml = '';
+  try {
+    const r = await fetch(`${API}/user/programs`, { headers: authHeader() });
+    const programs = r.ok ? await r.json() : [];
+    const prog = Array.isArray(programs) ? programs[0] : null;
+    if (prog) {
+      const dr = await fetch(`${API}/program/${prog.id}/details`, { headers: authHeader() });
+      const details = dr.ok ? await dr.json() : null;
+      if (details && details.files && details.files.length) {
+        programsHtml = `<div style="margin-bottom:2rem;">
+          <div class="dash-header"><h3 style="font-family:var(--serif);font-size:1.2rem;">Program Resources</h3></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;">
+          ${details.files.map(f=>`
+            <div class="card" style="padding:1.25rem;text-align:center;">
+              <div style="font-size:1.8rem;margin-bottom:.5rem;">${f.fileCategory==='VIDEO'?'🎬':f.fileCategory==='PDF'?'📄':'📎'}</div>
+              <div style="font-size:.85rem;color:var(--text);margin-bottom:.75rem;">${esc(f.title)}</div>
+              <a href="${imgSrc(f.filePath)}" target="_blank" class="btn btn-outline btn-sm">Open →</a>
+            </div>`).join('')}
+          </div></div>`;
+      }
+    }
+  } catch(e) {}
+
+  el.innerHTML = programsHtml + DAYS.map(d => `
+    <div id="day-section-${d.num}" style="margin-bottom:2rem;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.25rem;color:#fff;flex-shrink:0;">${d.num}</div>
+        <div>
+          <div style="font-family:var(--serif);font-size:1.2rem;">${d.title}</div>
+          <div style="font-size:.78rem;color:var(--text-3);">Day ${d.num} of 6</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:.75rem;">
+        <p>${d.desc}</p>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-gold btn-sm">Mark Complete ✓</button>
+          <button class="btn btn-ghost btn-sm">View Resources</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── SESSIONS ──
+async function loadSessions() {
+  const el = document.getElementById('sessions-content');
+  try {
+    const r = await fetch(`${API}/user/sessions`, { headers: authHeader() });
+    const sessions = r.ok ? await r.json() : [];
+    if (!Array.isArray(sessions)||!sessions.length) {
+      el.innerHTML='<div class="empty-state"><div class="icon">📅</div><p>No sessions scheduled yet. Check back soon.</p></div>';
+      return;
+    }
+    el.innerHTML = sessions.map(s=>`
+      <div class="session-item">
+        <div>
+          <div class="session-title">${esc(s.title)}</div>
+          <div class="session-meta">${esc(s.scheduleText||'')} ${s.programTitle?`· ${esc(s.programTitle)}`:''}</div>
+        </div>
+        ${s.meetingLink?`<a href="${esc(s.meetingLink)}" target="_blank" class="btn btn-gold btn-sm">Join →</a>`:`<span style="font-size:.78rem;color:var(--text-4);">Link coming soon</span>`}
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Could not load sessions.</p></div>';
+  }
+}
+
+// ── COMMUNITY ──
+async function loadCommunity() {
+  const el = document.getElementById('community-content');
+  try {
+    const r = await fetch(`${API}/user/community`, { headers: authHeader() });
+    const groups = r.ok ? await r.json() : [];
+    if (!Array.isArray(groups)||!groups.length) {
+      el.innerHTML='<div class="empty-state"><div class="icon">💬</div><p>Community groups coming soon.</p></div>';
+      return;
+    }
+    el.innerHTML = `<div class="community-grid">${groups.map(g=>`
+      <div class="community-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div style="font-family:var(--serif);font-size:1.1rem;">${esc(g.name)}</div>
+          <span class="badge badge-green">${g.type||'GROUP'}</span>
+        </div>
+        ${g.description?`<p style="font-size:.82rem;">${esc(g.description)}</p>`:''}
+        <a href="${esc(g.url)}" target="_blank" class="join-wa-btn">💬 Join ${g.type==='CHANNEL'?'Channel':'Group'}</a>
+      </div>`).join('')}</div>`;
+  } catch(e) { el.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Could not load community.</p></div>'; }
+}
+
+// ── PROGRAMS (with premium lock) ──
+async function loadPrograms() {
+  const el = document.getElementById('programs-content');
+  const isLifetime = _access === 'LIFETIME';
+  try {
+    const r = await fetch(`${API}/user/programs`, { headers: authHeader() });
+    if (r.status === 402 || !r.ok) {
+      el.innerHTML = renderPremiumLock('Full Program Library', 'Access all programs with Lifetime Membership.');
+      return;
+    }
+    const programs = await r.json();
+    if (!Array.isArray(programs)||!programs.length) {
+      el.innerHTML='<div class="empty-state"><div class="icon">📚</div><p>Programs coming soon.</p></div>';
+      return;
+    }
+    if (!isLifetime) {
+      el.innerHTML = `
+        <div class="alert alert-gold" style="margin-bottom:1.5rem;">🔒 You have access to the 6-Day Launchpad. <a href="../subscribe.html" style="color:var(--gold);font-weight:600;">Upgrade to Lifetime</a> to unlock all ${programs.length} programs.</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+        ${programs.map((p,i)=>i===0?`
+          <div class="card"><div class="badge badge-gold" style="margin-bottom:.75rem;">LAUNCHPAD</div>
+          <h4 style="font-family:var(--serif);font-size:1.15rem;margin-bottom:.4rem;">${esc(p.title)}</h4>
+          <p style="font-size:.84rem;">${esc((p.description||'').slice(0,80))}…</p>
+          <a href="../launchpad.html" class="btn btn-gold btn-sm" style="margin-top:1rem;">Access →</a></div>`
+          : `<div class="locked-card-wrap"><div class="locked-card-inner">
+          <h4 style="font-family:var(--serif);font-size:1.15rem;margin-bottom:.4rem;">${esc(p.title)}</h4>
+          <p style="font-size:.84rem;">${esc((p.description||'').slice(0,80))}…</p></div>
+          <div class="locked-overlay-card"><div class="lock">🔒</div>
+          <h4>Premium Program</h4><p>Lifetime Membership required</p>
+          <a href="../subscribe.html" class="btn btn-gold btn-sm">Upgrade — ₹4,999</a></div></div>`).join('')}
+        </div>`;
+      return;
+    }
+    el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+    ${programs.map(p=>`<div class="card">
+      ${p.category?`<span class="badge badge-gold" style="margin-bottom:.75rem;">${esc(p.category.name)}</span>`:''}
+      <h4 style="font-family:var(--serif);font-size:1.15rem;margin-bottom:.4rem;">${esc(p.title)}</h4>
+      <p style="font-size:.84rem;">${esc((p.description||'').slice(0,90))}…</p>
+      <a href="../user/dashboard.html" class="btn btn-outline btn-sm" style="margin-top:1rem;">Access →</a>
+    </div>`).join('')}</div>`;
+  } catch(e) { el.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Could not load programs.</p></div>'; }
+}
+
+// ── MEMBERSHIP ──
+function loadMembership() {
+  const el = document.getElementById('membership-content');
+  const isLifetime = _access === 'LIFETIME';
+  el.innerHTML = isLifetime ? `
+    <div class="card card-premium" style="max-width:520px;">
+      <div class="badge badge-gold" style="margin-bottom:1rem;">⭐ Lifetime Member</div>
+      <h3 style="font-family:var(--serif);font-size:1.6rem;margin-bottom:.5rem;">You have Lifetime Access</h3>
+      <p>You have permanent access to all programs, live sessions, community, and everything ReDiscoverU offers — now and in the future.</p>
+      <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--gold-border);">
+        <div class="caption" style="margin-bottom:.75rem;">Included in your membership</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;">
+          ${['All programs — forever','Weekly live Growth Circles','1-to-1 mentorship access','Premium community','All future programs'].map(f=>`<li style="display:flex;align-items:center;gap:.6rem;font-size:.85rem;color:var(--text-2);"><span style="color:var(--gold);">✓</span>${f}</li>`).join('')}
+        </ul>
+      </div>
+    </div>` : `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:700px;">
+      <div class="card">
+        <div class="badge badge-launch" style="margin-bottom:.75rem;">🚀 Current Plan</div>
+        <div style="font-family:var(--serif);font-size:1.8rem;color:var(--gold);">₹499</div>
+        <div style="font-size:.78rem;color:var(--text-3);margin-bottom:1rem;">6-Day Launchpad · One-time</div>
+        <p style="font-size:.84rem;">You have access to the 6-day curriculum, cohort support, and live Q&A session.</p>
+      </div>
+      <div class="card card-premium" style="position:relative;">
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.1em;padding:.25rem .9rem;border-radius:50px;">UPGRADE</div>
+        <div class="badge badge-gold" style="margin-bottom:.75rem;">⭐ Lifetime</div>
+        <div style="font-family:var(--serif);font-size:1.8rem;color:var(--gold);">₹4,999</div>
+        <div style="font-size:.78rem;color:var(--text-3);margin-bottom:1rem;">Lifetime · One-time</div>
+        <p style="font-size:.84rem;">All programs, weekly live sessions, 1-to-1 mentorship, and everything future.</p>
+        <a href="../subscribe.html" class="btn btn-gold btn-full" style="margin-top:1rem;">Upgrade Now →</a>
+      </div>
+    </div>`;
+}
+
+// ── ANNOUNCEMENTS ──
+async function loadHomeAnnouncements() {
+  const el = document.getElementById('home-announcements');
+  try {
+    const r = await fetch(`${API}/user/announcements`, { headers: authHeader() });
+    const list = r.ok ? await r.json() : [];
+    if (!Array.isArray(list)||!list.length) { el.innerHTML='<p style="color:var(--text-3);font-size:.85rem;">No announcements right now.</p>'; return; }
+    el.innerHTML = list.slice(0,3).map(a=>`
+      <div class="card" style="margin-bottom:.75rem;padding:1.25rem 1.5rem;">
+        <div style="font-family:var(--serif);font-size:1.05rem;margin-bottom:.3rem;">${esc(a.title)}</div>
+        <p style="font-size:.83rem;">${esc((a.message||'').slice(0,120))}${(a.message||'').length>120?'…':''}</p>
+        <div style="font-size:.72rem;color:var(--text-4);margin-top:.5rem;">${formatDate(a.createdAt)}</div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML='<p style="color:var(--text-3);font-size:.85rem;">Could not load announcements.</p>'; }
+}
+
+async function loadAnnouncements() {
+  const el = document.getElementById('announcements-content');
+  try {
+    const r = await fetch(`${API}/user/announcements`, { headers: authHeader() });
+    const list = r.ok ? await r.json() : [];
+    if (!Array.isArray(list)||!list.length) { el.innerHTML='<div class="empty-state"><div class="icon">📢</div><p>No announcements yet.</p></div>'; return; }
+    el.innerHTML = list.map(a=>`
+      <div class="card" style="margin-bottom:.75rem;">
+        <div style="font-family:var(--serif);font-size:1.1rem;margin-bottom:.4rem;">${esc(a.title)}</div>
+        <p style="font-size:.86rem;">${esc(a.message).replace(/\n/g,'<br>')}</p>
+        <div style="font-size:.72rem;color:var(--text-4);margin-top:.75rem;">${formatDate(a.createdAt)}</div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Could not load.</p></div>'; }
+}
+
+// ── PAYMENTS ──
+async function loadPayments() {
+  const el = document.getElementById('payments-content');
+  try {
+    const r = await fetch(`${API}/user/payments`, { headers: authHeader() });
+    const pays = r.ok ? await r.json() : [];
+    if (!Array.isArray(pays)||!pays.length) { el.innerHTML='<div class="empty-state"><div class="icon">💳</div><p>No payment history yet.</p></div>'; return; }
+    el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
+    ${pays.map(p=>`<tr>
+      <td style="font-family:var(--serif);font-size:1.05rem;color:var(--gold);">₹${p.finalAmount||p.amount||0}</td>
+      <td><span class="badge badge-${p.paymentStatus==='SUCCESS'||p.paymentStatus==='FREE'?'green':'gray'}">${esc(p.paymentStatus||'PENDING')}</span></td>
+      <td style="color:var(--text-3);">${formatDate(p.createdAt)}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+  } catch(e) { el.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Could not load payments.</p></div>'; }
+}
+
+function renderPremiumLock(title, subtitle) {
+  return `<div class="locked-wrap" style="max-width:480px;">
+    <div style="background:var(--surface);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:3rem;text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
+      <h3 style="font-family:var(--serif);font-size:1.5rem;margin-bottom:.5rem;">${title}</h3>
+      <p style="margin-bottom:1.5rem;">${subtitle}</p>
+      <a href="../subscribe.html" class="btn btn-gold">Upgrade to Lifetime — ₹4,999 →</a>
+    </div>
+  </div>`;
+}
+</script>
+</body>
+</html>
