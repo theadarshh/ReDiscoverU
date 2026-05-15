@@ -1,4 +1,4 @@
-const API=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://localhost:8080/api':'https://api.rediscoveru.life/api';
+const API=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://localhost:8080/api':'https://rediscoveru.onrender.com/api';
 const BASE=API.replace('/api','');
 function imgUrl(p){if(!p)return '';if(p.startsWith('http'))return p;return BASE+p;}
 function getToken(){return localStorage.getItem('rdu_token');}

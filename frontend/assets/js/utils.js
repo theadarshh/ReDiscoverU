@@ -4,7 +4,7 @@
 
 const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:8080/api'
-  : 'https://api.rediscoveru.life/api';
+  : 'https://rediscoveru.onrender.com/api';
 
 // ── Auth helpers ──────────────────────────────────────────────
 function getToken()  { return localStorage.getItem('rdu_token'); }
