@@ -233,7 +233,7 @@ public class EmailService {
         h.setText(html, true);
 
         // TEMPORARILY DISABLED FOR DEBUGGING
-        // mailSender.send(msg);
+        mailSender.send(msg);
 
         System.out.println("[Email] TEMP MAIL DISABLED");
 
