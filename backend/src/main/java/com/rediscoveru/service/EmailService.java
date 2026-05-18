@@ -221,17 +221,29 @@ public class EmailService {
 
     // ── Core send ────────────────────────────────────────────────
     private void sendHtml(String to, String subject, String html) {
-        try {
-            MimeMessage msg = mailSender.createMimeMessage();
-            MimeMessageHelper h = new MimeMessageHelper(msg, true, "UTF-8");
-            h.setFrom(fromEmail, "ReDiscoverU");
-            h.setTo(to);
-            h.setSubject(subject);
-            h.setText(html, true);
-            mailSender.send(msg);
-        } catch (Exception e) { System.err.println("[Email] send to " + to + ": " + e.getMessage()); }
-    }
+    try {
+        System.out.println("[Email] Attempting to send email to: " + to);
 
+        MimeMessage msg = mailSender.createMimeMessage();
+        MimeMessageHelper h = new MimeMessageHelper(msg, true, "UTF-8");
+
+        h.setFrom(fromEmail, "ReDiscoverU");
+        h.setTo(to);
+        h.setSubject(subject);
+        h.setText(html, true);
+
+        mailSender.send(msg);
+
+        System.out.println("[Email] Email sent successfully to: " + to);
+
+    } catch (Exception e) {
+
+        System.err.println("[Email] FAILED sending email to: " + to);
+        e.printStackTrace();
+
+        throw new RuntimeException("Email sending failed", e);
+    }
+}
     // ── HTML helpers ─────────────────────────────────────────────
     private String base(String type) {
         return "<!DOCTYPE html><html><head><meta charset='UTF-8'></head>" +
