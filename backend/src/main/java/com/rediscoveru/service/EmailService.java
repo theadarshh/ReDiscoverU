@@ -220,7 +220,7 @@ public class EmailService {
     }
 
     // ── Core send ────────────────────────────────────────────────
-    private void sendHtml(String to, String subject, String html) {
+  private void sendHtml(String to, String subject, String html) {
     try {
         System.out.println("[Email] Attempting to send email to: " + to);
 
@@ -232,9 +232,10 @@ public class EmailService {
         h.setSubject(subject);
         h.setText(html, true);
 
-        mailSender.send(msg);
+        // TEMPORARILY DISABLED FOR DEBUGGING
+        // mailSender.send(msg);
 
-        System.out.println("[Email] Email sent successfully to: " + to);
+        System.out.println("[Email] TEMP MAIL DISABLED");
 
     } catch (Exception e) {
 
