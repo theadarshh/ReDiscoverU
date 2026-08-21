@@ -27,7 +27,7 @@ public class EmailService {
     private final AnnouncementRepository           announcementRepo;
 
     @Value("${otp.expiry.minutes:5}")     private int    otpExpiry;
-    @Value("${spring.mail.username}")     private String fromEmail;
+    @Value("${MAIL_FROM:${spring.mail.username}}") private String fromEmail;
     @Value("${admin.email:admin@rediscoveru.life}") private String adminEmail;
 
     // ── Registration OTP ────────────────────────────────────────
@@ -232,10 +232,9 @@ public class EmailService {
         h.setSubject(subject);
         h.setText(html, true);
 
-        // TEMPORARILY DISABLED FOR DEBUGGING
         mailSender.send(msg);
 
-        System.out.println("[Email] TEMP MAIL DISABLED");
+        System.out.println("[Email] Email sent successfully to: " + to);
 
     } catch (Exception e) {
 
